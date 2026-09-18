@@ -85,7 +85,7 @@
         </div>
         <div>
           <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent">TrackMovie</span>
-          <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest bg-brand-500/10 text-brand-400 px-1.5 py-0.5 rounded ml-1.5 border border-brand-500/20">Cinema & TV</span>
+          <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest bg-brand-500/10 text-brand-400 px-1.5 py-0.5 rounded ml-1.5 border border-brand-500/20">TMDb Edition</span>
         </div>
       </div>
 
@@ -93,11 +93,11 @@
       <div class="flex items-center gap-2">
         <button onclick="app.openSearchModal()" class="flex items-center gap-2 bg-surface-elevated hover:bg-surface-border border border-surface-border text-slate-300 px-3.5 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm">
           <i class="fa-solid fa-magnifying-glass text-brand-400"></i>
-          <span class="hidden md:inline font-medium">Cerca film o serie...</span>
+          <span class="hidden md:inline font-medium">Cerca qualsiasi film o serie...</span>
         </button>
 
-        <button onclick="app.openDataModal()" title="Gestione Dati e Backup" class="w-10 h-10 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border flex items-center justify-center text-slate-300 hover:text-white transition">
-          <i class="fa-solid fa-cloud-arrow-down"></i>
+        <button onclick="app.openDataModal()" title="Impostazioni, TMDb & Backup" class="w-10 h-10 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border flex items-center justify-center text-slate-300 hover:text-white transition cursor-pointer">
+          <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </div>
@@ -130,9 +130,9 @@
         </button>
       </nav>
 
-      <div class="hidden sm:flex items-center text-xs text-slate-400">
-        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
-        <span>Film & TV Live</span>
+      <div id="tmdb-status-badge" class="hidden sm:flex items-center text-xs text-slate-400 cursor-pointer" onclick="app.openDataModal()">
+        <span class="inline-block w-2 h-2 rounded-full bg-slate-500 mr-2" id="tmdb-indicator-dot"></span>
+        <span id="tmdb-indicator-text">TMDb Non configurato</span>
       </div>
     </div>
 
@@ -162,7 +162,7 @@
           <i class="fa-solid fa-film"></i>
         </div>
         <h3 class="text-lg font-bold text-slate-200">La tua libreria è vuota</h3>
-        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Aggiungi film come Inception o Interstellar, oppure le tue serie preferite come Breaking Bad.</p>
+        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Cerca qualsiasi film o serie: 12 Angry Men, Inception, Breaking Bad e milioni di altri titoli.</p>
         <button onclick="app.openSearchModal()" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-500 hover:bg-brand-400 text-slate-950 transition">
           <i class="fa-solid fa-plus mr-2"></i>Cerca un film o una serie
         </button>
@@ -240,7 +240,7 @@
       <div class="bg-surface p-6 rounded-2xl border border-surface-border">
         <h3 class="font-bold text-base text-slate-200 mb-4 flex items-center gap-2">
           <i class="fa-solid fa-chart-column text-brand-400"></i>
-          I tuoi generi preferiti (filtrati per identità)
+          I tuoi generi preferiti
         </h3>
         <div id="genres-bars-container" class="space-y-3"></div>
       </div>
@@ -251,7 +251,7 @@
       <div class="bg-surface p-5 rounded-2xl border border-surface-border flex items-center justify-between">
         <div>
           <h2 class="text-lg font-bold text-slate-100">Prossime Uscite</h2>
-          <p class="text-xs text-slate-400">Episodi e uscite in programma delle serie nella tua lista</p>
+          <p class="text-xs text-slate-400">Episodi in onda delle serie presenti nella tua lista</p>
         </div>
         <i class="fa-regular fa-calendar-check text-2xl text-brand-400"></i>
       </div>
@@ -259,7 +259,7 @@
       <div id="calendar-schedule-container" class="space-y-3"></div>
     </section>
 
-    <!-- VIEW 4: ESPLORA (Con filtri intelligenti e senza Drama dominante) -->
+    <!-- VIEW 4: ESPLORA -->
     <section id="view-discover" class="hidden space-y-6">
       <div class="bg-gradient-to-r from-surface to-surface-elevated p-6 rounded-3xl border border-surface-border flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
@@ -334,7 +334,7 @@
     <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
       <div class="p-4 border-b border-surface-border flex items-center gap-3">
         <i class="fa-solid fa-magnifying-glass text-brand-400 text-lg"></i>
-        <input type="text" id="search-query-input" placeholder="Cerca film o serie es. Inception, Oppenheimer, The Bear..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
+        <input type="text" id="search-query-input" placeholder="Cerca es. 12 Angry Men, Inception, The Bear..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
         <button onclick="app.closeSearchModal()" class="text-slate-400 hover:text-white p-2 rounded-lg cursor-pointer">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
@@ -412,39 +412,58 @@
     </div>
   </div>
 
-  <!-- MODAL: DATA & BACKUP -->
+  <!-- MODAL: SETTINGS & DATA & TMDB KEY -->
   <div id="data-modal" onclick="if(event.target === this) app.closeDataModal()" class="fixed inset-0 z-50 bg-black/80 modal-backdrop hidden flex items-center justify-center p-4">
-    <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-md p-6 space-y-5 shadow-2xl">
-      <div class="flex items-center justify-between">
+    <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-md p-6 space-y-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+      <div class="flex items-center justify-between border-b border-surface-border pb-3">
         <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-database text-brand-400"></i> Backup & Dati
+          <i class="fa-solid fa-gear text-brand-400"></i> Impostazioni & Dati
         </h3>
         <button onclick="app.closeDataModal()" class="text-slate-400 hover:text-white cursor-pointer">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <p class="text-xs text-slate-400 leading-relaxed">
-        I tuoi dati sono salvati al sicuro in <code class="text-brand-400">localStorage</code>. Esporta il backup in formato JSON quando vuoi trasferirlo su un altro dispositivo.
-      </p>
+      <!-- SEZIONE TMDb API KEY -->
+      <div class="bg-surface-elevated/70 p-4 rounded-2xl border border-surface-border space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-key"></i> Chiave TMDb (Gratuita)
+          </span>
+          <span id="tmdb-badge-modal" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300">Non attiva</span>
+        </div>
 
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Incolla la tua <b>Chiave API (v3 auth)</b> per cercare qualsiasi film o serie al mondo (*12 Angry Men*, capolavori storici, uscite cinema) con trame e poster ufficiali in italiano.
+        </p>
+
+        <div class="flex gap-2">
+          <input type="text" id="tmdb-api-key-input" placeholder="Incolla chiave TMDb..." class="flex-1 bg-surface border border-surface-border text-white text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-brand-500 font-mono" autocomplete="off">
+          <button onclick="app.saveTmdbKey()" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs transition cursor-pointer">
+            Salva
+          </button>
+        </div>
+      </div>
+
+      <!-- SEZIONE BACKUP -->
       <div class="space-y-2.5">
-        <button onclick="app.exportDataJSON()" class="w-full py-3 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border text-white text-sm font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Backup & Sincronizzazione</span>
+        <button onclick="app.exportDataJSON()" class="w-full py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border text-white text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
           <i class="fa-solid fa-download text-brand-400"></i>
           Esporta Backup (JSON)
         </button>
 
-        <label class="w-full py-3 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
+        <label class="w-full py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border text-white text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
           <i class="fa-solid fa-upload text-emerald-400"></i>
           Importa Backup (JSON)
           <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="app.importDataJSON(event)">
         </label>
 
-        <button onclick="app.seedDemoShows()" class="w-full py-2.5 px-4 rounded-xl bg-surface-elevated/40 hover:bg-surface-elevated text-slate-400 hover:text-white text-xs font-medium border border-surface-border/50 transition cursor-pointer">
+        <button onclick="app.seedDemoShows()" class="w-full py-2 px-4 rounded-xl bg-surface-elevated/40 hover:bg-surface-elevated text-slate-400 hover:text-white text-xs font-medium border border-surface-border/50 transition cursor-pointer">
           Carica film e serie di esempio (Demo)
         </button>
 
-        <button onclick="app.clearAllData()" class="w-full py-2.5 px-4 rounded-xl text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition cursor-pointer">
+        <button onclick="app.clearAllData()" class="w-full py-2 px-4 rounded-xl text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition cursor-pointer">
           Cancella tutti i dati
         </button>
       </div>
@@ -459,10 +478,11 @@
 
   <script>
     /**
-     * TrackMovie Logic with Smart Specific Genres (Ignoring Generic 'Drama')
+     * TrackMovie Logic with Universal TMDb Integration
      */
     const app = {
       trackedShows: {},
+      tmdbApiKey: '',
       activeTab: 'watchlist',
       listFilter: 'all',
       discoverCategory: 'smart',
@@ -472,48 +492,35 @@
 
       displayedDiscoverShows: [],
       candidateShowPool: [],
-      dismissedIds: new Set(), // Titoli scartati dall'utente
+      dismissedIds: new Set(),
 
-      // Elenco di generi generici da NON considerare come gusti primari
       GENERIC_GENRES: new Set(['Drama', 'Cinema', 'Series']),
 
-      // Catalogo curato di Film imperdibili suddivisi per genere identitario
+      // Mappatura generi TMDb a nomi leggibili
+      tmdbGenreMap: {
+        28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
+        99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History',
+        27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-Fi',
+        10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western',
+        10759: 'Action & Adventure', 10762: 'Kids', 10763: 'News', 10764: 'Reality',
+        10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics'
+      },
+
       curatedMovies: [
+        { id: 'm_12angrymen', type: 'movie', name: '12 Angry Men (La parola ai giurati)', image: 'https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg', rating: 9.0, runtime: 96, premiered: '1957', genres: ['Crime', 'Mystery'], summary: 'Dodici giurati sono chiamati a decidere sulla sorte di un diciottenne accusato di parricidio in un drammatico confronto a porte chiuse.' },
         { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.' },
         { id: 'm_inception', type: 'movie', name: 'Inception', image: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', rating: 8.8, runtime: 148, premiered: '2010', genres: ['Sci-Fi', 'Action', 'Thriller'], summary: 'Un abile ladro di segreti nel subconscio deve affrontare una pericolosa missione di innesto di una nuova idea.' },
         { id: 'm_darkknight', type: 'movie', name: 'Il cavaliere oscuro', image: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', rating: 9.0, runtime: 152, premiered: '2008', genres: ['Action', 'Crime', 'Thriller'], summary: 'Batman affronta la prova psicologica e fisica più letale contro la follia anarchica del Joker.' },
         { id: 'm_pulpfiction', type: 'movie', name: 'Pulp Fiction', image: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', rating: 8.9, runtime: 154, premiered: '1994', genres: ['Crime', 'Thriller'], summary: 'Quattro storie di crimine e violenza a Los Angeles intrecciate con dialoghi leggendari.' },
         { id: 'm_dune2', type: 'movie', name: 'Dune - Parte due', image: 'https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGhkAi0ym92H.jpg', rating: 8.6, runtime: 166, premiered: '2024', genres: ['Sci-Fi', 'Adventure', 'Action'], summary: 'Paul Atreides stringe alleanza con i Fremen per vendicare la caduta della Casa Atreides su Arrakis.' },
-        { id: 'm_oppenheimer', type: 'movie', name: 'Oppenheimer', image: 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', rating: 8.9, runtime: 180, premiered: '2023', genres: ['History', 'Biography', 'Thriller'], summary: 'Il dramma storico del Progetto Manhattan e della nascita dell\'era nucleare.' },
-        { id: 'm_fightclub', type: 'movie', name: 'Fight Club', image: 'https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg', rating: 8.8, runtime: 139, premiered: '1999', genres: ['Thriller', 'Mystery'], summary: 'Un impiegato insonne e un misterioso produttore di sapone creano un circolo sovversivo di lotta.' },
-        { id: 'm_gladiator', type: 'movie', name: 'Il gladiatore', image: 'https://image.tmdb.org/t/p/w500/ehG95Jk2i0e8j9n2S06y5uQpS4h.jpg', rating: 8.5, runtime: 155, premiered: '2000', genres: ['Action', 'Adventure', 'History'], summary: 'Un condottiero romano tradito cerca redenzione e vendetta nell\'arena del Colosseo.' },
-        { id: 'm_parasite', type: 'movie', name: 'Parasite', image: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', rating: 8.5, runtime: 132, premiered: '2019', genres: ['Thriller', 'Comedy'], summary: 'Una famiglia senza prospettive si infiltra metodicamente al servizio di una facoltosa dinastia.' },
-        { id: 'm_matrix', type: 'movie', name: 'Matrix', image: 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg', rating: 8.7, runtime: 136, premiered: '1999', genres: ['Sci-Fi', 'Action'], summary: 'Un hacker scopre che il mondo attorno a lui non è altro che una simulazione creata da macchine senzienti.' },
-        { id: 'm_shutterisland', type: 'movie', name: 'Shutter Island', image: 'https://image.tmdb.org/t/p/w500/4GDy0PHYX3VRXUtwK5ysagvk2Te.jpg', rating: 8.2, runtime: 138, premiered: '2010', genres: ['Mystery', 'Thriller'], summary: 'Un marshal indaga sulla misteriosa scomparsa di una paziente da un manicomio criminale su un\'isola remota.' },
-        { id: 'm_grandbudapest', type: 'movie', name: 'Grand Budapest Hotel', image: 'https://image.tmdb.org/t/p/w500/nX5XotDM9Dy9neMzM1A9IigUVnT.jpg', rating: 8.1, runtime: 99, premiered: '2014', genres: ['Comedy', 'Adventure'], summary: 'Le bizzarre avventure di un leggendario concierge in un sontuoso albergo europeo tra le due guerre.' }
+        { id: 'm_fightclub', type: 'movie', name: 'Fight Club', image: 'https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg', rating: 8.8, runtime: 139, premiered: '1999', genres: ['Thriller', 'Mystery'], summary: 'Un impiegato insonne e un misterioso produttore di sapone creano un circolo sovversivo di lotta.' }
       ],
 
-      // Serie iconiche con generi ben definiti
-      curatedShowIds: [
-        169, // Breaking Bad (Crime/Thriller)
-        82,  // Game of Thrones (Fantasy/Adventure)
-        431, // Stranger Things (Sci-Fi/Horror)
-        305, // Black Mirror (Sci-Fi/Mystery)
-        1780,// Ted Lasso (Comedy)
-        216, // Rick and Morty (Animation/Sci-Fi/Comedy)
-        2993,// The Boys (Action/Sci-Fi)
-        31086,// House of the Dragon (Fantasy)
-        66,  // The Big Bang Theory (Comedy)
-        73,  // The Walking Dead (Horror/Thriller)
-        526, // Doctor Who (Sci-Fi/Adventure)
-        1855,// Peaky Blinders (Crime)
-        335, // Sherlock (Crime/Mystery)
-        41749,// Severance (Sci-Fi/Thriller)
-        38963 // The Mandalorian (Sci-Fi/Action)
-      ],
+      curatedShowIds: [169, 82, 431, 305, 1780, 216, 2993, 31086, 1855, 335, 41749],
 
       init() {
         this.loadFromStorage();
+        this.updateTmdbIndicator();
         this.renderAll();
         this.bindEvents();
         this.refreshDiscoverFeed(false);
@@ -529,6 +536,7 @@
           if (stored) {
             this.trackedShows = JSON.parse(stored);
           }
+          this.tmdbApiKey = localStorage.getItem('trackmovie_tmdb_key') || '';
         } catch (e) {
           console.error("Storage load error:", e);
           this.trackedShows = {};
@@ -542,6 +550,41 @@
           this.updateWatchlistCounts();
         } catch (e) {
           console.error("Storage save error:", e);
+        }
+      },
+
+      saveTmdbKey() {
+        const input = document.getElementById('tmdb-api-key-input');
+        const key = input.value.trim();
+        this.tmdbApiKey = key;
+        localStorage.setItem('trackmovie_tmdb_key', key);
+        this.updateTmdbIndicator();
+        this.showToast(key ? "Chiave TMDb salvata e attivata!" : "Chiave TMDb rimossa", "fa-key");
+        this.refreshDiscoverFeed(true);
+      },
+
+      updateTmdbIndicator() {
+        const input = document.getElementById('tmdb-api-key-input');
+        if (input) input.value = this.tmdbApiKey;
+
+        const dot = document.getElementById('tmdb-indicator-dot');
+        const text = document.getElementById('tmdb-indicator-text');
+        const modalBadge = document.getElementById('tmdb-badge-modal');
+
+        if (this.tmdbApiKey) {
+          if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse";
+          if (text) text.textContent = "TMDb Attivo (Tutti i film)";
+          if (modalBadge) {
+            modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            modalBadge.textContent = "Attiva";
+          }
+        } else {
+          if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-amber-400 mr-2";
+          if (text) text.textContent = "TMDb Non configurato";
+          if (modalBadge) {
+            modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
+            modalBadge.textContent = "Non attiva";
+          }
         }
       },
 
@@ -627,23 +670,50 @@
         this.refreshDiscoverFeed(true);
       },
 
-      async fetchShowDetails(showId) {
-        try {
-          const res = await fetch(`https://api.tvmaze.com/shows/${showId}?embed[]=episodes&embed[]=cast`);
-          if (!res.ok) throw new Error("Errore API");
-          const data = await res.json();
-          data.type = 'series';
-          return data;
-        } catch (err) {
-          console.error(err);
-          return null;
-        }
-      },
-
+      /**
+       * MOTORE DI RICERCA UNIVERSALE (TMDB + TVMAZE FALLBACK)
+       */
       async searchAll(query) {
         if (!query.trim()) return [];
-        const qLower = query.toLowerCase().trim();
+        const qTrim = query.trim();
 
+        // 1. Se l'utente ha inserito la chiave TMDb: cerca tra TUTTI i film e le serie del mondo
+        if (this.tmdbApiKey) {
+          try {
+            const url = `https://api.themoviedb.org/3/search/multi?api_key=${this.tmdbApiKey}&language=it-IT&query=${encodeURIComponent(qTrim)}&include_adult=false`;
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              return (data.results || [])
+                .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
+                .map(item => {
+                  const isMovie = item.media_type === 'movie';
+                  const genres = (item.genre_ids || [])
+                    .map(id => this.tmdbGenreMap[id])
+                    .filter(Boolean)
+                    .filter(g => g !== 'Drama');
+
+                  return {
+                    id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
+                    tmdbId: item.id,
+                    type: isMovie ? 'movie' : 'series',
+                    name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
+                    image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                    rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
+                    runtime: isMovie ? 120 : 45,
+                    premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
+                    genres: genres.length > 0 ? genres : [isMovie ? 'Cinema' : 'Serie'],
+                    summary: item.overview || 'Nessuna trama disponibile.'
+                  };
+                });
+            }
+          } catch (e) {
+            console.error("TMDb API search error:", e);
+          }
+        }
+
+        // 2. Fallback catalogo curato e TVMaze se non c'è TMDb
+        const qLower = qTrim.toLowerCase();
         const movieResults = this.curatedMovies.filter(m => 
           m.name.toLowerCase().includes(qLower) || 
           m.genres.some(g => g.toLowerCase().includes(qLower))
@@ -651,7 +721,7 @@
 
         let seriesResults = [];
         try {
-          const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
+          const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(qTrim)}`);
           const list = await res.json();
           seriesResults = list.map(item => {
             const s = item.show;
@@ -665,74 +735,141 @@
         return [...movieResults, ...seriesResults];
       },
 
-      async trackItem(itemData) {
-        const isMovie = itemData.type === 'movie' || String(itemData.id).startsWith('m_');
+      /**
+       * RECUPERA DETTAGLI E STAGIONI COMPLETE
+       */
+      async fetchItemDetails(item) {
+        const idStr = String(item.id);
 
-        if (isMovie) {
-          this.trackedShows[String(itemData.id)] = {
-            id: String(itemData.id),
-            type: 'movie',
-            name: itemData.name,
-            image: itemData.image || (itemData.image && itemData.image.medium) || 'https://placehold.co/400x600/181e2b/ffffff?text=' + encodeURIComponent(itemData.name),
-            rating: itemData.rating || 8.0,
-            runtime: itemData.runtime || 120,
-            premiered: itemData.premiered || 'N/A',
-            genres: (itemData.genres || []).filter(g => !this.GENERIC_GENRES.has(g)),
-            summary: itemData.summary || 'Nessuna trama disponibile.',
-            watched: false,
-            addedAt: Date.now()
-          };
-          if (this.trackedShows[String(itemData.id)].genres.length === 0) {
-            this.trackedShows[String(itemData.id)].genres = ['Cinema'];
+        // Se proviene da TMDb Serie
+        if (idStr.startsWith('tmdb_s_') && this.tmdbApiKey) {
+          const rawId = item.tmdbId || idStr.replace('tmdb_s_', '');
+          try {
+            const res = await fetch(`https://api.themoviedb.org/3/tv/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT`);
+            const tv = await res.json();
+            
+            const seasons = {};
+            // Popola le stagioni reali
+            const realSeasons = (tv.seasons || []).filter(s => s.season_number > 0);
+            for (const s of realSeasons) {
+              const eps = [];
+              const epCount = s.episode_count || 10;
+              for (let i = 1; i <= epCount; i++) {
+                eps.push({
+                  id: `${rawId}_s${s.season_number}_e${i}`,
+                  name: `Episodio ${i}`,
+                  season: s.season_number,
+                  number: i,
+                  runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
+                  airdate: s.air_date || '',
+                  summary: ''
+                });
+              }
+              seasons[s.season_number] = eps;
+            }
+
+            const cleanGenres = (tv.genres || []).map(g => g.name).filter(g => g !== 'Drama');
+
+            return {
+              id: idStr,
+              type: 'series',
+              name: tv.name || item.name,
+              image: tv.poster_path ? `https://image.tmdb.org/t/p/w500${tv.poster_path}` : item.image,
+              rating: tv.vote_average ? tv.vote_average.toFixed(1) : item.rating,
+              runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
+              premiered: tv.first_air_date ? tv.first_air_date.slice(0, 4) : 'N/A',
+              status: tv.status || 'In corso',
+              genres: cleanGenres.length > 0 ? cleanGenres : ['Serie'],
+              summary: tv.overview || item.summary || 'Nessuna trama.',
+              seasons: seasons,
+              watchedEpisodes: {},
+              addedAt: Date.now()
+            };
+          } catch (e) {
+            console.error(e);
           }
-        } else {
-          let fullData = itemData;
-          if (!fullData._embedded || !fullData._embedded.episodes) {
-            fullData = await this.fetchShowDetails(itemData.id);
-          }
-          if (!fullData) return;
-
-          const seasons = {};
-          const episodesList = (fullData._embedded && fullData._embedded.episodes) ? fullData._embedded.episodes : [];
-          
-          episodesList.forEach(ep => {
-            const sNum = ep.season || 1;
-            if (!seasons[sNum]) seasons[sNum] = [];
-            seasons[sNum].push({
-              id: ep.id,
-              name: ep.name,
-              season: ep.season,
-              number: ep.number,
-              runtime: ep.runtime || fullData.runtime || 45,
-              airdate: ep.airdate,
-              summary: ep.summary || ''
-            });
-          });
-
-          // Filtra i generi eliminando il 'Drama' se esistono generi più specifici
-          let cleanGenres = (fullData.genres || []).filter(g => g !== 'Drama');
-          if (cleanGenres.length === 0) cleanGenres = fullData.genres || ['Serie'];
-
-          this.trackedShows[String(fullData.id)] = {
-            id: String(fullData.id),
-            type: 'series',
-            name: fullData.name,
-            image: fullData.image ? (fullData.image.original || fullData.image.medium) : 'https://placehold.co/400x600/181e2b/ffffff?text=' + encodeURIComponent(fullData.name),
-            rating: fullData.rating && fullData.rating.average ? fullData.rating.average : 7.8,
-            runtime: fullData.runtime || 45,
-            premiered: fullData.premiered ? fullData.premiered.slice(0, 4) : 'N/A',
-            status: fullData.status || 'Ended',
-            genres: cleanGenres,
-            summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
-            seasons: seasons,
-            watchedEpisodes: {},
-            addedAt: Date.now()
-          };
         }
 
+        // Se proviene da TMDb Film
+        if (idStr.startsWith('tmdb_m_') && this.tmdbApiKey) {
+          const rawId = item.tmdbId || idStr.replace('tmdb_m_', '');
+          try {
+            const res = await fetch(`https://api.themoviedb.org/3/movie/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT`);
+            const mov = await res.json();
+            const cleanGenres = (mov.genres || []).map(g => g.name).filter(g => !this.GENERIC_GENRES.has(g));
+            return {
+              id: idStr,
+              type: 'movie',
+              name: mov.title || item.name,
+              image: mov.poster_path ? `https://image.tmdb.org/t/p/w500${mov.poster_path}` : item.image,
+              rating: mov.vote_average ? mov.vote_average.toFixed(1) : item.rating,
+              runtime: mov.runtime || 120,
+              premiered: mov.release_date ? mov.release_date.slice(0, 4) : 'N/A',
+              genres: cleanGenres.length > 0 ? cleanGenres : ['Cinema'],
+              summary: mov.overview || item.summary || 'Nessuna trama disponibile.',
+              watched: false,
+              addedAt: Date.now()
+            };
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        // Fallback TVMaze
+        if (item.type === 'series') {
+          try {
+            const res = await fetch(`https://api.tvmaze.com/shows/${item.id}?embed[]=episodes`);
+            const fullData = await res.json();
+            const seasons = {};
+            const episodesList = (fullData._embedded && fullData._embedded.episodes) ? fullData._embedded.episodes : [];
+            episodesList.forEach(ep => {
+              const sNum = ep.season || 1;
+              if (!seasons[sNum]) seasons[sNum] = [];
+              seasons[sNum].push({
+                id: ep.id,
+                name: ep.name,
+                season: ep.season,
+                number: ep.number,
+                runtime: ep.runtime || fullData.runtime || 45,
+                airdate: ep.airdate,
+                summary: ep.summary || ''
+              });
+            });
+
+            let cleanGenres = (fullData.genres || []).filter(g => g !== 'Drama');
+            if (cleanGenres.length === 0) cleanGenres = fullData.genres || ['Serie'];
+
+            return {
+              id: String(fullData.id),
+              type: 'series',
+              name: fullData.name,
+              image: fullData.image ? (fullData.image.original || fullData.image.medium) : item.image,
+              rating: fullData.rating && fullData.rating.average ? fullData.rating.average : 7.8,
+              runtime: fullData.runtime || 45,
+              premiered: fullData.premiered ? fullData.premiered.slice(0, 4) : 'N/A',
+              status: fullData.status || 'Ended',
+              genres: cleanGenres,
+              summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
+              seasons: seasons,
+              watchedEpisodes: {},
+              addedAt: Date.now()
+            };
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        return item;
+      },
+
+      async trackItem(itemData) {
+        const fullItem = await this.fetchItemDetails(itemData);
+        if (!fullItem) return;
+
+        this.trackedShows[String(fullItem.id)] = fullItem;
         this.saveToStorage();
         this.renderWatchlist();
-        this.showToast(`Aggiunto: ${itemData.name}`, 'fa-plus');
+        this.showToast(`Aggiunto: ${fullItem.name}`, 'fa-plus');
       },
 
       untrackItem(itemId) {
@@ -913,7 +1050,7 @@
                 </div>
 
                 <div class="flex items-center gap-2 self-end sm:self-center">
-                  <button onclick="app.toggleEpisode('${current.id}', ${nextEp.id})" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md cursor-pointer">
+                  <button onclick="app.toggleEpisode('${current.id}', '${nextEp.id}')" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md cursor-pointer">
                     <i class="fa-solid fa-check"></i> Segna come visto
                   </button>
                   <button onclick="app.openItemModalById('${current.id}')" class="p-2.5 rounded-xl bg-surface-border hover:bg-slate-700 text-slate-300 text-xs transition cursor-pointer">
@@ -1016,7 +1153,6 @@
             });
           }
 
-          // Esclude 'Drama' e 'Cinema' dalle barre statistiche per mostrare i generi reali
           if (item.genres && Array.isArray(item.genres)) {
             item.genres.forEach(g => {
               if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') {
@@ -1053,7 +1189,7 @@
         const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
         if (sortedGenres.length === 0) {
-          genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli con generi come Fantascienza, Thriller, Crime, Commedia o Azione per visualizzare la ripartizione.</p>`;
+          genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei generi preferiti.</p>`;
           return;
         }
 
@@ -1145,15 +1281,11 @@
         }).join('');
       },
 
-      /**
-       * ALGORITMO DI RACCOMANDAZIONE FILTRATO (NO DRAMA GENERICO)
-       */
       getUserTopSpecificGenres() {
         const counts = {};
         Object.values(this.trackedShows).forEach(s => {
           if (s.genres && Array.isArray(s.genres)) {
             s.genres.forEach(g => {
-              // IGNORA esplicitamente 'Drama', 'Cinema', 'Series' per evitare il monopolio del tag
               if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') {
                 counts[g] = (counts[g] || 0) + 1;
               }
@@ -1168,56 +1300,49 @@
         const trackedKeys = new Set(Object.keys(this.trackedShows));
         const cat = this.discoverCategory;
 
-        if (cat === 'top') {
-          // 1. Modalità Popolari & Cult: solo pietre miliari del cinema e delle serie
-          pool = pool.concat(this.curatedMovies);
-          const topSeriesPromises = this.curatedShowIds.map(id => fetch(`https://api.tvmaze.com/shows/${id}`).then(r => r.json()).catch(() => null));
-          const topSeries = (await Promise.all(topSeriesPromises)).filter(s => s && s.id);
-          topSeries.forEach(s => s.type = 'series');
-          pool = pool.concat(topSeries);
-        } else if (cat !== 'smart') {
-          // 2. Modalità Categoria Specifica (es. Sci-Fi, Crime, Action, Comedy)
-          const moviesInCat = this.curatedMovies.filter(m => m.genres.some(g => g.toLowerCase().includes(cat.toLowerCase())));
-          pool = pool.concat(moviesInCat);
-
+        // Se TMDb è attivo, pesca i titoli di tendenza direttamente da TMDb
+        if (this.tmdbApiKey) {
           try {
-            const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(cat)}`);
-            const items = await res.json();
-            const seriesInCat = items.map(i => {
-              const s = i.show;
-              s.type = 'series';
-              return s;
-            }).filter(s => s && s.image);
-            pool = pool.concat(seriesInCat);
-          } catch {}
-        } else {
-          // 3. Modalità 'Smart': basata sui generi SPECIFICI dell'utente (SENZA DRAMA)
-          const specificGenres = this.getUserTopSpecificGenres();
-          
-          if (specificGenres.length > 0) {
-            const targetGenre = specificGenres[0];
-            // Cerca film corrispondenti
-            const matchingMovies = this.curatedMovies.filter(m => m.genres.includes(targetGenre));
-            pool = pool.concat(matchingMovies);
+            let endpoint = `https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT`;
+            if (cat === 'top') {
+              endpoint = `https://api.themoviedb.org/3/movie/top_rated?api_key=${this.tmdbApiKey}&language=it-IT`;
+            }
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const data = await res.json();
+              const tmdbResults = (data.results || [])
+                .filter(i => i.poster_path)
+                .map(item => {
+                  const isMovie = item.title !== undefined;
+                  const genres = (item.genre_ids || [])
+                    .map(id => this.tmdbGenreMap[id])
+                    .filter(Boolean)
+                    .filter(g => g !== 'Drama');
 
-            // Cerca serie con quel genere specifico (es. Sci-Fi, Thriller)
-            try {
-              const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(targetGenre)}`);
-              const items = await res.json();
-              const series = items.map(i => {
-                const s = i.show;
-                s.type = 'series';
-                return s;
-              }).filter(s => s && s.image);
-              pool = pool.concat(series);
-            } catch {}
+                  return {
+                    id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
+                    tmdbId: item.id,
+                    type: isMovie ? 'movie' : 'series',
+                    name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
+                    image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                    rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0',
+                    runtime: isMovie ? 120 : 45,
+                    premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
+                    genres: genres.length > 0 ? genres : [isMovie ? 'Cinema' : 'Serie'],
+                    summary: item.overview || 'Nessuna trama.'
+                  };
+                });
+              pool = pool.concat(tmdbResults);
+            }
+          } catch (e) {
+            console.error(e);
           }
-
-          // Fallback bilanciato con film cult
-          pool = pool.concat(this.curatedMovies);
         }
 
-        // Deduplica ed esclude titoli tracciati o già scartati
+        // Aggiungi sempre il catalogo curato
+        pool = pool.concat(this.curatedMovies);
+
+        // Deduplica ed esclude titoli salvati o scartati
         const uniqueMap = new Map();
         pool.forEach(item => {
           if (item && item.id) {
@@ -1270,9 +1395,9 @@
         if (hintEl) {
           if (this.discoverCategory === 'smart') {
             if (specificGenres.length > 0) {
-              hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato ai tuoi gusti in: <b class="text-slate-200">${specificGenres.slice(0, 2).join(', ')}</b> (Drama escluso)`;
+              hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato ai tuoi gusti in: <b class="text-slate-200">${specificGenres.slice(0, 2).join(', ')}</b>`;
             } else {
-              hintEl.textContent = 'Proposte popolari e cult (aggiungi serie Sci-Fi, Crime o Comedy per personalizzare)';
+              hintEl.textContent = 'Proposte popolari e cult (aggiungi film e serie per personalizzare)';
             }
           } else {
             hintEl.textContent = `Categoria attiva: ${this.discoverCategory}`;
@@ -1309,12 +1434,11 @@
 
       generateDiscoverCardHTML(item) {
         const isTracked = !!this.trackedShows[String(item.id)];
-        const isMovie = item.type === 'movie' || String(item.id).startsWith('m_');
+        const isMovie = item.type === 'movie' || String(item.id).startsWith('m_') || String(item.id).startsWith('tmdb_m_');
         const img = item.image ? (item.image.medium || item.image.original || item.image) : '';
         const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '8.2');
         const year = item.premiered ? item.premiered.slice(0, 4) : '';
         
-        // Seleziona il genere primario escludendo 'Drama'
         const cleanGenres = (item.genres || []).filter(g => g !== 'Drama');
         const genre = cleanGenres[0] || (isMovie ? 'Cinema' : 'Serie');
 
@@ -1329,7 +1453,6 @@
                 </span>
               </div>
 
-              <!-- Tasto Rapido 'Non mi interessa' per scartare -->
               <button onclick="event.stopPropagation(); app.dismissAndReplaceItem('${item.id}')" title="Non mi interessa" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-rose-500/80 text-slate-300 hover:text-white flex items-center justify-center text-xs transition backdrop-blur-md cursor-pointer z-10">
                 <i class="fa-solid fa-eye-slash"></i>
               </button>
@@ -1352,9 +1475,6 @@
         `;
       },
 
-      /**
-       * SCARTA UN TITOLO E LO SOSTITUISCE IMMEDIATAMENTE
-       */
       async dismissAndReplaceItem(itemId) {
         this.dismissedIds.add(String(itemId));
         this.showToast("Titolo nascosto", "fa-eye-slash");
@@ -1365,15 +1485,6 @@
         const targetItem = this.displayedDiscoverShows.find(s => String(s.id) === String(itemId));
         if (targetItem) {
           await this.trackItem(targetItem);
-        } else {
-          const isMovie = String(itemId).startsWith('m_');
-          if (isMovie) {
-            const m = this.curatedMovies.find(cm => cm.id === itemId);
-            if (m) await this.trackItem(m);
-          } else {
-            const fetched = await this.fetchShowDetails(itemId);
-            if (fetched) await this.trackItem(fetched);
-          }
         }
         await this.replaceCardOnScreen(itemId);
       },
@@ -1418,13 +1529,10 @@
         if (this.trackedShows[idStr]) {
           this.openItemModalById(idStr);
         } else {
-          const isMovie = idStr.startsWith('m_');
-          if (isMovie) {
-            const movie = this.curatedMovies.find(m => m.id === idStr);
-            if (movie) this.openItemModalExternal(movie);
-          } else {
-            const full = await this.fetchShowDetails(idStr);
-            if (full) this.openItemModalExternal(full);
+          const item = this.displayedDiscoverShows.find(s => String(s.id) === idStr) || this.candidateShowPool.find(s => String(s.id) === idStr);
+          if (item) {
+            const full = await this.fetchItemDetails(item);
+            this.openItemModalExternal(full);
           }
         }
       },
@@ -1440,58 +1548,7 @@
       },
 
       openItemModalExternal(itemData) {
-        const isMovie = itemData.type === 'movie' || String(itemData.id).startsWith('m_');
-
-        if (isMovie) {
-          this.selectedModalShow = {
-            id: String(itemData.id),
-            type: 'movie',
-            name: itemData.name,
-            image: itemData.image ? (itemData.image.original || itemData.image.medium || itemData.image) : '',
-            rating: itemData.rating || 8.0,
-            runtime: itemData.runtime || 120,
-            premiered: itemData.premiered || 'N/A',
-            genres: (itemData.genres || []).filter(g => !this.GENERIC_GENRES.has(g)),
-            summary: itemData.summary || 'Nessuna descrizione.',
-            watched: false
-          };
-          if (this.selectedModalShow.genres.length === 0) this.selectedModalShow.genres = ['Cinema'];
-        } else {
-          const seasons = {};
-          const episodesList = (itemData._embedded && itemData._embedded.episodes) ? itemData._embedded.episodes : [];
-          episodesList.forEach(ep => {
-            const sNum = ep.season || 1;
-            if (!seasons[sNum]) seasons[sNum] = [];
-            seasons[sNum].push({
-              id: ep.id,
-              name: ep.name,
-              season: ep.season,
-              number: ep.number,
-              runtime: ep.runtime || itemData.runtime || 45,
-              airdate: ep.airdate,
-              summary: ep.summary || ''
-            });
-          });
-
-          let cleanGenres = (itemData.genres || []).filter(g => g !== 'Drama');
-          if (cleanGenres.length === 0) cleanGenres = itemData.genres || ['Serie'];
-
-          this.selectedModalShow = {
-            id: String(itemData.id),
-            type: 'series',
-            name: itemData.name,
-            image: itemData.image ? (itemData.image.original || itemData.image.medium) : '',
-            rating: itemData.rating && itemData.rating.average ? itemData.rating.average : 7.5,
-            runtime: itemData.runtime || 45,
-            premiered: itemData.premiered ? itemData.premiered.slice(0, 4) : 'N/A',
-            status: itemData.status || 'Ended',
-            genres: cleanGenres,
-            summary: itemData.summary ? itemData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
-            seasons: seasons,
-            watchedEpisodes: {}
-          };
-        }
-
+        this.selectedModalShow = itemData;
         this.selectedModalSeason = 1;
         this.refreshModalView();
         document.getElementById('show-details-modal').classList.remove('hidden');
@@ -1620,7 +1677,7 @@
               </div>
 
               ${isTracked ? `
-                <button onclick="app.toggleEpisode('${currentData.id}',${ep.id})" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
+                <button onclick="app.toggleEpisode('${currentData.id}', '${ep.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
                   <i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i>
                 </button>
               ` : `
@@ -1721,7 +1778,7 @@
 
         container.innerHTML = items.map(item => {
           const isTracked = !!this.trackedShows[String(item.id)];
-          const isMovie = item.type === 'movie' || String(item.id).startsWith('m_');
+          const isMovie = item.type === 'movie' || String(item.id).startsWith('m_') || String(item.id).startsWith('tmdb_m_');
           const imgUrl = item.image ? (item.image.medium || item.image) : 'https://placehold.co/100x150/1f2737/ffffff?text=' + encodeURIComponent(item.name);
           const year = item.premiered ? item.premiered.slice(0, 4) : 'N/A';
           const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
@@ -1761,7 +1818,16 @@
 
       async inspectItemFromSearch(itemId) {
         this.closeSearchModal();
-        await this.inspectItemFromDiscover(itemId);
+        const idStr = String(itemId);
+        if (this.trackedShows[idStr]) {
+          this.openItemModalById(idStr);
+        } else {
+          const item = await this.searchAll(idStr);
+          if (item && item.length > 0) {
+            const full = await this.fetchItemDetails(item[0]);
+            this.openItemModalExternal(full);
+          }
+        }
       },
 
       async quickAddOrOpen(itemId) {
@@ -1770,24 +1836,19 @@
           this.closeSearchModal();
           this.openItemModalById(idStr);
         } else {
-          const isMovie = idStr.startsWith('m_');
-          if (isMovie) {
-            const m = this.curatedMovies.find(cm => cm.id === itemId);
-            if (m) {
-              await this.trackItem(m);
-              this.closeSearchModal();
-            }
+          this.closeSearchModal();
+          const target = this.displayedDiscoverShows.find(s => String(s.id) === idStr) || 
+                         this.curatedMovies.find(m => String(m.id) === idStr);
+          if (target) {
+            await this.trackItem(target);
           } else {
-            const data = await this.fetchShowDetails(itemId);
-            if (data) {
-              await this.trackItem(data);
-              this.closeSearchModal();
-            }
+            await this.trackItem({ id: idStr, type: idStr.includes('_m_') ? 'movie' : 'series' });
           }
         }
       },
 
       openDataModal() {
+        this.updateTmdbIndicator();
         document.getElementById('data-modal').classList.remove('hidden');
       },
 
@@ -1849,19 +1910,21 @@
 
       async seedDemoShows(forceToast = true) {
         try {
-          const interstellar = this.curatedMovies[0];
+          const m12 = this.curatedMovies[0]; // 12 Angry Men
+          if (m12) {
+            await this.trackItem(m12);
+            this.trackedShows[String(m12.id)].watched = true;
+          }
+
+          const interstellar = this.curatedMovies[1];
           if (interstellar) {
             await this.trackItem(interstellar);
             this.trackedShows[String(interstellar.id)].watched = true;
           }
 
-          const bBad = await this.fetchShowDetails(169);
+          const bBad = await this.fetchItemDetails({ id: 169, type: 'series' });
           if (bBad) {
             await this.trackItem(bBad);
-            if (bBad._embedded && bBad._embedded.episodes) {
-              const firstFive = bBad._embedded.episodes.slice(0, 5);
-              firstFive.forEach(ep => this.trackedShows[String(bBad.id)].watchedEpisodes[ep.id] = true);
-            }
           }
 
           this.saveToStorage();
