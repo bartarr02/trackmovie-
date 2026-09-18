@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BingeTrack — Il tuo TV Time alternativo</title>
+  <title>TrackMovie</title>
 
+  <!-- Metadati PWA e Home Screen Mobile -->
+  <meta name="apple-mobile-web-app-title" content="TrackMovie">
+  <meta name="application-name" content="TrackMovie">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0e14">
+
+  <!-- Icona personalizzata -->
   <link rel="apple-touch-icon" href="icon.jpg">
   <link rel="icon" type="image/jpeg" sizes="192x192" href="icon.jpg">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,8 +84,8 @@
           <i class="fa-solid fa-play text-lg"></i>
         </div>
         <div>
-          <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent">BingeTrack</span>
-          <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest bg-brand-500/10 text-brand-400 px-1.5 py-0.5 rounded ml-1.5 border border-brand-500/20">TV Time Edition</span>
+          <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent">TrackMovie</span>
+          <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest bg-brand-500/10 text-brand-400 px-1.5 py-0.5 rounded ml-1.5 border border-brand-500/20">Series Tracker</span>
         </div>
       </div>
 
@@ -166,7 +175,7 @@
       </div>
     </section>
 
-    <!-- VIEW 2: STATISTICHE (TV TIME STYLE) -->
+    <!-- VIEW 2: STATISTICHE -->
     <section id="view-stats" class="hidden space-y-6">
       <!-- Hero Stats Banner -->
       <div class="relative overflow-hidden bg-gradient-to-br from-surface to-[#162032] p-6 sm:p-8 rounded-3xl border border-surface-border shadow-xl">
@@ -300,7 +309,7 @@
 
   <!-- MODAL: SEARCH -->
   <div id="search-modal" class="fixed inset-0 z-50 bg-black/80 modal-backdrop hidden flex items-start justify-center p-4 sm:pt-16">
-    <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
       <!-- Search Input header -->
       <div class="p-4 border-b border-surface-border flex items-center gap-3">
         <i class="fa-solid fa-magnifying-glass text-brand-400 text-lg"></i>
@@ -319,7 +328,7 @@
     </div>
   </div>
 
-  <!-- MODAL: SHOW DETAILS & EPISODES MANAGER (THE CORE OF TV TIME) -->
+  <!-- MODAL: SHOW DETAILS & EPISODES MANAGER -->
   <div id="show-details-modal" class="fixed inset-0 z-50 bg-black/85 modal-backdrop hidden flex items-center justify-center p-2 sm:p-4">
     <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
       <!-- Modal Header / Hero banner -->
@@ -386,6 +395,7 @@
     </div>
   </div>
 
+  <!-- MODAL: DATA & BACKUP -->
   <div id="data-modal" class="fixed inset-0 z-50 bg-black/80 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-md p-6 space-y-5 shadow-2xl">
       <div class="flex items-center justify-between">
@@ -432,7 +442,7 @@
 
   <script>
     /**
-     * BingeTrack App Logic
+     * TrackMovie App Logic
      * TV Time replacement using TVMaze Open API (No Auth needed)
      */
     const app = {
@@ -460,7 +470,7 @@
       // Storage Management
       loadFromStorage() {
         try {
-          const stored = localStorage.getItem('bingetrack_data_v1');
+          const stored = localStorage.getItem('trackmovie_data_v1') || localStorage.getItem('bingetrack_data_v1');
           if (stored) {
             this.trackedShows = JSON.parse(stored);
           }
@@ -472,7 +482,7 @@
 
       saveToStorage() {
         try {
-          localStorage.setItem('bingetrack_data_v1', JSON.stringify(this.trackedShows));
+          localStorage.setItem('trackmovie_data_v1', JSON.stringify(this.trackedShows));
           this.updateStats();
           this.updateWatchlistCounts();
         } catch (e) {
@@ -573,7 +583,6 @@
       },
 
       async trackShow(showData) {
-        // If not already fetched with episodes, fetch full data
         let fullData = showData;
         if (!fullData._embedded || !fullData._embedded.episodes) {
           fullData = await this.fetchShowDetails(showData.id);
@@ -584,7 +593,6 @@
           return;
         }
 
-        // Group episodes by season
         const seasons = {};
         const episodesList = (fullData._embedded && fullData._embedded.episodes) ? fullData._embedded.episodes : [];
         
@@ -712,7 +720,7 @@
             }
           }
         }
-        return null; // All watched
+        return null;
       },
 
       renderWatchlist() {
@@ -730,14 +738,12 @@
 
         empty.classList.add('hidden');
 
-        // Filter shows
         const filtered = showIds.map(id => this.trackedShows[id]).filter(show => {
           const { status } = this.getShowProgress(show);
           if (this.listFilter === 'all') return true;
           return status === this.listFilter;
         });
 
-        // 1. Render Next-up Banner (Top priority show with next ep)
         const watchingShows = showIds.map(id => this.trackedShows[id]).filter(s => {
           const p = this.getShowProgress(s);
           return p.status === 'watching' || p.status === 'plan';
@@ -776,7 +782,6 @@
         }
         nextUpContainer.innerHTML = nextUpHTML;
 
-        // 2. Render Cards Grid
         grid.innerHTML = filtered.map(show => {
           const { watched, total, percent, status } = this.getShowProgress(show);
           const nextEp = this.getNextEpisodeToWatch(show);
@@ -793,7 +798,6 @@
 
           return `
             <div onclick="app.openShowModalById(${show.id})" class="group relative bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col cursor-pointer shadow-md hover:-translate-y-1">
-              <!-- Poster Image -->
               <div class="relative aspect-[2/3] w-full overflow-hidden bg-surface-elevated">
                 <img src="${show.image}" alt="${show.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
@@ -804,15 +808,13 @@
                   </span>
                 </div>
 
-                <!-- Next ep quick hint on poster bottom -->
                 ${nextEp ? `
                   <div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate">
-                    <span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>: ${nextEp.name}
+                    <span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>:${nextEp.name}
                   </div>
                 ` : ''}
               </div>
 
-              <!-- Content Body -->
               <div class="p-3 flex-1 flex flex-col justify-between">
                 <div>
                   <h4 class="font-bold text-sm text-slate-100 group-hover:text-brand-400 transition-colors line-clamp-1">${show.name}</h4>
@@ -822,7 +824,6 @@
                   </div>
                 </div>
 
-                <!-- Progress Bar -->
                 <div class="w-full h-1.5 bg-surface-elevated rounded-full overflow-hidden mt-3">
                   <div class="h-full bg-brand-400 rounded-full transition-all" style="width: ${percent}%"></div>
                 </div>
@@ -847,7 +848,6 @@
           const watchedEpIds = Object.keys(show.watchedEpisodes);
           totalEpisodes += watchedEpIds.length;
 
-          // Find runtime for watched episodes
           Object.values(show.seasons).forEach(eps => {
             eps.forEach(ep => {
               if (show.watchedEpisodes[ep.id]) {
@@ -856,7 +856,6 @@
             });
           });
 
-          // Genres aggregation
           if (show.genres && Array.isArray(show.genres)) {
             show.genres.forEach(g => {
               genreCounts[g] = (genreCounts[g] || 0) + watchedEpIds.length;
@@ -864,7 +863,6 @@
           }
         });
 
-        // Time calculations
         const minutesInHour = 60;
         const minutesInDay = 60 * 24;
         const minutesInMonth = 60 * 24 * 30.5;
@@ -878,7 +876,6 @@
         const hours = Math.floor(rem / minutesInHour);
         const mins = rem % minutesInHour;
 
-        // Set UI text
         document.getElementById('stat-months').textContent = months;
         document.getElementById('stat-days').textContent = days;
         document.getElementById('stat-hours').textContent = hours;
@@ -888,7 +885,6 @@
         document.getElementById('stat-finished-count').textContent = finishedShows;
         document.getElementById('stat-total-shows').textContent = shows.length;
 
-        // Render Genres breakdown
         const genresContainer = document.getElementById('genres-bars-container');
         const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
@@ -929,7 +925,6 @@
         const container = document.getElementById('calendar-schedule-container');
         const upcomingList = [];
 
-        // Scan upcoming episodes from tracked shows
         const todayStr = new Date().toISOString().split('T')[0];
 
         Object.values(this.trackedShows).forEach(show => {
@@ -950,7 +945,6 @@
           });
         });
 
-        // Sort by closest airdate
         upcomingList.sort((a, b) => a.airdate.localeCompare(b.airdate));
 
         if (upcomingList.length === 0) {
@@ -988,9 +982,8 @@
 
       async loadDiscoverFeed() {
         const discoverGrid = document.getElementById('discover-cards-grid');
-        const popularQueryIds = [82, 169, 431, 305, 1780, 216, 2993, 31086]; // Breaking Bad, Stranger Things, Game of Thrones, Black Mirror, Ted Lasso, Rick & Morty...
+        const popularQueryIds = [82, 169, 431, 305, 1780, 216, 2993, 31086];
         
-        // Show placeholders
         discoverGrid.innerHTML = `
           <div class="col-span-full py-10 text-center text-slate-500 text-sm">
             <i class="fa-solid fa-spinner fa-spin mr-2"></i> Caricamento suggeriti da TVMaze...
@@ -1062,7 +1055,6 @@
       },
 
       openShowModalExternal(showData) {
-        // Show detail of an untracked show
         const seasons = {};
         const episodesList = (showData._embedded && showData._embedded.episodes) ? showData._embedded.episodes : [];
         episodesList.forEach(ep => {
@@ -1108,7 +1100,6 @@
         if (!show) return;
 
         const isTracked = !!this.trackedShows[show.id];
-        // If tracked, sync live reference
         const currentData = isTracked ? this.trackedShows[show.id] : show;
 
         document.getElementById('modal-title').textContent = currentData.name;
@@ -1118,17 +1109,14 @@
         document.getElementById('modal-status-pill').textContent = currentData.status;
         document.getElementById('modal-summary').textContent = currentData.summary;
 
-        // Genres tags
         document.getElementById('modal-genres').innerHTML = currentData.genres.map(g => `
           <span class="bg-surface-elevated px-2 py-0.5 rounded border border-surface-border">${g}</span>
         `).join('');
 
-        // Progress Fill
         const { watched, total, percent } = this.getShowProgress(currentData);
         document.getElementById('modal-progress-percent').textContent = `${percent}% (${watched}/${total})`;
         document.getElementById('modal-progress-fill').style.width = `${percent}%`;
 
-        // Action button track/untrack
         const trackBtn = document.getElementById('modal-btn-track');
         const trackLabel = document.getElementById('modal-track-label');
         if (isTracked) {
@@ -1139,7 +1127,6 @@
           trackLabel.textContent = "Aggiungi alla lista";
         }
 
-        // Season tabs
         const seasonNums = Object.keys(currentData.seasons).map(Number).sort((a, b) => a - b);
         if (!seasonNums.includes(this.selectedModalSeason) && seasonNums.length > 0) {
           this.selectedModalSeason = seasonNums[0];
@@ -1155,7 +1142,6 @@
           `;
         }).join('');
 
-        // Episodes in season
         const epContainer = document.getElementById('modal-episodes-container');
         const activeEps = currentData.seasons[this.selectedModalSeason] || [];
 
@@ -1164,14 +1150,13 @@
           return;
         }
 
-        // Batch season watch buttons
         const allSeasonWatched = activeEps.every(ep => currentData.watchedEpisodes[ep.id]);
 
         let epHTML = `
           <div class="flex items-center justify-between pb-3 mb-2 border-b border-surface-border/60">
             <span class="text-xs font-bold text-slate-300">Episodi Stagione ${this.selectedModalSeason} (${activeEps.length})</span>
             ${isTracked ? `
-              <button onclick="app.markSeasonWatched(${currentData.id}, ${this.selectedModalSeason}, ${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline">
+              <button onclick="app.markSeasonWatched(${currentData.id}, ${this.selectedModalSeason},${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline">
                 <i class="fa-solid fa-check mr-1"></i> ${allSeasonWatched ? 'Deseleziona tutta la stagione' : 'Segna stagione come vista'}
               </button>
             ` : ''}
@@ -1193,7 +1178,7 @@
               </div>
 
               ${isTracked ? `
-                <button onclick="app.toggleEpisode(${currentData.id}, ${ep.id})" class="w-8 h-8 rounded-lg flex items-center justify-center transition ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
+                <button onclick="app.toggleEpisode(${currentData.id},${ep.id})" class="w-8 h-8 rounded-lg flex items-center justify-center transition ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
                   <i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i>
                 </button>
               ` : `
@@ -1247,7 +1232,6 @@
       },
 
       bindEvents() {
-        // Search debounce
         const searchInput = document.getElementById('search-query-input');
         searchInput.addEventListener('input', (e) => {
           clearTimeout(this.searchDebounceTimer);
@@ -1273,7 +1257,6 @@
           }, 350);
         });
 
-        // Close modal on Escape
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
             this.closeSearchModal();
@@ -1357,7 +1340,7 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `BingeTrack_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+        link.download = `TrackMovie_Backup_${new Date().toISOString().slice(0, 10)}.json`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1402,14 +1385,12 @@
       },
 
       async seedDemoShows(forceToast = true) {
-        // Pre-carica 2 serie iconiche come demo iniziale
         try {
-          const bBad = await this.fetchShowDetails(169); // Breaking Bad
-          const stranger = await this.fetchShowDetails(82); // Game of Thrones
+          const bBad = await this.fetchShowDetails(169);
+          const stranger = await this.fetchShowDetails(82);
           
           if (bBad) {
             await this.trackShow(bBad);
-            // Simula qualche episodio visto per testare le statistiche
             if (bBad._embedded && bBad._embedded.episodes) {
               const firstFive = bBad._embedded.episodes.slice(0, 5);
               firstFive.forEach(ep => this.trackedShows[bBad.id].watchedEpisodes[ep.id] = true);
@@ -1440,7 +1421,6 @@
       }
     };
 
-    // Bootstrap app on DOM load
     window.addEventListener('DOMContentLoaded', () => {
       app.init();
     });
