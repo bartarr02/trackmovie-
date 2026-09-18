@@ -89,7 +89,6 @@
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
       <div class="flex items-center gap-2">
         <button onclick="app.openSearchModal()" class="flex items-center gap-2 bg-surface-elevated hover:bg-surface-border border border-surface-border text-slate-300 px-3.5 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm cursor-pointer">
           <i class="fa-solid fa-magnifying-glass text-brand-400"></i>
@@ -105,7 +104,6 @@
 
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-12">
     
-    <!-- Navigation Tabs -->
     <div class="flex items-center justify-between border-b border-surface-border pb-4 mb-6">
       <nav class="flex space-x-1 sm:space-x-2 bg-surface p-1 rounded-2xl border border-surface-border text-sm overflow-x-auto">
         <button onclick="app.setTab('watchlist')" id="tab-btn-watchlist" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-brand-400 bg-surface-elevated shadow-sm">
@@ -148,10 +146,6 @@
           <button onclick="app.setListFilter('plan')" id="filter-plan" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">Da vedere</button>
           <button onclick="app.setListFilter('finished')" id="filter-finished" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">Visti</button>
         </div>
-
-        <div class="text-xs text-slate-400 font-medium">
-          Ordinamento: <span class="text-brand-400">Attività recente</span>
-        </div>
       </div>
 
       <div id="next-up-container" class="space-y-3"></div>
@@ -162,7 +156,7 @@
           <i class="fa-solid fa-film"></i>
         </div>
         <h3 class="text-lg font-bold text-slate-200">La tua libreria è vuota</h3>
-        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Cerca qualsiasi film o serie senza duplicati: 12 Angry Men, Inception, Breaking Bad e milioni di altri titoli.</p>
+        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Cerca qualsiasi film o serie al mondo per iniziare a tracciare i tuoi progressi e gusti.</p>
         <button onclick="app.openSearchModal()" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-500 hover:bg-brand-400 text-slate-950 transition cursor-pointer">
           <i class="fa-solid fa-plus mr-2"></i>Cerca un film o una serie
         </button>
@@ -240,7 +234,7 @@
       <div class="bg-surface p-6 rounded-2xl border border-surface-border">
         <h3 class="font-bold text-base text-slate-200 mb-4 flex items-center gap-2">
           <i class="fa-solid fa-chart-column text-brand-400"></i>
-          I tuoi generi preferiti
+          Il tuo profilo d'ascolto (Generi)
         </h3>
         <div id="genres-bars-container" class="space-y-3"></div>
       </div>
@@ -264,7 +258,7 @@
       <div class="bg-gradient-to-r from-surface to-surface-elevated p-6 rounded-3xl border border-surface-border flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-bold text-white">Scopri nuovi Film e Serie</h2>
-          <p class="text-sm text-slate-400">Seleziona una categoria o lasciati ispirare dai tuoi generi preferiti.</p>
+          <p class="text-sm text-slate-400">Proposte fresche basate in tempo reale sulle scelte della tua libreria.</p>
         </div>
         <div class="flex items-center gap-2 w-full md:w-auto">
           <button id="btn-refresh-discover" onclick="app.refreshDiscoverFeed(true)" class="px-4 py-3 rounded-xl bg-surface-elevated hover:bg-surface-border text-slate-300 hover:text-white font-semibold text-xs border border-surface-border transition flex items-center gap-2 cursor-pointer active:scale-95">
@@ -272,35 +266,17 @@
             <span>Aggiorna tutti</span>
           </button>
           <button onclick="app.openSearchModal()" class="flex-1 md:flex-none px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold transition flex items-center justify-center gap-2 text-xs cursor-pointer">
-            <i class="fa-solid fa-magnifying-glass"></i> Cerca titolo
+            <i class="fa-solid fa-magnifying-glass"></i> Cerca
           </button>
         </div>
       </div>
 
-      <!-- Filtri categoria dedicati per Esplora -->
-      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-        <button onclick="app.setDiscoverCategory('smart')" id="disc-cat-smart" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-brand-500 text-slate-950">
-          <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> I tuoi gusti
-        </button>
-        <button onclick="app.setDiscoverCategory('top')" id="disc-cat-top" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
-          <i class="fa-solid fa-fire mr-1 text-orange-400"></i> Popolari & Cult
-        </button>
-        <button onclick="app.setDiscoverCategory('Sci-Fi')" id="disc-cat-Sci-Fi" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
-          Fantascienza
-        </button>
-        <button onclick="app.setDiscoverCategory('Crime')" id="disc-cat-Crime" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
-          Crime & Thriller
-        </button>
-        <button onclick="app.setDiscoverCategory('Action')" id="disc-cat-Action" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
-          Azione & Avventura
-        </button>
-        <button onclick="app.setDiscoverCategory('Comedy')" id="disc-cat-Comedy" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
-          Commedia
-        </button>
-      </div>
-
       <div class="flex items-center justify-between">
-        <span id="discover-flavor-hint" class="text-xs text-slate-400"></span>
+        <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-brand-400"></i>
+          <span>Consigliati per te</span>
+        </h3>
+        <span id="discover-flavor-hint" class="text-xs text-slate-400 font-medium"></span>
       </div>
 
       <div id="discover-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
@@ -353,12 +329,11 @@
   <div id="show-details-modal" onclick="if(event.target === this) app.closeDetailsModal()" class="fixed inset-0 z-50 bg-black/85 modal-backdrop hidden flex items-center justify-center p-2 sm:p-4">
     <div class="relative bg-surface rounded-3xl border border-surface-border w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
       
-      <!-- Pulsante X di chiusura ad altissima priorità z-30 -->
+      <!-- Pulsante X di chiusura -->
       <button onclick="app.closeDetailsModal()" class="absolute top-3.5 right-3.5 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-black text-slate-200 hover:text-white flex items-center justify-center transition shadow-lg cursor-pointer tap-highlight-transparent active:scale-90" aria-label="Chiudi finestra">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <!-- Modal Header / Hero banner -->
       <div id="modal-hero" class="relative min-h-[160px] sm:min-h-[220px] bg-cover bg-center flex items-end p-4 sm:p-6">
         <div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent"></div>
         
@@ -402,9 +377,7 @@
           </div>
         </div>
 
-        <p id="modal-summary" class="text-xs sm:text-sm text-slate-400 line-clamp-3 leading-relaxed">
-          Trama...
-        </p>
+        <p id="modal-summary" class="text-xs sm:text-sm text-slate-400 line-clamp-3 leading-relaxed"></p>
 
         <div class="pt-2 flex items-center gap-2 overflow-x-auto pb-1" id="modal-seasons-tabs"></div>
       </div>
@@ -425,7 +398,6 @@
         </button>
       </div>
 
-      <!-- SEZIONE TMDb API KEY -->
       <div class="bg-surface-elevated/70 p-4 rounded-2xl border border-surface-border space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-brand-400 flex items-center gap-1.5">
@@ -435,7 +407,7 @@
         </div>
 
         <p class="text-xs text-slate-400 leading-relaxed">
-          Incolla la tua <b>Chiave API (v3 auth)</b> per cercare qualsiasi film o serie al mondo (*12 Angry Men*, capolavori storici, uscite cinema) con trame e poster ufficiali in italiano.
+          Incolla la tua <b>Chiave API (v3 auth)</b> per sbloccare tutti i film del mondo e abilitare le raccomandazioni TMDb in tempo reale in base ai tuoi generi preferiti.
         </p>
 
         <div class="flex gap-2">
@@ -446,7 +418,6 @@
         </div>
       </div>
 
-      <!-- SEZIONE PULIZIA DUPLICATI & BACKUP -->
       <div class="space-y-2.5">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Manutenzione & Backup</span>
         
@@ -473,22 +444,17 @@
     </div>
   </div>
 
-  <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-20 md:bottom-8 right-1/2 translate-x-1/2 md:translate-x-0 md:right-8 z-50 bg-surface-card border border-brand-500/40 text-white px-4 py-3 rounded-2xl shadow-xl shadow-black/60 flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
     <i id="toast-icon" class="fa-solid fa-circle-check text-brand-400"></i>
     <span id="toast-message" class="text-xs sm:text-sm font-semibold">Notifica</span>
   </div>
 
   <script>
-    /**
-     * TrackMovie Logic with Universal TMDb Integration & Advanced Deduplication
-     */
     const app = {
       trackedShows: {},
       tmdbApiKey: '',
       activeTab: 'watchlist',
       listFilter: 'all',
-      discoverCategory: 'smart',
       selectedModalShow: null,
       selectedModalSeason: 1,
       searchDebounceTimer: null,
@@ -497,13 +463,12 @@
       candidateShowPool: [],
       dismissedIds: new Set(),
 
-      GENERIC_GENRES: new Set(['Drama', 'Cinema', 'Series']),
-
       tmdbGenreIds: {
-        'Action': 28,
-        'Sci-Fi': 878,
-        'Crime': 80,
-        'Comedy': 35
+        'Action': 28, 'Adventure': 12, 'Animation': 16, 'Comedy': 35, 'Crime': 80,
+        'Documentary': 99, 'Drama': 18, 'Family': 10751, 'Fantasy': 14, 'History': 36,
+        'Horror': 27, 'Music': 10402, 'Mystery': 9648, 'Romance': 10749, 'Sci-Fi': 878,
+        'Thriller': 53, 'War': 10752, 'Western': 37,
+        'Action & Adventure': 10759, 'Sci-Fi & Fantasy': 10765
       },
 
       tmdbGenreMap: {
@@ -516,35 +481,24 @@
       },
 
       curatedMovies: [
-        { id: 'm_12angrymen', type: 'movie', name: '12 Angry Men', image: 'https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg', rating: 9.0, runtime: 96, premiered: '1957', genres: ['Crime', 'Mystery'], summary: 'Dodici giurati sono chiamati a decidere sulla sorte di un diciottenne accusato di parricidio in un drammatico confronto a porte chiuse.' },
-        { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.' },
+        { id: 'm_12angrymen', type: 'movie', name: '12 Angry Men', image: 'https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg', rating: 9.0, runtime: 96, premiered: '1957', genres: ['Drama', 'Crime'], summary: 'Dodici giurati sono chiamati a decidere sulla sorte di un diciottenne accusato di parricidio in un drammatico confronto a porte chiuse.' },
+        { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Drama', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.' },
         { id: 'm_inception', type: 'movie', name: 'Inception', image: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', rating: 8.8, runtime: 148, premiered: '2010', genres: ['Sci-Fi', 'Action', 'Thriller'], summary: 'Un abile ladro di segreti nel subconscio deve affrontare una pericolosa missione di innesto di una nuova idea.' },
-        { id: 'm_darkknight', type: 'movie', name: 'The Dark Knight', image: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', rating: 9.0, runtime: 152, premiered: '2008', genres: ['Action', 'Crime', 'Thriller'], summary: 'Batman affronta la prova psicologica e fisica più letale contro la follia anarchica del Joker.' },
-        { id: 'm_pulpfiction', type: 'movie', name: 'Pulp Fiction', image: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', rating: 8.9, runtime: 154, premiered: '1994', genres: ['Crime', 'Thriller'], summary: 'Quattro storie di crimine e violenza a Los Angeles intrecciate con dialoghi leggendari.' },
-        { id: 'm_dune2', type: 'movie', name: 'Dune: Part Two', image: 'https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGhkAi0ym92H.jpg', rating: 8.6, runtime: 166, premiered: '2024', genres: ['Sci-Fi', 'Adventure', 'Action'], summary: 'Paul Atreides stringe alleanza con i Fremen per vendicare la caduta della Casa Atreides su Arrakis.' },
-        { id: 'm_fightclub', type: 'movie', name: 'Fight Club', image: 'https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg', rating: 8.8, runtime: 139, premiered: '1999', genres: ['Thriller', 'Mystery'], summary: 'Un impiegato insonne e un misterioso produttore di sapone creano un circolo sovversivo di lotta.' },
-        { id: 'm_parasite', type: 'movie', name: 'Parasite', image: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', rating: 8.5, runtime: 132, premiered: '2019', genres: ['Thriller', 'Comedy'], summary: 'Una famiglia in difficoltà economiche si insinua con l\'inganno nella vita di una ricca famiglia di Seoul.' },
-        { id: 'm_matrix', type: 'movie', name: 'The Matrix', image: 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg', rating: 8.7, runtime: 136, premiered: '1999', genres: ['Sci-Fi', 'Action'], summary: 'Un hacker scopre che il mondo attorno a lui non è altro che una simulazione creata da macchine senzienti.' },
-        { id: 'm_gladiator', type: 'movie', name: 'Gladiator', image: 'https://image.tmdb.org/t/p/w500/ehG95Jk2i0e8j9n2S06y5uQpS4h.jpg', rating: 8.5, runtime: 155, premiered: '2000', genres: ['Action', 'Adventure', 'History'], summary: 'Un condottiero romano tradito cerca redenzione e vendetta nell\'arena del Colosseo.' }
+        { id: 'm_darkknight', type: 'movie', name: 'The Dark Knight', image: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', rating: 9.0, runtime: 152, premiered: '2008', genres: ['Action', 'Crime', 'Drama'], summary: 'Batman affronta la prova psicologica e fisica più letale contro la follia anarchica del Joker.' },
+        { id: 'm_pulpfiction', type: 'movie', name: 'Pulp Fiction', image: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', rating: 8.9, runtime: 154, premiered: '1994', genres: ['Crime', 'Thriller', 'Drama'], summary: 'Quattro storie di crimine e violenza a Los Angeles intrecciate con dialoghi leggendari.' },
+        { id: 'm_dune2', type: 'movie', name: 'Dune: Part Two', image: 'https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGhkAi0ym92H.jpg', rating: 8.6, runtime: 166, premiered: '2024', genres: ['Sci-Fi', 'Adventure'], summary: 'Paul Atreides stringe alleanza con i Fremen per vendicare la caduta della Casa Atreides su Arrakis.' },
+        { id: 'm_fightclub', type: 'movie', name: 'Fight Club', image: 'https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg', rating: 8.8, runtime: 139, premiered: '1999', genres: ['Drama', 'Thriller'], summary: 'Un impiegato insonne e un misterioso produttore di sapone creano un circolo sovversivo di lotta.' },
+        { id: 'm_parasite', type: 'movie', name: 'Parasite', image: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', rating: 8.5, runtime: 132, premiered: '2019', genres: ['Thriller', 'Comedy', 'Drama'], summary: 'Una famiglia in difficoltà economiche si insinua con l\'inganno nella vita di una ricca famiglia di Seoul.' }
       ],
 
-      curatedShowIds: [169, 82, 431, 305, 1780, 216, 2993, 31086, 1855, 335, 41749],
-
-      /**
-       * Funzione di normalizzazione stringa per evitare duplicati fonetici o di punteggiatura
-       */
       normalizeTitle(title) {
         if (!title) return '';
-        return title
-          .toLowerCase()
-          .replace(/[^\w\s]/gi, '') // Rimuove punteggiatura
-          .replace(/\s+/g, ' ')     // Rimuove spazi doppi
-          .trim();
+        return title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim();
       },
 
       init() {
         this.loadFromStorage();
-        this.cleanDuplicateTrackedShows(false); // Rimuove i duplicati memorizzati in precedenza
+        this.cleanDuplicateTrackedShows(false);
         this.updateTmdbIndicator();
         this.renderAll();
         this.bindEvents();
@@ -574,9 +528,6 @@
         }
       },
 
-      /**
-       * Pulisce automaticamente i titoli duplicati nella libreria dell'utente
-       */
       cleanDuplicateTrackedShows(notify = false) {
         const seenNames = new Map();
         let removedCount = 0;
@@ -584,7 +535,6 @@
         for (const [id, item] of Object.entries(this.trackedShows)) {
           const norm = this.normalizeTitle(item.name);
           if (seenNames.has(norm)) {
-            // Se abbiamo già visto questo titolo, manteniamo quello con più progressi
             const existingId = seenNames.get(norm);
             const existingItem = this.trackedShows[existingId];
             
@@ -632,7 +582,7 @@
 
         if (this.tmdbApiKey) {
           if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse";
-          if (text) text.textContent = "TMDb Attivo (Tutti i film)";
+          if (text) text.textContent = "TMDb Attivo";
           if (modalBadge) {
             modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
             modalBadge.textContent = "Attiva";
@@ -675,24 +625,16 @@
 
           if (t === tabId) {
             view.classList.remove('hidden');
-            if (navBtn) {
-              navBtn.classList.add('bg-surface-elevated', 'text-brand-400', 'shadow-sm');
-              navBtn.classList.remove('text-slate-400');
-            }
-            if (mobBtn) {
-              mobBtn.classList.add('text-brand-400');
-              mobBtn.classList.remove('text-slate-400');
-            }
+            if (navBtn) navBtn.classList.add('bg-surface-elevated', 'text-brand-400', 'shadow-sm');
+            if (navBtn) navBtn.classList.remove('text-slate-400');
+            if (mobBtn) mobBtn.classList.add('text-brand-400');
+            if (mobBtn) mobBtn.classList.remove('text-slate-400');
           } else {
             view.classList.add('hidden');
-            if (navBtn) {
-              navBtn.classList.remove('bg-surface-elevated', 'text-brand-400', 'shadow-sm');
-              navBtn.classList.add('text-slate-400');
-            }
-            if (mobBtn) {
-              mobBtn.classList.remove('text-brand-400');
-              mobBtn.classList.add('text-slate-400');
-            }
+            if (navBtn) navBtn.classList.remove('bg-surface-elevated', 'text-brand-400', 'shadow-sm');
+            if (navBtn) navBtn.classList.add('text-slate-400');
+            if (mobBtn) mobBtn.classList.remove('text-brand-400');
+            if (mobBtn) mobBtn.classList.add('text-slate-400');
           }
         });
 
@@ -715,23 +657,6 @@
         this.renderWatchlist();
       },
 
-      setDiscoverCategory(cat) {
-        this.discoverCategory = cat;
-        document.querySelectorAll('.disc-pill').forEach(btn => {
-          btn.classList.remove('bg-brand-500', 'text-slate-950');
-          btn.classList.add('bg-surface-elevated', 'text-slate-400', 'border', 'border-surface-border');
-        });
-        const activeBtn = document.getElementById(`disc-cat-${cat}`);
-        if (activeBtn) {
-          activeBtn.classList.add('bg-brand-500', 'text-slate-950');
-          activeBtn.classList.remove('bg-surface-elevated', 'text-slate-400', 'border', 'border-surface-border');
-        }
-        this.refreshDiscoverFeed(true);
-      },
-
-      /**
-       * RICERCA CON DEDUPLICAZIONE AUTOMATICA DEI RISULTATI
-       */
       async searchAll(query) {
         if (!query.trim()) return [];
         const qTrim = query.trim();
@@ -747,10 +672,7 @@
                 .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
                 .map(item => {
                   const isMovie = item.media_type === 'movie';
-                  const genres = (item.genre_ids || [])
-                    .map(id => this.tmdbGenreMap[id])
-                    .filter(Boolean)
-                    .filter(g => g !== 'Drama');
+                  const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean);
 
                   return {
                     id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
@@ -761,7 +683,7 @@
                     rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
                     runtime: isMovie ? 120 : 45,
                     premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
-                    genres: genres.length > 0 ? genres : [isMovie ? 'Cinema' : 'Serie'],
+                    genres: genres.length > 0 ? genres : [],
                     summary: item.overview || 'Nessuna trama disponibile.'
                   };
                 });
@@ -786,16 +708,12 @@
             s.type = 'series';
             return s;
           });
-        } catch (err) {
-          console.error(err);
-        }
+        } catch (err) {}
 
         const combined = [...rawResults, ...movieResults, ...seriesResults];
 
-        // Filtro di deduplicazione per titolo normalizzato + tipo
         const unique = [];
         const seen = new Set();
-
         for (const item of combined) {
           const normKey = `${this.normalizeTitle(item.name)}_${item.type}`;
           if (!seen.has(normKey)) {
@@ -835,7 +753,7 @@
               seasons[s.season_number] = eps;
             }
 
-            const cleanGenres = (tv.genres || []).map(g => g.name).filter(g => g !== 'Drama');
+            const cleanGenres = (tv.genres || []).map(g => g.name);
 
             return {
               id: idStr,
@@ -846,15 +764,13 @@
               runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
               premiered: tv.first_air_date ? tv.first_air_date.slice(0, 4) : 'N/A',
               status: tv.status || 'In corso',
-              genres: cleanGenres.length > 0 ? cleanGenres : ['Serie'],
+              genres: cleanGenres.length > 0 ? cleanGenres : [],
               summary: tv.overview || item.summary || 'Nessuna trama.',
               seasons: seasons,
               watchedEpisodes: {},
               addedAt: Date.now()
             };
-          } catch (e) {
-            console.error(e);
-          }
+          } catch (e) {}
         }
 
         if (idStr.startsWith('tmdb_m_') && this.tmdbApiKey) {
@@ -862,7 +778,7 @@
           try {
             const res = await fetch(`https://api.themoviedb.org/3/movie/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT`);
             const mov = await res.json();
-            const cleanGenres = (mov.genres || []).map(g => g.name).filter(g => !this.GENERIC_GENRES.has(g));
+            const cleanGenres = (mov.genres || []).map(g => g.name);
             return {
               id: idStr,
               type: 'movie',
@@ -871,14 +787,12 @@
               rating: mov.vote_average ? mov.vote_average.toFixed(1) : item.rating,
               runtime: mov.runtime || 120,
               premiered: mov.release_date ? mov.release_date.slice(0, 4) : 'N/A',
-              genres: cleanGenres.length > 0 ? cleanGenres : ['Cinema'],
+              genres: cleanGenres.length > 0 ? cleanGenres : [],
               summary: mov.overview || item.summary || 'Nessuna trama disponibile.',
               watched: false,
               addedAt: Date.now()
             };
-          } catch (e) {
-            console.error(e);
-          }
+          } catch (e) {}
         }
 
         if (item.type === 'series') {
@@ -901,9 +815,6 @@
               });
             });
 
-            let cleanGenres = (fullData.genres || []).filter(g => g !== 'Drama');
-            if (cleanGenres.length === 0) cleanGenres = fullData.genres || ['Serie'];
-
             return {
               id: String(fullData.id),
               type: 'series',
@@ -913,22 +824,19 @@
               runtime: fullData.runtime || 45,
               premiered: fullData.premiered ? fullData.premiered.slice(0, 4) : 'N/A',
               status: fullData.status || 'Ended',
-              genres: cleanGenres,
+              genres: fullData.genres || [],
               summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
               seasons: seasons,
               watchedEpisodes: {},
               addedAt: Date.now()
             };
-          } catch (e) {
-            console.error(e);
-          }
+          } catch (e) {}
         }
 
         return item;
       },
 
       async trackItem(itemData) {
-        // Verifica se un titolo con nome identico è già presente
         const normNew = this.normalizeTitle(itemData.name);
         const alreadyExists = Object.values(this.trackedShows).some(s => this.normalizeTitle(s.name) === normNew);
         
@@ -1229,9 +1137,7 @@
 
           if (item.genres && Array.isArray(item.genres)) {
             item.genres.forEach(g => {
-              if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') {
-                genreCounts[g] = (genreCounts[g] || 0) + 1;
-              }
+              genreCounts[g] = (genreCounts[g] || 0) + 1;
             });
           }
         });
@@ -1263,7 +1169,7 @@
         const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
         if (sortedGenres.length === 0) {
-          genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei generi preferiti.</p>`;
+          genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei tuoi generi preferiti.</p>`;
           return;
         }
 
@@ -1355,53 +1261,47 @@
         }).join('');
       },
 
-      getUserTopSpecificGenres() {
+      /**
+       * RECUPERA I GENERI ESATTAMENTE COME SONO SALVATI DALL'UTENTE
+       */
+      getUserTopGenres() {
         const counts = {};
         Object.values(this.trackedShows).forEach(s => {
           if (s.genres && Array.isArray(s.genres)) {
             s.genres.forEach(g => {
-              if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') {
-                counts[g] = (counts[g] || 0) + 1;
-              }
+              counts[g] = (counts[g] || 0) + 1;
             });
           }
         });
         return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
       },
 
-      /**
-       * COSTRUZIONE DEL POOL CON DEDUPLICAZIONE TOTALE (ID E TITOLO)
-       */
       async buildSmartCandidatePool(forceFullNew = false) {
         let pool = [];
-        
-        // Mappa di tutti i titoli già salvati in lista (normalizzati)
         const trackedTitles = new Set(Object.values(this.trackedShows).map(s => this.normalizeTitle(s.name)));
         const trackedKeys = new Set(Object.keys(this.trackedShows));
-        const cat = this.discoverCategory;
 
         if (this.tmdbApiKey) {
           try {
             const randomPage = forceFullNew ? Math.floor(Math.random() * 5) + 1 : 1;
             let endpoints = [];
 
-            if (cat === 'top') {
-              endpoints.push(`https://api.themoviedb.org/3/movie/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-              endpoints.push(`https://api.themoviedb.org/3/tv/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-            } else if (cat !== 'smart') {
-              const genreId = this.tmdbGenreIds[cat] || 28;
-              endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
-              endpoints.push(`https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
-            } else {
-              const specificGenres = this.getUserTopSpecificGenres();
-              if (specificGenres.length > 0) {
-                const targetGenre = specificGenres[Math.floor(Math.random() * specificGenres.length)];
-                const genreId = this.tmdbGenreIds[targetGenre];
-                if (genreId) {
-                  endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
-                }
+            const userTopGenres = this.getUserTopGenres();
+
+            if (userTopGenres.length > 0) {
+              // Estrapola fino a 2 generi preferiti dall'utente e trova il loro ID TMDb
+              const topG = userTopGenres.slice(0, 2);
+              const genreIdsToFetch = topG.map(g => this.tmdbGenreIds[g] || Object.keys(this.tmdbGenreMap).find(key => this.tmdbGenreMap[key] === g)).filter(Boolean);
+              
+              if (genreIdsToFetch.length > 0) {
+                const genreQuery = genreIdsToFetch.join('|'); // Uso di pipe (|) per condizione OR su TMDb
+                endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreQuery}&sort_by=popularity.desc&page=${randomPage}`);
+                endpoints.push(`https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreQuery}&sort_by=popularity.desc&page=${randomPage}`);
+              } else {
+                 endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
               }
-              endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
+            } else {
+               endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
             }
 
             const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
@@ -1411,10 +1311,7 @@
                   .filter(i => i && i.poster_path)
                   .map(item => {
                     const isMovie = item.title !== undefined;
-                    const genres = (item.genre_ids || [])
-                      .map(id => this.tmdbGenreMap[id])
-                      .filter(Boolean)
-                      .filter(g => g !== 'Drama');
+                    const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean);
 
                     return {
                       id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
@@ -1425,7 +1322,7 @@
                       rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0',
                       runtime: isMovie ? 120 : 45,
                       premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
-                      genres: genres.length > 0 ? genres : [isMovie ? 'Cinema' : 'Serie'],
+                      genres: genres.length > 0 ? genres : [],
                       summary: item.overview || 'Nessuna trama.'
                     };
                   });
@@ -1440,7 +1337,6 @@
         const shuffledCurated = [...this.curatedMovies].sort(() => 0.5 - Math.random());
         pool = pool.concat(shuffledCurated);
 
-        // Deduplica rigorosa sia per ID che per Titolo Normalizzato
         const uniqueList = [];
         const seenKeys = new Set();
         const seenNormTitles = new Set();
@@ -1450,7 +1346,6 @@
             const idStr = String(item.id);
             const norm = this.normalizeTitle(item.name);
 
-            // Esclude se già salvato nella libreria, già scartato con l'occhio o già aggiunto al pool
             if (!trackedKeys.has(idStr) && 
                 !trackedTitles.has(norm) && 
                 !this.dismissedIds.has(idStr) && 
@@ -1513,16 +1408,12 @@
 
         await this.buildSmartCandidatePool(forceReload);
 
-        const specificGenres = this.getUserTopSpecificGenres();
+        const userTopGenres = this.getUserTopGenres();
         if (hintEl) {
-          if (this.discoverCategory === 'smart') {
-            if (specificGenres.length > 0) {
-              hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato ai tuoi gusti in: <b class="text-slate-200">${specificGenres.slice(0, 2).join(', ')}</b>`;
-            } else {
-              hintEl.textContent = 'Proposte popolari e cult (senza doppioni)';
-            }
+          if (userTopGenres.length > 0) {
+            hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Basato sui tuoi gusti: <b class="text-slate-200">${userTopGenres.slice(0, 2).join(', ')}</b>`;
           } else {
-            hintEl.textContent = `Categoria attiva: ${this.discoverCategory}`;
+            hintEl.textContent = 'I titoli del momento (aggiungi film e serie per suggerimenti su misura)';
           }
         }
 
@@ -1570,8 +1461,7 @@
         const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '8.2');
         const year = item.premiered ? item.premiered.slice(0, 4) : '';
         
-        const cleanGenres = (item.genres || []).filter(g => g !== 'Drama');
-        const genre = cleanGenres[0] || (isMovie ? 'Cinema' : 'Serie');
+        const genre = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
 
         return `
           <div id="discover-card-${item.id}" class="group bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col shadow-sm relative">
@@ -1808,7 +1698,7 @@
               </div>
 
               ${isTracked ? `
-                <button onclick="app.toggleEpisode('${currentData.id}',${ep.id})" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
+                <button onclick="app.toggleEpisode('${currentData.id}', '${ep.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
                   <i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i>
                 </button>
               ` : `
@@ -1914,8 +1804,7 @@
           const year = item.premiered ? item.premiered.slice(0, 4) : 'N/A';
           const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
 
-          const cleanGenres = (item.genres || []).filter(g => g !== 'Drama');
-          const genreDisplay = cleanGenres[0] || (isMovie ? 'Cinema' : 'Serie');
+          const genreDisplay = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
 
           return `
             <div class="bg-surface-elevated/70 p-3 rounded-2xl border border-surface-border flex items-center justify-between gap-3 hover:border-brand-500/40 transition">
