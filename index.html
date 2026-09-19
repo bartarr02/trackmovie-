@@ -550,7 +550,6 @@
         this.renderWatchlist();
       },
 
-      // GESTIONE PAUSA
       togglePauseModal() {
         if (!this.selectedModalShow) return;
         const idStr = String(this.selectedModalShow.id);
@@ -562,6 +561,37 @@
         this.renderWatchlist();
         this.refreshModalView();
         this.showToast(item.paused ? `Serie messa in pausa: ${item.name}` : `Serie ripresa: ${item.name}`, item.paused ? 'fa-pause' : 'fa-play');
+      },
+
+      // GESTIONE MINUTAGGIO FILM (IN CORSO)
+      updateMovieProgress(movieId, currentMinutes) {
+        const idStr = String(movieId);
+        const movie = this.trackedShows[idStr];
+        if (!movie || movie.type !== 'movie') return;
+
+        const total = movie.runtime || 120;
+        let mins = parseInt(currentMinutes, 10);
+        if (isNaN(mins) || mins < 0) mins = 0;
+
+        movie.currentMinutes = mins;
+        movie.lastActivity = Date.now();
+
+        if (mins >= total) {
+          movie.watched = true;
+          this.showToast(`Film completato: ${movie.name}`, 'fa-circle-check');
+        } else if (mins > 0) {
+          movie.watched = false;
+          this.showToast(`Progresso salvato: ${mins} / ${total} min`, 'fa-clock');
+        } else {
+          movie.watched = false;
+          this.showToast(`Progresso azzerato`, 'fa-rotate-left');
+        }
+
+        this.saveToStorage();
+        this.renderWatchlist();
+        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
+          this.refreshModalView();
+        }
       },
 
       // ==========================================
@@ -711,6 +741,7 @@
           const year = item.premiered ? item.premiered.slice(0, 4) : 'N/A';
           const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
           const genreDisplay = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
+
           const roleHtml = item.character ? `<div class="text-[10px] text-brand-400 font-medium truncate mt-1"><i class="fa-solid fa-mask mr-1"></i>Ruolo: ${item.character}</div>` : '';
 
           return `
@@ -731,7 +762,7 @@
                 </div>
               </div>
 
-               <button onclick="app.quickAddOrOpen('${item.id}', ${isMovie}, event)" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
+              <button onclick="app.quickAddOrOpen('${item.id}', ${isMovie}, event)" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
                 <i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i>
                 <span class="hidden sm:inline">${isTracked ? 'In Lista' : 'Aggiungi'}</span>
               </button>
@@ -753,14 +784,11 @@
 
       async quickAddOrOpen(itemId, isMovieType, event) {
         const idStr = String(itemId);
-        
-        // Se è già presente, apre direttamente i dettagli
         if (this.trackedShows[idStr]) {
           this.openItemModalById(idStr);
           return;
         }
 
-        // Recupera il bottone cliccato per aggiornarne subito l'icona
         const btn = event ? event.currentTarget : null;
         if (btn) {
           btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span class="hidden sm:inline">Aggiunta...</span>`;
@@ -770,7 +798,6 @@
         const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
         await this.trackItem(dummyItem);
 
-        // Trasforma il pulsante con la spunta e lo stile "In Lista"
         if (btn) {
           btn.disabled = false;
           btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer bg-surface text-brand-400 border border-brand-500/30";
@@ -861,6 +888,7 @@
               genres: cleanGenres.length > 0 ? cleanGenres : ['Cinema'],
               summary: mov.overview || item.summary || 'Nessuna trama disponibile.',
               cast: castList,
+              currentMinutes: 0,
               watched: false,
               lastActivity: Date.now(),
               addedAt: Date.now()
@@ -978,9 +1006,19 @@
         typePill.className = `text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${isMovie ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'}`;
 
         const statusPill = document.getElementById('modal-status-pill');
+        const progress = this.getItemProgress(currentData);
+
         if (isMovie) {
-          statusPill.textContent = 'Film';
-          statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-surface-elevated text-slate-300 border border-surface-border';
+          if (progress.status === 'watching') {
+            statusPill.textContent = 'In corso';
+            statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30';
+          } else if (progress.status === 'finished') {
+            statusPill.textContent = 'Visto';
+            statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          } else {
+            statusPill.textContent = 'Da vedere';
+            statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-surface-elevated text-slate-300 border border-surface-border';
+          }
         } else if (currentData.paused) {
           statusPill.textContent = 'In pausa';
           statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30';
@@ -999,9 +1037,16 @@
 
         document.getElementById('modal-genres').innerHTML = (currentData.genres || []).map(g => `<span class="bg-surface-elevated px-2 py-0.5 rounded border border-surface-border">${g}</span>`).join('');
 
-        const { watched, total, percent } = this.getItemProgress(currentData);
-        document.getElementById('modal-progress-percent').textContent = isMovie ? (watched ? '100% (Visto)' : '0% (Non visto)') : `${percent}% (${watched}/${total})`;
-        document.getElementById('modal-progress-fill').style.width = `${percent}%`;
+        if (isMovie) {
+          const curMins = currentData.currentMinutes || 0;
+          const totMins = currentData.runtime || 120;
+          document.getElementById('modal-progress-percent').textContent = currentData.watched 
+            ? '100% (Visto)' 
+            : (curMins > 0 ? `${progress.percent}% (${curMins}/${totMins} min)` : '0% (Non iniziato)');
+        } else {
+          document.getElementById('modal-progress-percent').textContent = `${progress.percent}% (${progress.watched}/${progress.total})`;
+        }
+        document.getElementById('modal-progress-fill').style.width = `${progress.percent}%`;
 
         const trackBtn = document.getElementById('modal-btn-track');
         if (isTracked) {
@@ -1022,15 +1067,49 @@
           seasonsTabsContainer.innerHTML = '';
           markAllBtn.classList.add('hidden');
           pauseBtn.classList.add('hidden');
+          
+          const curMins = currentData.currentMinutes || 0;
+          const totMins = currentData.runtime || 120;
+
           epContainer.innerHTML = `
-            <div class="py-8 px-4 text-center bg-surface/50 rounded-2xl border border-surface-border flex flex-col items-center justify-center gap-4">
+            <div class="py-6 px-4 bg-surface/50 rounded-2xl border border-surface-border flex flex-col items-center justify-center gap-4 text-center">
               <i class="fa-solid fa-film text-4xl text-amber-400"></i>
-              <div><h4 class="text-base font-bold text-white">${currentData.name}</h4></div>
+              <div>
+                <h4 class="text-base font-bold text-white">${currentData.name}</h4>
+                <p class="text-xs text-slate-400 mt-0.5">Durata totale: ${totMins} minuti</p>
+              </div>
+
               ${isTracked ? `
-                <button onclick="app.toggleMovieWatched('${currentData.id}')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 cursor-pointer ${currentData.watched ? 'bg-emerald-500 text-slate-950' : 'bg-surface-elevated border border-surface-border text-slate-200 hover:text-white'}">
-                  <i class="fa-solid ${currentData.watched ? 'fa-check' : 'fa-play'}"></i> <span>${currentData.watched ? 'Film già visto' : 'Segna film come visto'}</span>
-                </button>
-              ` : `<p class="text-xs text-slate-500">Aggiungi il film alla lista per segnarlo come visto.</p>`}
+                <div class="w-full max-w-sm bg-surface-elevated/70 p-4 rounded-xl border border-surface-border space-y-3">
+                  <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                    <span><i class="fa-solid fa-clock mr-1 text-brand-400"></i> Minutaggio raggiunto:</span>
+                    <span class="text-brand-400">${curMins} / ${totMins} min</span>
+                  </div>
+                  
+                  <div class="flex items-center gap-2">
+                    <input type="number" id="movie-minute-input" min="0" max="${totMins}" value="${curMins}" 
+                      placeholder="Minuto es. 45" 
+                      class="flex-1 bg-surface border border-surface-border text-white text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-brand-500">
+                    <button onclick="app.updateMovieProgress('${currentData.id}', document.getElementById('movie-minute-input').value)" 
+                      class="px-4 py-2 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-xl transition cursor-pointer">
+                      Salva
+                    </button>
+                    ${curMins > 0 ? `
+                      <button onclick="app.updateMovieProgress('${currentData.id}', 0)" title="Azzera minutaggio" 
+                        class="px-3 py-2 bg-surface hover:bg-slate-700 text-slate-400 hover:text-white text-xs rounded-xl transition cursor-pointer border border-surface-border">
+                        <i class="fa-solid fa-rotate-left"></i>
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+
+                <div class="pt-1">
+                  <button onclick="app.toggleMovieWatched('${currentData.id}')" class="px-5 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 cursor-pointer ${currentData.watched ? 'bg-emerald-500 text-slate-950' : 'bg-surface-elevated border border-surface-border text-slate-200 hover:text-white'}">
+                    <i class="fa-solid ${currentData.watched ? 'fa-check' : 'fa-play'}"></i> 
+                    <span>${currentData.watched ? 'Film già visto' : 'Segna come interamente visto'}</span>
+                  </button>
+                </div>
+              ` : `<p class="text-xs text-slate-500">Aggiungi il film alla lista per registrarne i progressi.</p>`}
             </div>
           `;
           return;
@@ -1092,8 +1171,27 @@
       // ==========================================
       getItemProgress(item) {
         if (item.type === 'movie') {
-          return { watched: item.watched ? 1 : 0, total: 1, percent: item.watched ? 100 : 0, status: item.watched ? 'finished' : 'plan' };
+          const curMins = item.currentMinutes || 0;
+          const totMins = item.runtime || 120;
+          let percent = 0;
+          let status = 'plan';
+
+          if (item.watched) {
+            percent = 100;
+            status = 'finished';
+          } else if (curMins > 0) {
+            percent = Math.min(99, Math.round((curMins / totMins) * 100));
+            status = 'watching';
+          }
+
+          return {
+            watched: item.watched ? 1 : (curMins > 0 ? 0.5 : 0),
+            total: 1,
+            percent: percent,
+            status: status
+          };
         }
+
         let total = 0;
         Object.values(item.seasons || {}).forEach(eps => total += eps.length);
         const watched = Object.keys(item.watchedEpisodes || {}).length;
@@ -1195,17 +1293,32 @@
           const nextEp = !isMovie ? this.getNextEpisodeToWatch(item) : null;
           
           let badgeColor = 'bg-brand-500/20 text-brand-400 border-brand-500/30';
-          let statusText = isMovie ? (watched ? 'Visto' : 'Da vedere') : `${watched}/${total} ep`;
-          
-          if (status === 'finished') {
-            badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-            statusText = isMovie ? 'Visto' : 'Completata';
-          } else if (status === 'paused') {
-            badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-            statusText = 'In pausa';
-          } else if (status === 'plan') {
-            badgeColor = 'bg-slate-700 text-slate-300 border-slate-600';
-            statusText = 'Da iniziare';
+          let statusText = `${watched}/${total} ep`;
+
+          if (isMovie) {
+            const curM = item.currentMinutes || 0;
+            const totM = item.runtime || 120;
+            if (status === 'finished') {
+              badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+              statusText = 'Visto';
+            } else if (status === 'watching') {
+              badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+              statusText = `${curM}/${totM} min`;
+            } else {
+              badgeColor = 'bg-slate-700 text-slate-300 border-slate-600';
+              statusText = 'Da vedere';
+            }
+          } else {
+            if (status === 'finished') {
+              badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+              statusText = 'Completata';
+            } else if (status === 'paused') {
+              badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+              statusText = 'In pausa';
+            } else if (status === 'plan') {
+              badgeColor = 'bg-slate-700 text-slate-300 border-slate-600';
+              statusText = 'Da iniziare';
+            }
           }
 
           return `
@@ -1240,6 +1353,8 @@
             if (item.watched) {
               moviesWatched++;
               totalMinutes += (item.runtime || 120);
+            } else if (item.currentMinutes) {
+              totalMinutes += item.currentMinutes;
             }
           } else {
             if (status === 'finished') finishedSeries++;
@@ -1364,8 +1479,11 @@
         const idStr = String(movieId);
         const movie = this.trackedShows[idStr];
         if (!movie || movie.type !== 'movie') return;
+        
         movie.watched = !movie.watched;
+        movie.currentMinutes = movie.watched ? (movie.runtime || 120) : 0;
         movie.lastActivity = Date.now();
+
         this.saveToStorage();
         this.renderWatchlist();
         if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
@@ -1407,6 +1525,7 @@
 
         if (item.type === 'movie') {
           item.watched = true;
+          item.currentMinutes = item.runtime || 120;
         } else {
           if (!item.watchedEpisodes) item.watchedEpisodes = {};
           Object.values(item.seasons || {}).forEach(eps => {
