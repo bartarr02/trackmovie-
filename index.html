@@ -151,7 +151,7 @@
         
         <div class="flex items-center gap-3 bg-surface-elevated p-3 rounded-2xl border border-surface-border focus-within:border-brand-500 transition-colors">
           <i class="fa-solid fa-magnifying-glass text-brand-400 text-lg ml-2"></i>
-          <input type="text" id="main-search-input" placeholder="Cerca titoli o attori..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
+          <input type="text" id="main-search-input" oninput="app.triggerSearch()" placeholder="Cerca titoli es. Inception, Breaking Bad..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
         </div>
 
         <div class="flex items-center gap-2 justify-center">
@@ -201,7 +201,6 @@
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <!-- Contatori -->
         <div class="bg-surface p-4 rounded-2xl border border-surface-border flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg"><i class="fa-solid fa-clapperboard"></i></div>
           <div><span class="text-[11px] text-slate-400 uppercase font-semibold">Film Visti</span><h4 id="stat-movies-count" class="text-xl font-bold text-white">0</h4></div>
@@ -274,7 +273,7 @@
       </div>
 
       <div class="flex items-center justify-between">
-        <span id="discover-flavor-hint" class="text-xs text-slate-400"></span>
+        <span id="discover-flavor-hint" class="text-xs text-slate-400 font-medium"></span>
       </div>
 
       <div id="discover-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
@@ -502,11 +501,11 @@
           const mobBtn = document.getElementById(`mobile-nav-${t}`);
 
           if (t === tabId) {
-            if(view) view.classList.remove('hidden');
+            if (view) view.classList.remove('hidden');
             if (navBtn) navBtn.className = "nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 bg-surface-elevated text-brand-400 shadow-sm";
             if (mobBtn && t !== 'search') mobBtn.className = "flex flex-col items-center gap-1 text-brand-400";
           } else {
-            if(view) view.classList.add('hidden');
+            if (view) view.classList.add('hidden');
             if (navBtn) navBtn.className = "nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200";
             if (mobBtn && t !== 'search') mobBtn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200";
           }
@@ -515,7 +514,10 @@
         if (tabId === 'stats') this.renderStats();
         if (tabId === 'calendar') this.renderCalendar();
         if (tabId === 'watchlist') this.renderWatchlist();
-        if (tabId === 'search') document.getElementById('main-search-input').focus();
+        if (tabId === 'search') {
+          const input = document.getElementById('main-search-input');
+          if (input) input.focus();
+        }
       },
 
       // ==========================================
@@ -645,24 +647,21 @@
 
       async searchByActor(query) {
         if (!this.tmdbApiKey) {
-          this.showToast("Ricerca attore disponibile solo con chiave TMDb attiva.", "fa-triangle-exclamation");
+          this.showToast("Ricerca attore disponibile con chiave TMDb attiva.", "fa-triangle-exclamation");
           return [];
         }
         try {
-          // 1. Cerca la persona
           const personRes = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${this.tmdbApiKey}&language=it-IT&query=${encodeURIComponent(query)}`);
           const personData = await personRes.json();
           if (!personData.results || personData.results.length === 0) return [];
           
-          const personId = personData.results[0].id; // Prende il primo risultato più rilevante
-          
-          // 2. Cerca i crediti della persona
+          const personId = personData.results[0].id;
           const credRes = await fetch(`https://api.themoviedb.org/3/person/${personId}/combined_credits?api_key=${this.tmdbApiKey}&language=it-IT`);
           const credData = await credRes.json();
           
-          const rawResults = (credData.cast || [])
+          return (credData.cast || [])
             .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
-            .sort((a, b) => b.popularity - a.popularity) // Ordina per popolarità
+            .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
             .map(item => {
               const isMovie = item.media_type === 'movie';
               const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean).filter(g => g !== 'Drama');
@@ -680,10 +679,7 @@
                 character: item.character || ''
               };
             });
-            
-          return rawResults;
         } catch (e) {
-          console.error(e);
           return [];
         }
       },
@@ -703,7 +699,6 @@
           const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
           const genreDisplay = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
 
-          // Se è una ricerca attore, mostra il ruolo
           const roleHtml = item.character ? `<div class="text-[10px] text-brand-400 font-medium truncate mt-1"><i class="fa-solid fa-mask mr-1"></i>Ruolo: ${item.character}</div>` : '';
 
           return `
@@ -724,7 +719,7 @@
                 </div>
               </div>
 
-              <button onclick="app.quickAddOrOpen('${item.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
+              <button onclick="app.quickAddOrOpen('${item.id}', ${isMovie})" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
                 <i class="fa-solid ${isTracked ? 'fa-eye' : 'fa-plus'}"></i>
                 <span class="hidden sm:inline">${isTracked ? 'Dettagli' : 'Aggiungi'}</span>
               </button>
@@ -738,30 +733,23 @@
         if (this.trackedShows[idStr]) {
           this.openItemModalById(idStr);
         } else {
-          // Preleva item fittizio per fetchDetails
           const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
           const full = await this.fetchItemDetails(dummyItem);
           if (full) this.openItemModalExternal(full);
         }
       },
 
-      async quickAddOrOpen(itemId) {
+      async quickAddOrOpen(itemId, isMovieType) {
         const idStr = String(itemId);
         if (this.trackedShows[idStr]) {
           this.openItemModalById(idStr);
         } else {
-          const isMovieType = idStr.includes('_m_');
           const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
           await this.trackItem(dummyItem);
         }
       },
 
       bindEvents() {
-        const searchInput = document.getElementById('main-search-input');
-        if(searchInput) {
-          searchInput.addEventListener('input', () => this.triggerSearch());
-        }
-
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
             this.closeDetailsModal();
@@ -779,7 +767,6 @@
         if (idStr.startsWith('tmdb_s_') && this.tmdbApiKey) {
           const rawId = item.tmdbId || idStr.replace('tmdb_s_', '');
           try {
-            // Aggiunto append_to_response=credits per ottenere il CAST
             const res = await fetch(`https://api.themoviedb.org/3/tv/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT&append_to_response=credits`);
             const tv = await res.json();
             
@@ -790,29 +777,36 @@
               const epCount = s.episode_count || 10;
               for (let i = 1; i <= epCount; i++) {
                 eps.push({
-                  id: `${rawId}_s${s.season_number}_e${i}`, name: `Episodio ${i}`, season: s.season_number, number: i,
-                  runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45, airdate: s.air_date || '', summary: ''
+                  id: `${rawId}_s${s.season_number}_e${i}`,
+                  name: `Episodio ${i}`,
+                  season: s.season_number,
+                  number: i,
+                  runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
+                  airdate: s.air_date || '',
+                  summary: ''
                 });
               }
               seasons[s.season_number] = eps;
             }
 
             const cleanGenres = (tv.genres || []).map(g => g.name).filter(g => g !== 'Drama');
-            // Estrai top 5 attori
             const castList = (tv.credits && tv.credits.cast) ? tv.credits.cast.slice(0, 5).map(c => c.name) : [];
 
             return {
-              id: idStr, type: 'series',
+              id: idStr,
+              type: 'series',
               name: tv.name || item.name,
               image: tv.poster_path ? `https://image.tmdb.org/t/p/w500${tv.poster_path}` : item.image,
-              rating: tv.vote_average ? tv.vote_average.toFixed(1) : item.rating,
+              rating: tv.vote_average ? tv.vote_average.toFixed(1) : (item.rating || '7.5'),
               runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
               premiered: tv.first_air_date ? tv.first_air_date.slice(0, 4) : 'N/A',
               status: tv.status || 'In corso',
               genres: cleanGenres.length > 0 ? cleanGenres : ['Serie'],
               summary: tv.overview || item.summary || 'Nessuna trama.',
               cast: castList,
-              seasons: seasons, watchedEpisodes: {}, addedAt: Date.now()
+              seasons: seasons,
+              watchedEpisodes: {},
+              addedAt: Date.now()
             };
           } catch (e) {}
         }
@@ -820,28 +814,28 @@
         if (idStr.startsWith('tmdb_m_') && this.tmdbApiKey) {
           const rawId = item.tmdbId || idStr.replace('tmdb_m_', '');
           try {
-            // Aggiunto append_to_response=credits
             const res = await fetch(`https://api.themoviedb.org/3/movie/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT&append_to_response=credits`);
             const mov = await res.json();
             const cleanGenres = (mov.genres || []).map(g => g.name).filter(g => !this.GENERIC_GENRES.has(g));
             const castList = (mov.credits && mov.credits.cast) ? mov.credits.cast.slice(0, 5).map(c => c.name) : [];
 
             return {
-              id: idStr, type: 'movie',
+              id: idStr,
+              type: 'movie',
               name: mov.title || item.name,
               image: mov.poster_path ? `https://image.tmdb.org/t/p/w500${mov.poster_path}` : item.image,
-              rating: mov.vote_average ? mov.vote_average.toFixed(1) : item.rating,
+              rating: mov.vote_average ? mov.vote_average.toFixed(1) : (item.rating || '7.5'),
               runtime: mov.runtime || 120,
               premiered: mov.release_date ? mov.release_date.slice(0, 4) : 'N/A',
               genres: cleanGenres.length > 0 ? cleanGenres : ['Cinema'],
               summary: mov.overview || item.summary || 'Nessuna trama disponibile.',
               cast: castList,
-              watched: false, addedAt: Date.now()
+              watched: false,
+              addedAt: Date.now()
             };
           } catch (e) {}
         }
 
-        // TVMaze Fallback
         if (item.type === 'series') {
           try {
             const res = await fetch(`https://api.tvmaze.com/shows/${item.id}?embed[]=episodes&embed[]=cast`);
@@ -851,35 +845,50 @@
             episodesList.forEach(ep => {
               const sNum = ep.season || 1;
               if (!seasons[sNum]) seasons[sNum] = [];
-              seasons[sNum].push({ id: ep.id, name: ep.name, season: ep.season, number: ep.number, runtime: ep.runtime || fullData.runtime || 45, airdate: ep.airdate, summary: ep.summary || '' });
+              seasons[sNum].push({
+                id: ep.id,
+                name: ep.name,
+                season: ep.season,
+                number: ep.number,
+                runtime: ep.runtime || fullData.runtime || 45,
+                airdate: ep.airdate,
+                summary: ep.summary || ''
+              });
             });
 
             let cleanGenres = (fullData.genres || []).filter(g => g !== 'Drama');
             if (cleanGenres.length === 0) cleanGenres = fullData.genres || ['Serie'];
-            
             const castList = (fullData._embedded && fullData._embedded.cast) ? fullData._embedded.cast.slice(0, 5).map(c => c.person.name) : [];
 
             return {
-              id: String(fullData.id), type: 'series', name: fullData.name,
+              id: String(fullData.id),
+              type: 'series',
+              name: fullData.name,
               image: fullData.image ? (fullData.image.original || fullData.image.medium) : item.image,
               rating: fullData.rating && fullData.rating.average ? fullData.rating.average : 7.8,
               runtime: fullData.runtime || 45,
               premiered: fullData.premiered ? fullData.premiered.slice(0, 4) : 'N/A',
               status: fullData.status || 'Ended',
-              genres: cleanGenres, summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
+              genres: cleanGenres,
+              summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
               cast: castList,
-              seasons: seasons, watchedEpisodes: {}, addedAt: Date.now()
+              seasons: seasons,
+              watchedEpisodes: {},
+              addedAt: Date.now()
             };
           } catch (e) {}
         }
 
-        return item; // Fallback per i curated
+        return item;
       },
 
       async trackItem(itemData) {
         const normNew = this.normalizeTitle(itemData.name);
         const alreadyExists = Object.values(this.trackedShows).some(s => this.normalizeTitle(s.name) === normNew);
-        if (alreadyExists) { this.showToast("Questo titolo è già nella tua lista!", "fa-info"); return; }
+        if (alreadyExists) {
+          this.showToast("Questo titolo è già nella tua lista!", "fa-info");
+          return;
+        }
 
         const fullItem = await this.fetchItemDetails(itemData);
         if (!fullItem) return;
@@ -935,8 +944,7 @@
         document.getElementById('modal-status-pill').textContent = isMovie ? `Film` : (currentData.status || 'In corso');
         document.getElementById('modal-summary').textContent = currentData.summary;
 
-        // INSERIMENTO DETTAGLI EXTRA: MINUTAGGIO E CAST
-        const runtimeText = currentData.runtime ? `${currentData.runtime} min ${isMovie ? '' : '(media ad episodio)'}` : 'Sconosciuta';
+        const runtimeText = currentData.runtime ? `${currentData.runtime} min ${isMovie ? '' : '(media episodio)'}` : 'Sconosciuta';
         document.getElementById('modal-runtime-text').textContent = runtimeText;
         
         const castStr = (currentData.cast && currentData.cast.length > 0) ? currentData.cast.join(', ') : 'Nessun dato disponibile';
@@ -993,11 +1001,11 @@
           return;
         }
 
-        const allSeasonWatched = activeEps.every(ep => currentData.watchedEpisodes && currentData.watchedEpisodes[ep.id]);
-        let epHTML = `<div class="flex items-center justify-between pb-3 mb-2 border-b border-surface-border/60"><span class="text-xs font-bold text-slate-300">Episodi Stagione ${this.selectedModalSeason} (${activeEps.length})</span>${isTracked ? `<button onclick="app.markSeasonWatched('${currentData.id}', ${this.selectedModalSeason},${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline cursor-pointer"><i class="fa-solid fa-check mr-1"></i> ${allSeasonWatched ? 'Deseleziona stagione' : 'Segna stagione vista'}</button>` : ''}</div>`;
+        const allSeasonWatched = activeEps.every(ep => currentData.watchedEpisodes && currentData.watchedEpisodes[String(ep.id)]);
+        let epHTML = `<div class="flex items-center justify-between pb-3 mb-2 border-b border-surface-border/60"><span class="text-xs font-bold text-slate-300">Episodi Stagione ${this.selectedModalSeason} (${activeEps.length})</span>${isTracked ? `<button onclick="app.markSeasonWatched('${currentData.id}', ${this.selectedModalSeason}, ${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline cursor-pointer"><i class="fa-solid fa-check mr-1"></i> ${allSeasonWatched ? 'Deseleziona stagione' : 'Segna stagione vista'}</button>` : ''}</div>`;
 
         epHTML += activeEps.map(ep => {
-          const isWatched = !!(currentData.watchedEpisodes && currentData.watchedEpisodes[ep.id]);
+          const isWatched = !!(currentData.watchedEpisodes && currentData.watchedEpisodes[String(ep.id)]);
           return `
             <div class="flex items-center justify-between gap-3 p-3 rounded-xl border transition ${isWatched ? 'bg-surface/50 border-surface-border opacity-70' : 'bg-surface border-surface-border/80 hover:border-brand-500/40'}">
               <div class="flex items-center gap-3">
@@ -1007,26 +1015,37 @@
                   <span class="text-[11px] text-slate-500">${ep.runtime || 45} min ${ep.airdate ? '• ' + ep.airdate : ''}</span>
                 </div>
               </div>
-              ${isTracked ? `<button onclick="app.toggleEpisode('${currentData.id}', '${ep.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}"><i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i></button>` : `<button onclick="app.quickAddOrOpen('${currentData.id}')" class="text-xs text-brand-400 font-semibold hover:underline cursor-pointer">Aggiungi</button>`}
+              ${isTracked ? `<button onclick="app.toggleEpisode('${currentData.id}', '${ep.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}"><i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i></button>` : `<button onclick="app.quickAddOrOpen('${currentData.id}', false)" class="text-xs text-brand-400 font-semibold hover:underline cursor-pointer">Aggiungi</button>`}
             </div>
           `;
         }).join('');
         epContainer.innerHTML = epHTML;
       },
 
-      selectSeasonTab(seasonNum) { this.selectedModalSeason = seasonNum; this.refreshModalView(); },
+      selectSeasonTab(seasonNum) {
+        this.selectedModalSeason = seasonNum;
+        this.refreshModalView();
+      },
 
       async toggleItemTrackingFromModal() {
         if (!this.selectedModalShow) return;
         const idStr = String(this.selectedModalShow.id);
-        if (this.trackedShows[idStr]) { this.untrackItem(idStr); this.closeDetailsModal(); }
-        else { await this.trackItem(this.selectedModalShow); this.refreshModalView(); }
+        if (this.trackedShows[idStr]) {
+          this.untrackItem(idStr);
+          this.closeDetailsModal();
+        } else {
+          await this.trackItem(this.selectedModalShow);
+          this.refreshModalView();
+        }
       },
 
       markAllModal() {
         if (!this.selectedModalShow) return;
         const idStr = String(this.selectedModalShow.id);
-        if (!this.trackedShows[idStr]) { this.showToast("Aggiungi prima alla lista", "fa-info"); return; }
+        if (!this.trackedShows[idStr]) {
+          this.showToast("Aggiungi prima alla lista", "fa-info");
+          return;
+        }
         this.markAll(idStr);
       },
 
@@ -1034,11 +1053,16 @@
       // ====== RENDERING LISTA E STATISTICHE ======
       // ==========================================
       getItemProgress(item) {
-        if (item.type === 'movie') return { watched: item.watched ? 1 : 0, total: 1, percent: item.watched ? 100 : 0, status: item.watched ? 'finished' : 'plan' };
-        let total = 0; Object.values(item.seasons || {}).forEach(eps => total += eps.length);
+        if (item.type === 'movie') {
+          return { watched: item.watched ? 1 : 0, total: 1, percent: item.watched ? 100 : 0, status: item.watched ? 'finished' : 'plan' };
+        }
+        let total = 0;
+        Object.values(item.seasons || {}).forEach(eps => total += eps.length);
         const watched = Object.keys(item.watchedEpisodes || {}).length;
         const percent = total > 0 ? Math.round((watched / total) * 100) : 0;
-        let status = 'watching'; if (watched === 0) status = 'plan'; else if (watched === total && total > 0) status = 'finished';
+        let status = 'watching';
+        if (watched === 0) status = 'plan';
+        else if (watched === total && total > 0) status = 'finished';
         return { watched, total, percent, status };
       },
 
@@ -1047,7 +1071,9 @@
         const sortedSeasons = Object.keys(show.seasons).map(Number).sort((a, b) => a - b);
         for (const s of sortedSeasons) {
           const eps = show.seasons[s];
-          for (const ep of eps) { if (!show.watchedEpisodes || !show.watchedEpisodes[ep.id]) return ep; }
+          for (const ep of eps) {
+            if (!show.watchedEpisodes || !show.watchedEpisodes[String(ep.id)]) return ep;
+          }
         }
         return null;
       },
@@ -1058,26 +1084,27 @@
         const nextUpContainer = document.getElementById('next-up-container');
         
         const itemIds = Object.keys(this.trackedShows);
-        if (itemIds.length === 0) { grid.innerHTML = ''; nextUpContainer.innerHTML = ''; empty.classList.remove('hidden'); return; }
+        if (itemIds.length === 0) {
+          grid.innerHTML = '';
+          nextUpContainer.innerHTML = '';
+          empty.classList.remove('hidden');
+          return;
+        }
 
         empty.classList.add('hidden');
 
-        // LOGICA FILTRI COMBINATI
         const filtered = itemIds.map(id => this.trackedShows[id]).filter(item => {
           const { status } = this.getItemProgress(item);
-          // Filtro Tipo
           let matchType = true;
           if (this.filterType === 'movie') matchType = item.type === 'movie';
           if (this.filterType === 'series') matchType = item.type !== 'movie';
           
-          // Filtro Stato
           let matchStatus = true;
           if (this.filterStatus !== 'all') matchStatus = status === this.filterStatus;
 
           return matchType && matchStatus;
         });
 
-        // Mostra "Prossimo episodio" solo se non c'è filtro esclusivo sui film
         const watchingSeries = itemIds.map(id => this.trackedShows[id]).filter(s => {
           if (s.type === 'movie' || this.filterType === 'movie') return false;
           const p = this.getItemProgress(s);
@@ -1122,8 +1149,13 @@
           const nextEp = !isMovie ? this.getNextEpisodeToWatch(item) : null;
           let badgeColor = 'bg-brand-500/20 text-brand-400 border-brand-500/30';
           let statusText = isMovie ? (watched ? 'Visto' : 'Da vedere') : `${watched}/${total} ep`;
-          if (status === 'finished') { badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'; statusText = isMovie ? 'Visto' : 'Completata'; } 
-          else if (status === 'plan') { badgeColor = 'bg-slate-700 text-slate-300 border-slate-600'; statusText = 'Da iniziare'; }
+          if (status === 'finished') {
+            badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+            statusText = isMovie ? 'Visto' : 'Completata';
+          } else if (status === 'plan') {
+            badgeColor = 'bg-slate-700 text-slate-300 border-slate-600';
+            statusText = 'Da iniziare';
+          }
 
           return `
             <div onclick="app.openItemModalById('${item.id}')" class="group relative bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col cursor-pointer shadow-md hover:-translate-y-1">
@@ -1132,7 +1164,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
                 <div class="absolute top-2 left-2"><span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}">${isMovie ? 'Film' : 'Serie'}</span></div>
                 <div class="absolute top-2 right-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${badgeColor} backdrop-blur-md">${percent}%</span></div>
-                ${nextEp ? `<div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate"><span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>:${nextEp.name}</div>` : ''}
+                ${nextEp ? `<div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate"><span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>: ${nextEp.name}</div>` : ''}
               </div>
               <div class="p-3 flex-1 flex flex-col justify-between">
                 <div>
@@ -1154,31 +1186,54 @@
         items.forEach(item => {
           const { status } = this.getItemProgress(item);
           if (item.type === 'movie') {
-            if (item.watched) { moviesWatched++; totalMinutes += (item.runtime || 120); }
+            if (item.watched) {
+              moviesWatched++;
+              totalMinutes += (item.runtime || 120);
+            }
           } else {
             if (status === 'finished') finishedSeries++;
             const watchedEpIds = Object.keys(item.watchedEpisodes || {});
             totalEpisodes += watchedEpIds.length;
-            Object.values(item.seasons || {}).forEach(eps => { eps.forEach(ep => { if (item.watchedEpisodes && item.watchedEpisodes[ep.id]) totalMinutes += (ep.runtime || item.runtime || 45); }); });
+            Object.values(item.seasons || {}).forEach(eps => {
+              eps.forEach(ep => {
+                if (item.watchedEpisodes && item.watchedEpisodes[String(ep.id)]) {
+                  totalMinutes += (ep.runtime || item.runtime || 45);
+                }
+              });
+            });
           }
           if (item.genres && Array.isArray(item.genres)) {
-            item.genres.forEach(g => { if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') genreCounts[g] = (genreCounts[g] || 0) + 1; });
+            item.genres.forEach(g => {
+              if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') {
+                genreCounts[g] = (genreCounts[g] || 0) + 1;
+              }
+            });
           }
         });
 
         const mInH = 60, mInD = 60 * 24, mInM = 60 * 24 * 30.5;
-        const months = Math.floor(totalMinutes / mInM); let rem = totalMinutes % mInM;
-        const days = Math.floor(rem / mInD); rem = rem % mInD;
-        const hours = Math.floor(rem / mInH); const mins = rem % mInH;
+        const months = Math.floor(totalMinutes / mInM);
+        let rem = totalMinutes % mInM;
+        const days = Math.floor(rem / mInD);
+        rem = rem % mInD;
+        const hours = Math.floor(rem / mInH);
+        const mins = rem % mInH;
 
-        document.getElementById('stat-months').textContent = months; document.getElementById('stat-days').textContent = days;
-        document.getElementById('stat-hours').textContent = hours; document.getElementById('stat-minutes').textContent = mins;
-        document.getElementById('stat-movies-count').textContent = moviesWatched; document.getElementById('stat-episodes-count').textContent = totalEpisodes;
-        document.getElementById('stat-finished-count').textContent = finishedSeries; document.getElementById('stat-total-shows').textContent = items.length;
+        document.getElementById('stat-months').textContent = months;
+        document.getElementById('stat-days').textContent = days;
+        document.getElementById('stat-hours').textContent = hours;
+        document.getElementById('stat-minutes').textContent = mins;
+        document.getElementById('stat-movies-count').textContent = moviesWatched;
+        document.getElementById('stat-episodes-count').textContent = totalEpisodes;
+        document.getElementById('stat-finished-count').textContent = finishedSeries;
+        document.getElementById('stat-total-shows').textContent = items.length;
 
         const genresContainer = document.getElementById('genres-bars-container');
         const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        if (sortedGenres.length === 0) { genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei tuoi generi preferiti.</p>`; return; }
+        if (sortedGenres.length === 0) {
+          genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei generi.</p>`;
+          return;
+        }
         const maxCount = sortedGenres[0][1] || 1;
         genresContainer.innerHTML = sortedGenres.map(([genre, count]) => {
           const pct = Math.round((count / maxCount) * 100);
@@ -1186,8 +1241,14 @@
         }).join('');
       },
 
-      updateStats() { if (this.activeTab === 'stats') this.renderStats(); },
-      updateWatchlistCounts() { const countEl = document.getElementById('badge-watching-count'); if (countEl) countEl.textContent = Object.keys(this.trackedShows).length; },
+      updateStats() {
+        if (this.activeTab === 'stats') this.renderStats();
+      },
+
+      updateWatchlistCounts() {
+        const countEl = document.getElementById('badge-watching-count');
+        if (countEl) countEl.textContent = Object.keys(this.trackedShows).length;
+      },
 
       renderCalendar() {
         const container = document.getElementById('calendar-schedule-container');
@@ -1197,24 +1258,138 @@
         Object.values(this.trackedShows).forEach(show => {
           if (show.type === 'movie' || !show.seasons) return;
           Object.values(show.seasons).forEach(eps => {
-            eps.forEach(ep => { if (ep.airdate && ep.airdate >= todayStr) upcomingList.push({ showName: show.name, showImage: show.image, showId: show.id, epTitle: ep.name, season: ep.season, number: ep.number, airdate: ep.airdate }); });
+            eps.forEach(ep => {
+              if (ep.airdate && ep.airdate >= todayStr) {
+                upcomingList.push({
+                  showName: show.name,
+                  showImage: show.image,
+                  showId: show.id,
+                  epTitle: ep.name,
+                  season: ep.season,
+                  number: ep.number,
+                  airdate: ep.airdate
+                });
+              }
+            });
           });
         });
         upcomingList.sort((a, b) => a.airdate.localeCompare(b.airdate));
 
-        if (upcomingList.length === 0) { container.innerHTML = `<div class="text-center py-16 bg-surface rounded-2xl border border-surface-border text-slate-400"><i class="fa-regular fa-calendar-xmark text-3xl mb-3 text-slate-500"></i><p class="text-sm font-semibold">Nessuna nuova uscita a breve</p></div>`; return; }
+        if (upcomingList.length === 0) {
+          container.innerHTML = `<div class="text-center py-16 bg-surface rounded-2xl border border-surface-border text-slate-400"><i class="fa-regular fa-calendar-xmark text-3xl mb-3 text-slate-500"></i><p class="text-sm font-semibold">Nessuna nuova uscita a breve</p></div>`;
+          return;
+        }
         container.innerHTML = upcomingList.slice(0, 15).map(item => {
           const dateFormatted = new Date(item.airdate).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
           return `<div onclick="app.openItemModalById('${item.showId}')" class="bg-surface p-4 rounded-2xl border border-surface-border hover:border-brand-500/40 flex items-center justify-between gap-4 transition cursor-pointer"><div class="flex items-center gap-3.5"><img src="${item.showImage}" class="w-12 h-16 rounded-xl object-cover border border-surface-border"><div><span class="text-xs font-bold text-brand-400 flex items-center gap-1.5"><i class="fa-regular fa-clock"></i> ${dateFormatted}</span><h4 class="font-bold text-white text-sm sm:text-base">${item.showName}</h4><p class="text-xs text-slate-400">S${item.season}, E${item.number} • ${item.epTitle}</p></div></div><span class="text-xs bg-surface-elevated px-3 py-1.5 rounded-xl text-slate-300 font-semibold border border-surface-border">In arrivo</span></div>`;
         }).join('');
       },
 
+      toggleEpisode(showId, epId) {
+        const idStr = String(showId);
+        const epKey = String(epId);
+        const show = this.trackedShows[idStr];
+        if (!show || show.type === 'movie') return;
+
+        if (!show.watchedEpisodes) show.watchedEpisodes = {};
+
+        if (show.watchedEpisodes[epKey]) {
+          delete show.watchedEpisodes[epKey];
+        } else {
+          show.watchedEpisodes[epKey] = true;
+        }
+
+        this.saveToStorage();
+        this.renderWatchlist();
+        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
+          this.refreshModalView();
+        }
+      },
+
+      toggleMovieWatched(movieId) {
+        const idStr = String(movieId);
+        const movie = this.trackedShows[idStr];
+        if (!movie || movie.type !== 'movie') return;
+        movie.watched = !movie.watched;
+        this.saveToStorage();
+        this.renderWatchlist();
+        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
+          this.refreshModalView();
+        }
+        this.showToast(movie.watched ? `Segnato come visto: ${movie.name}` : `Rimosso dai visti`);
+      },
+
+      markSeasonWatched(showId, seasonNum, markAsWatched = true) {
+        const idStr = String(showId);
+        const show = this.trackedShows[idStr];
+        if (!show || !show.seasons || !show.seasons[seasonNum]) return;
+
+        if (!show.watchedEpisodes) show.watchedEpisodes = {};
+
+        show.seasons[seasonNum].forEach(ep => {
+          const epKey = String(ep.id);
+          if (markAsWatched) {
+            show.watchedEpisodes[epKey] = true;
+          } else {
+            delete show.watchedEpisodes[epKey];
+          }
+        });
+
+        this.saveToStorage();
+        this.renderWatchlist();
+        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
+          this.refreshModalView();
+        }
+        this.showToast(markAsWatched ? `Stagione ${seasonNum} completata!` : `Stagione ${seasonNum} azzerata`);
+      },
+
+      markAll(itemId) {
+        const idStr = String(itemId);
+        const item = this.trackedShows[idStr];
+        if (!item) return;
+
+        if (item.type === 'movie') {
+          item.watched = true;
+        } else {
+          if (!item.watchedEpisodes) item.watchedEpisodes = {};
+          Object.values(item.seasons || {}).forEach(eps => {
+            eps.forEach(ep => {
+              item.watchedEpisodes[String(ep.id)] = true;
+            });
+          });
+        }
+
+        this.saveToStorage();
+        this.renderWatchlist();
+        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
+          this.refreshModalView();
+        }
+        this.showToast(`Segnato tutto come visto!`);
+      },
+
+      untrackItem(itemId) {
+        const idStr = String(itemId);
+        if (this.trackedShows[idStr]) {
+          const name = this.trackedShows[idStr].name;
+          delete this.trackedShows[idStr];
+          this.saveToStorage();
+          this.renderAll();
+          this.showToast(`Rimosso: ${name}`, 'fa-trash');
+        }
+      },
+
       // ==========================================
       // ====== SEZIONE: DISCOVER & ESPLORA =======
       // ==========================================
-      getUserTopSpecificGenres() {
+      getUserTopGenres() {
         const counts = {};
-        Object.values(this.trackedShows).forEach(s => { if (s.genres && Array.isArray(s.genres)) { s.genres.forEach(g => { if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') counts[g] = (counts[g] || 0) + 1; }); } });
+        Object.values(this.trackedShows).forEach(s => {
+          if (s.genres && Array.isArray(s.genres)) {
+            s.genres.forEach(g => {
+              counts[g] = (counts[g] || 0) + 1;
+            });
+          }
+        });
         return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
       },
 
@@ -1224,66 +1399,168 @@
         const trackedKeys = new Set(Object.keys(this.trackedShows));
         const cat = this.discoverCategory;
 
-        if (this.tmdbApiKey) {
-          try {
-            const randomPage = forceFullNew ? Math.floor(Math.random() * 5) + 1 : 1;
-            let endpoints = [];
-            if (cat === 'top') {
-              endpoints.push(`https://api.themoviedb.org/3/movie/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-              endpoints.push(`https://api.themoviedb.org/3/tv/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-            } else if (cat !== 'smart') {
-              const genreId = this.tmdbGenreIds[cat] || 28;
-              endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
-              endpoints.push(`https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
-            } else {
-              const specificGenres = this.getUserTopSpecificGenres();
-              if (specificGenres.length > 0) {
-                const targetGenre = specificGenres[Math.floor(Math.random() * specificGenres.length)];
-                const genreId = this.tmdbGenreIds[targetGenre];
-                if (genreId) endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
-              }
-              endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-            }
+        if (cat === 'top') {
+          pool = pool.concat(this.curatedMovies);
 
-            const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
-            responses.forEach(data => {
-              if (data && data.results) {
-                const mapped = data.results.filter(i => i && i.poster_path).map(item => {
-                  const isMovie = item.title !== undefined;
-                  return { id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`, tmdbId: item.id, type: isMovie ? 'movie' : 'series', name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name), image: `https://image.tmdb.org/t/p/w500${item.poster_path}`, rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0', runtime: isMovie ? 120 : 45, premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'), genres: (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean).filter(g => g !== 'Drama'), summary: item.overview || 'Nessuna trama.' };
-                });
-                pool = pool.concat(mapped);
+          if (this.tmdbApiKey) {
+            try {
+              const randomPage = forceFullNew ? Math.floor(Math.random() * 4) + 1 : 1;
+              const endpoints = [
+                `https://api.themoviedb.org/3/movie/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`,
+                `https://api.themoviedb.org/3/tv/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`
+              ];
+              const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
+              responses.forEach(data => {
+                if (data && data.results) {
+                  const mapped = data.results.filter(i => i && i.poster_path).map(item => {
+                    const isMovie = item.title !== undefined;
+                    return {
+                      id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
+                      tmdbId: item.id,
+                      type: isMovie ? 'movie' : 'series',
+                      name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
+                      image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                      rating: item.vote_average ? item.vote_average.toFixed(1) : '8.5',
+                      runtime: isMovie ? 120 : 45,
+                      premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
+                      genres: (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean),
+                      summary: item.overview || 'Nessuna trama disponibile.'
+                    };
+                  });
+                  pool = pool.concat(mapped);
+                }
+              });
+            } catch (e) {}
+          }
+        } else if (cat === 'smart') {
+          pool = pool.concat(this.curatedMovies);
+          const userTopGenres = this.getUserTopGenres();
+
+          if (this.tmdbApiKey) {
+            try {
+              const randomPage = forceFullNew ? Math.floor(Math.random() * 4) + 1 : 1;
+              let endpoints = [];
+
+              if (userTopGenres.length > 0) {
+                const topG = userTopGenres.slice(0, 2);
+                const genreIdsToFetch = topG.map(g => this.tmdbGenreIds[g] || Object.keys(this.tmdbGenreMap).find(key => this.tmdbGenreMap[key] === g)).filter(Boolean);
+                
+                if (genreIdsToFetch.length > 0) {
+                  const genreQuery = genreIdsToFetch.join('|');
+                  endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreQuery}&sort_by=popularity.desc&page=${randomPage}`);
+                  endpoints.push(`https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreQuery}&sort_by=popularity.desc&page=${randomPage}`);
+                } else {
+                  endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
+                }
+              } else {
+                endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
               }
-            });
-          } catch (e) {}
+
+              const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
+              responses.forEach(data => {
+                if (data && data.results) {
+                  const mapped = data.results.filter(i => i && i.poster_path).map(item => {
+                    const isMovie = item.title !== undefined;
+                    return {
+                      id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
+                      tmdbId: item.id,
+                      type: isMovie ? 'movie' : 'series',
+                      name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
+                      image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                      rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0',
+                      runtime: isMovie ? 120 : 45,
+                      premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
+                      genres: (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean),
+                      summary: item.overview || 'Nessuna trama.'
+                    };
+                  });
+                  pool = pool.concat(mapped);
+                }
+              });
+            } catch (e) {}
+          }
+        } else {
+          const matchingCults = this.curatedMovies.filter(m => m.genres.some(g => g.toLowerCase().includes(cat.toLowerCase())));
+          pool = pool.concat(matchingCults);
+
+          if (this.tmdbApiKey) {
+            try {
+              const randomPage = forceFullNew ? Math.floor(Math.random() * 5) + 1 : 1;
+              const genreId = this.tmdbGenreIds[cat] || 28;
+              const endpoints = [
+                `https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`,
+                `https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`
+              ];
+              const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
+              responses.forEach(data => {
+                if (data && data.results) {
+                  const mapped = data.results.filter(i => i && i.poster_path).map(item => {
+                    const isMovie = item.title !== undefined;
+                    return {
+                      id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
+                      tmdbId: item.id,
+                      type: isMovie ? 'movie' : 'series',
+                      name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
+                      image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                      rating: item.vote_average ? item.vote_average.toFixed(1) : '7.8',
+                      runtime: isMovie ? 120 : 45,
+                      premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
+                      genres: (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean),
+                      summary: item.overview || 'Nessuna trama disponibile.'
+                    };
+                  });
+                  pool = pool.concat(mapped);
+                }
+              });
+            } catch (e) {}
+          }
         }
-        pool = pool.concat([...this.curatedMovies].sort(() => 0.5 - Math.random()));
-        const uniqueList = []; const seenKeys = new Set(); const seenNormTitles = new Set();
+
+        const uniqueList = [];
+        const seenKeys = new Set();
+        const seenNormTitles = new Set();
+
         pool.forEach(item => {
           if (item && item.id && item.name && item.image) {
-            const idStr = String(item.id); const norm = this.normalizeTitle(item.name);
-            if (!trackedKeys.has(idStr) && !trackedTitles.has(norm) && !this.dismissedIds.has(idStr) && !seenKeys.has(idStr) && !seenNormTitles.has(norm)) {
-              seenKeys.add(idStr); seenNormTitles.add(norm); uniqueList.push(item);
+            const idStr = String(item.id);
+            const norm = this.normalizeTitle(item.name);
+
+            if (!trackedKeys.has(idStr) && 
+                !trackedTitles.has(norm) && 
+                !this.dismissedIds.has(idStr) && 
+                !seenKeys.has(idStr) && 
+                !seenNormTitles.has(norm)) {
+              
+              seenKeys.add(idStr);
+              seenNormTitles.add(norm);
+              uniqueList.push(item);
             }
           }
         });
+
         this.candidateShowPool = uniqueList.sort(() => 0.5 - Math.random());
       },
 
       async getNextReplacementShow(excludeIds = []) {
         const excludeSet = new Set([...excludeIds.map(String), ...Object.keys(this.trackedShows), ...Array.from(this.dismissedIds)]);
         const onScreenTitles = new Set(this.displayedDiscoverShows.map(s => this.normalizeTitle(s.name)));
+        
         for (let i = 0; i < this.candidateShowPool.length; i++) {
           const candidate = this.candidateShowPool[i];
-          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(this.normalizeTitle(candidate.name))) {
-            this.candidateShowPool.splice(i, 1); return candidate;
+          const norm = this.normalizeTitle(candidate.name);
+          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(norm)) {
+            this.candidateShowPool.splice(i, 1);
+            return candidate;
           }
         }
+
         await this.buildSmartCandidatePool(true);
         for (let i = 0; i < this.candidateShowPool.length; i++) {
           const candidate = this.candidateShowPool[i];
-          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(this.normalizeTitle(candidate.name))) {
-            this.candidateShowPool.splice(i, 1); return candidate;
+          const norm = this.normalizeTitle(candidate.name);
+          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(norm)) {
+            this.candidateShowPool.splice(i, 1);
+            return candidate;
           }
         }
         return null;
@@ -1295,33 +1572,61 @@
         const refreshIcon = document.getElementById('icon-refresh-discover');
 
         if (refreshIcon) refreshIcon.classList.add('fa-spin');
-        discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin text-brand-400 mr-2 text-base"></i> Generazione proposte in corso...</div>`;
-        if (forceReload) { this.candidateShowPool = []; this.displayedDiscoverShows = []; }
+        
+        discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin text-brand-400 mr-2 text-base"></i> Caricamento proposte per te...</div>`;
+
+        if (forceReload) {
+          this.candidateShowPool = [];
+          this.displayedDiscoverShows = [];
+        }
+
         await this.buildSmartCandidatePool(forceReload);
 
-        const specificGenres = this.getUserTopSpecificGenres();
+        const userTopGenres = this.getUserTopGenres();
         if (hintEl) {
           if (this.discoverCategory === 'smart') {
-            hintEl.innerHTML = specificGenres.length > 0 ? `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato a: <b class="text-slate-200">${specificGenres.slice(0, 2).join(', ')}</b>` : 'Proposte popolari e cult';
-          } else { hintEl.textContent = `Categoria: ${this.discoverCategory}`; }
-        }
-
-        this.displayedDiscoverShows = [];
-        const seenNormTitles = new Set();
-        while (this.displayedDiscoverShows.length < 10 && this.candidateShowPool.length > 0) {
-          const item = this.candidateShowPool.shift();
-          const idStr = String(item.id); const norm = this.normalizeTitle(item.name);
-          if (!this.trackedShows[idStr] && !this.dismissedIds.has(idStr) && !seenNormTitles.has(norm)) {
-            seenNormTitles.add(norm); this.displayedDiscoverShows.push(item);
+            if (userTopGenres.length > 0) {
+              hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato ai tuoi titoli: <b class="text-slate-200">${userTopGenres.slice(0, 2).join(', ')}</b>`;
+            } else {
+              hintEl.textContent = 'Proposte basate sulle serie e i film che aggiungi';
+            }
+          } else if (this.discoverCategory === 'top') {
+            hintEl.innerHTML = `<i class="fa-solid fa-crown text-amber-400 mr-1"></i> Pietre miliari e film più premiati della storia`;
+          } else {
+            hintEl.textContent = `Categoria attiva: ${this.discoverCategory}`;
           }
         }
-        if (refreshIcon) setTimeout(() => refreshIcon.classList.remove('fa-spin'), 350);
+
+        const initialTargetCount = 10;
+        this.displayedDiscoverShows = [];
+        const seenNormTitles = new Set();
+
+        while (this.displayedDiscoverShows.length < initialTargetCount && this.candidateShowPool.length > 0) {
+          const item = this.candidateShowPool.shift();
+          const idStr = String(item.id);
+          const norm = this.normalizeTitle(item.name);
+
+          if (!this.trackedShows[idStr] && !this.dismissedIds.has(idStr) && !seenNormTitles.has(norm)) {
+            seenNormTitles.add(norm);
+            this.displayedDiscoverShows.push(item);
+          }
+        }
+
+        if (refreshIcon) {
+          setTimeout(() => refreshIcon.classList.remove('fa-spin'), 350);
+        }
+
         this.renderDiscoverGrid();
       },
 
       renderDiscoverGrid() {
         const discoverGrid = document.getElementById('discover-cards-grid');
-        if (this.displayedDiscoverShows.length === 0) { discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 text-sm">Nessun altro titolo disponibile in questa categoria.</div>`; return; }
+        
+        if (this.displayedDiscoverShows.length === 0) {
+          discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 text-sm">Nessun altro titolo disponibile in questa categoria. Prova a cliccare su "Genera Nuovi Titoli" o seleziona un'altra categoria in alto.</div>`;
+          return;
+        }
+
         discoverGrid.innerHTML = this.displayedDiscoverShows.map((item) => this.generateDiscoverCardHTML(item)).join('');
       },
 
@@ -1330,6 +1635,7 @@
         const isMovie = item.type === 'movie' || String(item.id).startsWith('m_') || String(item.id).startsWith('tmdb_m_');
         const img = item.image ? (item.image.medium || item.image.original || item.image) : '';
         const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '8.2');
+        const year = item.premiered ? item.premiered.slice(0, 4) : '';
         const genre = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
 
         return `
@@ -1341,14 +1647,19 @@
               <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-accent text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-star text-[10px]"></i> ${rating}</div>
             </div>
             <div class="p-3 flex-1 flex flex-col justify-between gap-2">
-              <div><h4 class="font-bold text-sm text-slate-200 line-clamp-1 cursor-pointer group-hover:text-brand-400 transition-colors" onclick="app.inspectItemFromDiscover('${item.id}')">${item.name}</h4><span class="text-[11px] text-slate-400">${item.premiered ? item.premiered.slice(0,4) + ' • ' : ''}${genre}</span></div>
+              <div><h4 class="font-bold text-sm text-slate-200 line-clamp-1 cursor-pointer group-hover:text-brand-400 transition-colors" onclick="app.inspectItemFromDiscover('${item.id}')">${item.name}</h4><span class="text-[11px] text-slate-400">${year ? year + ' • ' : ''}${genre}</span></div>
               <button onclick="app.quickAddAndReplaceItem('${item.id}')" class="w-full py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${isTracked ? 'bg-surface-elevated text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}"><i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i><span>${isTracked ? 'In Lista' : 'Aggiungi'}</span></button>
             </div>
           </div>
         `;
       },
 
-      async dismissAndReplaceItem(itemId) { this.dismissedIds.add(String(itemId)); this.showToast("Titolo nascosto", "fa-eye-slash"); await this.replaceCardOnScreen(itemId); },
+      async dismissAndReplaceItem(itemId) {
+        this.dismissedIds.add(String(itemId));
+        this.showToast("Titolo nascosto", "fa-eye-slash");
+        await this.replaceCardOnScreen(itemId);
+      },
+
       async quickAddAndReplaceItem(itemId) {
         const targetItem = this.displayedDiscoverShows.find(s => String(s.id) === String(itemId));
         if (targetItem) await this.trackItem(targetItem);
@@ -1362,59 +1673,176 @@
         const currentOnScreenIds = this.displayedDiscoverShows.map(s => s.id);
         const replacement = await this.getNextReplacementShow(currentOnScreenIds);
         const showIndex = this.displayedDiscoverShows.findIndex(s => String(s.id) === String(itemId));
-        if (showIndex !== -1) { if (replacement) this.displayedDiscoverShows[showIndex] = replacement; else this.displayedDiscoverShows.splice(showIndex, 1); }
+        if (showIndex !== -1) {
+          if (replacement) this.displayedDiscoverShows[showIndex] = replacement;
+          else this.displayedDiscoverShows.splice(showIndex, 1);
+        }
         setTimeout(() => {
           if (replacement) {
-            const tempContainer = document.createElement('div'); tempContainer.innerHTML = this.generateDiscoverCardHTML(replacement);
-            const newCardNode = tempContainer.firstElementChild; newCardNode.classList.add('opacity-0', 'scale-90', 'transition-all', 'duration-300');
-            cardElement.replaceWith(newCardNode); requestAnimationFrame(() => newCardNode.classList.remove('opacity-0', 'scale-90'));
-          } else { cardElement.remove(); }
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = this.generateDiscoverCardHTML(replacement);
+            const newCardNode = tempContainer.firstElementChild;
+            newCardNode.classList.add('opacity-0', 'scale-90', 'transition-all', 'duration-300');
+            cardElement.replaceWith(newCardNode);
+            requestAnimationFrame(() => newCardNode.classList.remove('opacity-0', 'scale-90'));
+          } else {
+            cardElement.remove();
+          }
         }, 200);
       },
 
       async inspectItemFromDiscover(itemId) {
         const idStr = String(itemId);
-        if (this.trackedShows[idStr]) { this.openItemModalById(idStr); } 
-        else {
+        if (this.trackedShows[idStr]) {
+          this.openItemModalById(idStr);
+        } else {
           const item = this.displayedDiscoverShows.find(s => String(s.id) === idStr) || this.candidateShowPool.find(s => String(s.id) === idStr);
-          if (item) { const full = await this.fetchItemDetails(item); this.openItemModalExternal(full); }
+          if (item) {
+            const full = await this.fetchItemDetails(item);
+            this.openItemModalExternal(full);
+          }
         }
       },
 
-      openDataModal() { this.updateTmdbIndicator(); document.getElementById('data-modal').classList.remove('hidden'); },
-      closeDataModal() { document.getElementById('data-modal').classList.add('hidden'); },
+      // ==========================================
+      // ====== SEZIONE: BACKUP & IMPOSTAZIONI ====
+      // ==========================================
+      openDataModal() {
+        this.updateTmdbIndicator();
+        document.getElementById('data-modal').classList.remove('hidden');
+      },
+
+      closeDataModal() {
+        document.getElementById('data-modal').classList.add('hidden');
+      },
+
+      saveTmdbKey() {
+        const input = document.getElementById('tmdb-api-key-input');
+        const key = input.value.trim();
+        this.tmdbApiKey = key;
+        localStorage.setItem('trackmovie_tmdb_key', key);
+        this.updateTmdbIndicator();
+        this.showToast(key ? "Chiave TMDb salvata e attivata!" : "Chiave TMDb rimossa", "fa-key");
+        this.refreshDiscoverFeed(true);
+      },
+
+      updateTmdbIndicator() {
+        const input = document.getElementById('tmdb-api-key-input');
+        if (input) input.value = this.tmdbApiKey;
+
+        const dot = document.getElementById('tmdb-indicator-dot');
+        const text = document.getElementById('tmdb-indicator-text');
+        const modalBadge = document.getElementById('tmdb-badge-modal');
+
+        if (this.tmdbApiKey) {
+          if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse";
+          if (text) text.textContent = "TMDb Attivo";
+          if (modalBadge) {
+            modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            modalBadge.textContent = "Attiva";
+          }
+        } else {
+          if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-amber-400 mr-2";
+          if (text) text.textContent = "TMDb Non configurato";
+          if (modalBadge) {
+            modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
+            modalBadge.textContent = "Non attiva";
+          }
+        }
+      },
+
+      cleanDuplicateTrackedShows(notify = false) {
+        const seenNames = new Map();
+        let removedCount = 0;
+
+        for (const [id, item] of Object.entries(this.trackedShows)) {
+          const norm = this.normalizeTitle(item.name);
+          if (seenNames.has(norm)) {
+            const existingId = seenNames.get(norm);
+            const existingItem = this.trackedShows[existingId];
+            
+            const existingProgress = (existingItem.watched ? 1 : 0) + Object.keys(existingItem.watchedEpisodes || {}).length;
+            const currentProgress = (item.watched ? 1 : 0) + Object.keys(item.watchedEpisodes || {}).length;
+
+            if (currentProgress > existingProgress) {
+              delete this.trackedShows[existingId];
+              seenNames.set(norm, id);
+            } else {
+              delete this.trackedShows[id];
+            }
+            removedCount++;
+          } else {
+            seenNames.set(norm, id);
+          }
+        }
+
+        if (removedCount > 0) {
+          this.saveToStorage();
+          this.renderWatchlist();
+          if (notify) this.showToast(`Rimossi ${removedCount} titoli duplicati!`, 'fa-broom');
+        } else if (notify) {
+          this.showToast("Nessun titolo duplicato trovato.", "fa-check");
+        }
+      },
 
       exportDataJSON() {
-        const dataStr = JSON.stringify(this.trackedShows, null, 2); const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url;
-        link.download = `TrackMovie_Backup_${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+        const dataStr = JSON.stringify(this.trackedShows, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `TrackMovie_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
         this.showToast("Backup scaricato!", "fa-circle-down");
       },
 
       importDataJSON(event) {
-        const file = event.target.files[0]; if (!file) return;
+        const file = event.target.files[0];
+        if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
             const parsed = JSON.parse(e.target.result);
             if (typeof parsed === 'object' && parsed !== null) {
-              this.trackedShows = parsed; this.cleanDuplicateTrackedShows(false); this.saveToStorage(); this.renderAll(); this.refreshDiscoverFeed(true); this.closeDataModal(); this.showToast("Dati importati!");
+              this.trackedShows = parsed;
+              this.cleanDuplicateTrackedShows(false);
+              this.saveToStorage();
+              this.renderAll();
+              this.refreshDiscoverFeed(true);
+              this.closeDataModal();
+              this.showToast("Dati importati!");
             } else throw new Error("Formato non valido");
-          } catch (err) { this.showToast("File JSON non valido", "fa-triangle-exclamation"); }
+          } catch (err) {
+            this.showToast("File JSON non valido", "fa-triangle-exclamation");
+          }
         };
         reader.readAsText(file);
       },
 
       clearAllData() {
         if (window.confirm("Sei sicuro di voler cancellare tutto?")) {
-          this.trackedShows = {}; this.saveToStorage(); this.renderAll(); this.refreshDiscoverFeed(true); this.closeDataModal(); this.showToast("Dati azzerati", "fa-trash");
+          this.trackedShows = {};
+          this.saveToStorage();
+          this.renderAll();
+          this.refreshDiscoverFeed(true);
+          this.closeDataModal();
+          this.showToast("Dati azzerati", "fa-trash");
         }
       },
 
-      renderAll() { this.renderWatchlist(); this.updateStats(); this.updateWatchlistCounts(); }
+      renderAll() {
+        this.renderWatchlist();
+        this.updateStats();
+        this.updateWatchlistCounts();
+      }
     };
 
-    window.addEventListener('DOMContentLoaded', () => { app.init(); });
+    window.addEventListener('DOMContentLoaded', () => {
+      app.init();
+    });
   </script>
 </body>
 </html>
