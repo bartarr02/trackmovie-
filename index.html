@@ -14,9 +14,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0e14">
 
-  <link rel="apple-touch-icon" href="icon.jpg">
-  <link rel="icon" type="image/jpeg" sizes="192x192" href="icon.jpg">
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -548,6 +545,37 @@
           activeBtn.classList.remove('text-slate-400', 'border-transparent');
         }
         this.renderWatchlist();
+      },
+
+      // ==========================================
+      // ====== AZIONI RAPIDE DAL MODAL ===========
+      // (metodi aggiunti: mancavano nel codice originale
+      // e i bottoni corrispondenti non facevano nulla)
+      // ==========================================
+      toggleItemTrackingFromModal() {
+        if (!this.selectedModalShow) return;
+        const idStr = String(this.selectedModalShow.id);
+        if (this.trackedShows[idStr]) {
+          const name = this.trackedShows[idStr].name;
+          if (confirm(`Rimuovere "${name}" dalla lista?`)) {
+            this.untrackItem(idStr);
+            this.closeDetailsModal();
+          }
+        } else {
+          this.trackItem(this.selectedModalShow).then(() => {
+            if (this.selectedModalShow) this.refreshModalView();
+          });
+        }
+      },
+
+      markAllModal() {
+        if (!this.selectedModalShow) return;
+        const idStr = String(this.selectedModalShow.id);
+        if (!this.trackedShows[idStr]) {
+          this.showToast("Aggiungi prima il titolo alla lista.", "fa-triangle-exclamation");
+          return;
+        }
+        this.markAll(idStr);
       },
 
       togglePauseModal() {
