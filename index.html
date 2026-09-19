@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
+  <!-- ========================================== -->
+  <!-- ============ HEAD & LIBRERIE ============= -->
+  <!-- ========================================== -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TrackMovie — Film e Serie TV</title>
 
-  <!-- Metadati PWA e Home Screen Mobile -->
   <meta name="apple-mobile-web-app-title" content="TrackMovie">
   <meta name="application-name" content="TrackMovie">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0e14">
 
-  <!-- Icona personalizzata -->
   <link rel="apple-touch-icon" href="icon.jpg">
   <link rel="icon" type="image/jpeg" sizes="192x192" href="icon.jpg">
 
@@ -28,55 +29,31 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#ecfeff',
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0891b2',
-            },
+            brand: { 50: '#ecfeff', 400: '#22d3ee', 500: '#06b6d4', 600: '#0891b2' },
             accent: '#f59e0b',
-            surface: {
-              DEFAULT: '#121620',
-              card: '#181e2b',
-              elevated: '#1f2737',
-              border: '#2a3449'
-            }
+            surface: { DEFAULT: '#121620', card: '#181e2b', elevated: '#1f2737', border: '#2a3449' }
           },
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          }
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] }
         }
       }
     }
   </script>
 
   <style>
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0f131a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #2a3449;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #06b6d4;
-    }
-    .tap-highlight-transparent {
-      -webkit-tap-highlight-color: transparent;
-    }
-    .modal-backdrop {
-      backdrop-filter: blur(8px);
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f131a; }
+    ::-webkit-scrollbar-thumb { background: #2a3449; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+    .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+    .modal-backdrop { backdrop-filter: blur(8px); }
   </style>
 </head>
 
 <body class="bg-[#0b0e14] text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-black">
 
+  <!-- ========================================== -->
+  <!-- ============= HEADER & MENU ============== -->
+  <!-- ========================================== -->
   <header class="sticky top-0 z-30 bg-[#0b0e14]/90 backdrop-blur-md border-b border-surface-border">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 cursor-pointer" onclick="app.setTab('watchlist')">
@@ -90,9 +67,9 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button onclick="app.openSearchModal()" class="flex items-center gap-2 bg-surface-elevated hover:bg-surface-border border border-surface-border text-slate-300 px-3.5 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm cursor-pointer">
+        <button onclick="app.setTab('search')" class="flex items-center gap-2 bg-surface-elevated hover:bg-surface-border border border-surface-border text-slate-300 px-3.5 py-2 rounded-xl text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm cursor-pointer">
           <i class="fa-solid fa-magnifying-glass text-brand-400"></i>
-          <span class="hidden md:inline font-medium">Cerca qualsiasi film o serie...</span>
+          <span class="hidden md:inline font-medium">Cerca...</span>
         </button>
 
         <button onclick="app.openDataModal()" title="Impostazioni, TMDb & Backup" class="w-10 h-10 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border flex items-center justify-center text-slate-300 hover:text-white transition cursor-pointer">
@@ -107,24 +84,19 @@
     <div class="flex items-center justify-between border-b border-surface-border pb-4 mb-6">
       <nav class="flex space-x-1 sm:space-x-2 bg-surface p-1 rounded-2xl border border-surface-border text-sm overflow-x-auto">
         <button onclick="app.setTab('watchlist')" id="tab-btn-watchlist" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-brand-400 bg-surface-elevated shadow-sm">
-          <i class="fa-solid fa-layer-group"></i>
-          <span>La mia Lista</span>
-          <span id="badge-watching-count" class="text-xs bg-brand-500/20 text-brand-400 px-1.5 py-0.2 rounded-full ml-1">0</span>
+          <i class="fa-solid fa-layer-group"></i> <span>La mia Lista</span>
         </button>
-
+        <button onclick="app.setTab('search')" id="tab-btn-search" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200">
+          <i class="fa-solid fa-magnifying-glass"></i> <span>Cerca</span>
+        </button>
         <button onclick="app.setTab('calendar')" id="tab-btn-calendar" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200">
-          <i class="fa-regular fa-calendar-days"></i>
-          <span>In Arrivo</span>
+          <i class="fa-regular fa-calendar-days"></i> <span>In Arrivo</span>
         </button>
-
         <button onclick="app.setTab('stats')" id="tab-btn-stats" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200">
-          <i class="fa-solid fa-chart-pie"></i>
-          <span>Statistiche</span>
+          <i class="fa-solid fa-chart-pie"></i> <span>Statistiche</span>
         </button>
-
         <button onclick="app.setTab('discover')" id="tab-btn-discover" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200">
-          <i class="fa-solid fa-fire"></i>
-          <span>Esplora</span>
+          <i class="fa-solid fa-fire"></i> <span>Esplora</span>
         </button>
       </nav>
 
@@ -134,17 +106,25 @@
       </div>
     </div>
 
-    <!-- VIEW 1: WATCHLIST -->
+    <!-- ========================================== -->
+    <!-- ============= SEZIONE: LISTA ============= -->
+    <!-- ========================================== -->
     <section id="view-watchlist" class="space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-surface-border">
-        <div class="flex flex-wrap items-center gap-1 text-xs sm:text-sm">
-          <button onclick="app.setListFilter('all')" id="filter-all" class="list-filter px-3 py-1.5 rounded-lg font-medium bg-brand-500/20 text-brand-400 border border-brand-500/30">Tutti</button>
-          <button onclick="app.setListFilter('movie')" id="filter-movie" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">Film</button>
-          <button onclick="app.setListFilter('series')" id="filter-series" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">Serie TV</button>
-          <span class="text-slate-600 px-1">|</span>
-          <button onclick="app.setListFilter('watching')" id="filter-watching" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">In corso</button>
-          <button onclick="app.setListFilter('plan')" id="filter-plan" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">Da vedere</button>
-          <button onclick="app.setListFilter('finished')" id="filter-finished" class="list-filter px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white">Visti</button>
+      <div class="bg-surface p-3 rounded-2xl border border-surface-border space-y-3">
+        <!-- RIGA 1: FILTRO TIPO -->
+        <div class="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto pb-1">
+          <span class="text-slate-500 font-bold uppercase tracking-wider mr-2 text-[10px]">Tipo:</span>
+          <button onclick="app.setFilterType('all')" id="filter-type-all" class="filter-type px-3 py-1.5 rounded-lg font-medium bg-brand-500/20 text-brand-400 border border-brand-500/30">Tutto</button>
+          <button onclick="app.setFilterType('movie')" id="filter-type-movie" class="filter-type px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Film</button>
+          <button onclick="app.setFilterType('series')" id="filter-type-series" class="filter-type px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Serie TV</button>
+        </div>
+        <!-- RIGA 2: FILTRO STATO -->
+        <div class="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto pt-2 border-t border-surface-border/50">
+          <span class="text-slate-500 font-bold uppercase tracking-wider mr-2 text-[10px]">Stato:</span>
+          <button onclick="app.setFilterStatus('all')" id="filter-status-all" class="filter-status px-3 py-1.5 rounded-lg font-medium bg-brand-500/20 text-brand-400 border border-brand-500/30">Tutti</button>
+          <button onclick="app.setFilterStatus('watching')" id="filter-status-watching" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">In corso</button>
+          <button onclick="app.setFilterStatus('plan')" id="filter-status-plan" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Da vedere</button>
+          <button onclick="app.setFilterStatus('finished')" id="filter-status-finished" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Visti</button>
         </div>
       </div>
 
@@ -155,15 +135,46 @@
         <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surface-elevated flex items-center justify-center text-slate-500 text-2xl">
           <i class="fa-solid fa-film"></i>
         </div>
-        <h3 class="text-lg font-bold text-slate-200">La tua libreria è vuota</h3>
-        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Cerca qualsiasi film o serie al mondo per iniziare a tracciare i tuoi progressi e gusti.</p>
-        <button onclick="app.openSearchModal()" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-500 hover:bg-brand-400 text-slate-950 transition cursor-pointer">
-          <i class="fa-solid fa-plus mr-2"></i>Cerca un film o una serie
+        <h3 class="text-lg font-bold text-slate-200">Nessun titolo corrisponde ai filtri</h3>
+        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Modifica i filtri qui sopra o vai nella scheda Ricerca per aggiungere nuovi titoli.</p>
+        <button onclick="app.setTab('search')" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-500 hover:bg-brand-400 text-slate-950 transition cursor-pointer">
+          <i class="fa-solid fa-magnifying-glass mr-2"></i>Vai alla Ricerca
         </button>
       </div>
     </section>
 
-    <!-- VIEW 2: STATISTICHE -->
+    <!-- ========================================== -->
+    <!-- ============ SEZIONE: RICERCA ============ -->
+    <!-- ========================================== -->
+    <section id="view-search" class="hidden space-y-6">
+      <div class="bg-surface rounded-3xl border border-surface-border p-4 sm:p-6 shadow-xl flex flex-col gap-4">
+        
+        <div class="flex items-center gap-3 bg-surface-elevated p-3 rounded-2xl border border-surface-border focus-within:border-brand-500 transition-colors">
+          <i class="fa-solid fa-magnifying-glass text-brand-400 text-lg ml-2"></i>
+          <input type="text" id="main-search-input" placeholder="Cerca titoli o attori..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
+        </div>
+
+        <div class="flex items-center gap-2 justify-center">
+          <button onclick="app.setSearchMode('title')" id="search-mode-title" class="search-mode-btn px-4 py-2 rounded-xl text-sm font-bold transition bg-brand-500 text-slate-950 shadow-sm">
+            <i class="fa-solid fa-film mr-1"></i> Titolo
+          </button>
+          <button onclick="app.setSearchMode('actor')" id="search-mode-actor" class="search-mode-btn px-4 py-2 rounded-xl text-sm font-bold transition bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
+            <i class="fa-solid fa-user mr-1"></i> Attore / Regista
+          </button>
+        </div>
+      </div>
+
+      <div id="main-search-results" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="md:col-span-2 text-center py-16 text-slate-500 text-sm">
+          <i class="fa-solid fa-keyboard text-4xl mb-3 text-surface-border"></i><br>
+          Digita qualcosa per iniziare la ricerca.
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ========== SEZIONE: STATISTICHE ========== -->
+    <!-- ========================================== -->
     <section id="view-stats" class="hidden space-y-6">
       <div class="relative overflow-hidden bg-gradient-to-br from-surface to-[#162032] p-6 sm:p-8 rounded-3xl border border-surface-border shadow-xl">
         <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -190,57 +201,36 @@
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <!-- Contatori -->
         <div class="bg-surface p-4 rounded-2xl border border-surface-border flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-clapperboard"></i>
-          </div>
-          <div>
-            <span class="text-[11px] text-slate-400 uppercase font-semibold">Film Visti</span>
-            <h4 id="stat-movies-count" class="text-xl font-bold text-white">0</h4>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg"><i class="fa-solid fa-clapperboard"></i></div>
+          <div><span class="text-[11px] text-slate-400 uppercase font-semibold">Film Visti</span><h4 id="stat-movies-count" class="text-xl font-bold text-white">0</h4></div>
         </div>
-
         <div class="bg-surface p-4 rounded-2xl border border-surface-border flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-tv"></i>
-          </div>
-          <div>
-            <span class="text-[11px] text-slate-400 uppercase font-semibold">Episodi Visti</span>
-            <h4 id="stat-episodes-count" class="text-xl font-bold text-white">0</h4>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-lg"><i class="fa-solid fa-tv"></i></div>
+          <div><span class="text-[11px] text-slate-400 uppercase font-semibold">Episodi Visti</span><h4 id="stat-episodes-count" class="text-xl font-bold text-white">0</h4></div>
         </div>
-
         <div class="bg-surface p-4 rounded-2xl border border-surface-border flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-trophy"></i>
-          </div>
-          <div>
-            <span class="text-[11px] text-slate-400 uppercase font-semibold">Serie Concluse</span>
-            <h4 id="stat-finished-count" class="text-xl font-bold text-white">0</h4>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg"><i class="fa-solid fa-trophy"></i></div>
+          <div><span class="text-[11px] text-slate-400 uppercase font-semibold">Serie Concluse</span><h4 id="stat-finished-count" class="text-xl font-bold text-white">0</h4></div>
         </div>
-
         <div class="bg-surface p-4 rounded-2xl border border-surface-border flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-bookmark"></i>
-          </div>
-          <div>
-            <span class="text-[11px] text-slate-400 uppercase font-semibold">Totale Titoli</span>
-            <h4 id="stat-total-shows" class="text-xl font-bold text-white">0</h4>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg"><i class="fa-solid fa-bookmark"></i></div>
+          <div><span class="text-[11px] text-slate-400 uppercase font-semibold">Totale Titoli</span><h4 id="stat-total-shows" class="text-xl font-bold text-white">0</h4></div>
         </div>
       </div>
 
       <div class="bg-surface p-6 rounded-2xl border border-surface-border">
         <h3 class="font-bold text-base text-slate-200 mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-chart-column text-brand-400"></i>
-          Il tuo profilo d'ascolto (Generi)
+          <i class="fa-solid fa-chart-column text-brand-400"></i> I tuoi generi preferiti
         </h3>
         <div id="genres-bars-container" class="space-y-3"></div>
       </div>
     </section>
 
-    <!-- VIEW 3: CALENDARIO -->
+    <!-- ========================================== -->
+    <!-- =========== SEZIONE: CALENDARIO ========== -->
+    <!-- ========================================== -->
     <section id="view-calendar" class="hidden space-y-4">
       <div class="bg-surface p-5 rounded-2xl border border-surface-border flex items-center justify-between">
         <div>
@@ -249,94 +239,81 @@
         </div>
         <i class="fa-regular fa-calendar-check text-2xl text-brand-400"></i>
       </div>
-
       <div id="calendar-schedule-container" class="space-y-3"></div>
     </section>
 
-    <!-- VIEW 4: ESPLORA -->
+    <!-- ========================================== -->
+    <!-- ============= SEZIONE: ESPLORA =========== -->
+    <!-- ========================================== -->
     <section id="view-discover" class="hidden space-y-6">
       <div class="bg-gradient-to-r from-surface to-surface-elevated p-6 rounded-3xl border border-surface-border flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-bold text-white">Scopri nuovi Film e Serie</h2>
-          <p class="text-sm text-slate-400">Proposte fresche basate in tempo reale sulle scelte della tua libreria.</p>
+          <p class="text-sm text-slate-400">Lasciati ispirare dai tuoi generi preferiti o dai grandi classici.</p>
         </div>
         <div class="flex items-center gap-2 w-full md:w-auto">
-          <button id="btn-refresh-discover" onclick="app.refreshDiscoverFeed(true)" class="px-4 py-3 rounded-xl bg-surface-elevated hover:bg-surface-border text-slate-300 hover:text-white font-semibold text-xs border border-surface-border transition flex items-center gap-2 cursor-pointer active:scale-95">
+          <button onclick="app.refreshDiscoverFeed(true)" class="w-full px-4 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
             <i id="icon-refresh-discover" class="fa-solid fa-rotate"></i>
-            <span>Aggiorna tutti</span>
-          </button>
-          <button onclick="app.openSearchModal()" class="flex-1 md:flex-none px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold transition flex items-center justify-center gap-2 text-xs cursor-pointer">
-            <i class="fa-solid fa-magnifying-glass"></i> Cerca
+            <span>Genera Nuovi Titoli</span>
           </button>
         </div>
       </div>
 
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <button onclick="app.setDiscoverCategory('smart')" id="disc-cat-smart" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-brand-500 text-slate-950">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> I tuoi gusti
+        </button>
+        <button onclick="app.setDiscoverCategory('top')" id="disc-cat-top" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">
+          <i class="fa-solid fa-crown mr-1 text-amber-400"></i> Cult & Classici
+        </button>
+        <button onclick="app.setDiscoverCategory('Sci-Fi')" id="disc-cat-Sci-Fi" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">Fantascienza</button>
+        <button onclick="app.setDiscoverCategory('Crime')" id="disc-cat-Crime" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">Crime & Thriller</button>
+        <button onclick="app.setDiscoverCategory('Action')" id="disc-cat-Action" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">Azione</button>
+        <button onclick="app.setDiscoverCategory('Comedy')" id="disc-cat-Comedy" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">Commedia</button>
+        <button onclick="app.setDiscoverCategory('Drama')" id="disc-cat-Drama" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-surface-elevated text-slate-400 hover:text-white border border-surface-border">Drammatico</button>
+      </div>
+
       <div class="flex items-center justify-between">
-        <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-wand-magic-sparkles text-brand-400"></i>
-          <span>Consigliati per te</span>
-        </h3>
-        <span id="discover-flavor-hint" class="text-xs text-slate-400 font-medium"></span>
+        <span id="discover-flavor-hint" class="text-xs text-slate-400"></span>
       </div>
 
       <div id="discover-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
     </section>
   </main>
 
-  <!-- Mobile Bottom Nav -->
+  <!-- ========================================== -->
+  <!-- ========== BOTTOM NAV (MOBILE) =========== -->
+  <!-- ========================================== -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0b0e14]/95 backdrop-blur-md border-t border-surface-border py-2 px-6 flex justify-around items-center">
     <button onclick="app.setTab('watchlist')" id="mobile-nav-watchlist" class="flex flex-col items-center gap-1 text-brand-400">
-      <i class="fa-solid fa-layer-group text-lg"></i>
-      <span class="text-[10px] font-semibold">Lista</span>
+      <i class="fa-solid fa-layer-group text-lg"></i> <span class="text-[10px] font-semibold">Lista</span>
     </button>
     <button onclick="app.setTab('calendar')" id="mobile-nav-calendar" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-      <i class="fa-regular fa-calendar-days text-lg"></i>
-      <span class="text-[10px] font-semibold">In arrivo</span>
+      <i class="fa-regular fa-calendar-days text-lg"></i> <span class="text-[10px] font-semibold">In arrivo</span>
     </button>
-    <button onclick="app.openSearchModal()" class="flex flex-col items-center gap-1 -mt-5 bg-gradient-to-tr from-brand-600 to-brand-400 w-12 h-12 rounded-full items-center justify-center text-slate-950 shadow-lg shadow-brand-500/30">
+    <button onclick="app.setTab('search')" id="mobile-nav-search" class="flex flex-col items-center gap-1 -mt-5 bg-gradient-to-tr from-brand-600 to-brand-400 w-12 h-12 rounded-full items-center justify-center text-slate-950 shadow-lg shadow-brand-500/30">
       <i class="fa-solid fa-magnifying-glass text-lg"></i>
     </button>
     <button onclick="app.setTab('stats')" id="mobile-nav-stats" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-      <i class="fa-solid fa-chart-pie text-lg"></i>
-      <span class="text-[10px] font-semibold">Stats</span>
+      <i class="fa-solid fa-chart-pie text-lg"></i> <span class="text-[10px] font-semibold">Stats</span>
     </button>
     <button onclick="app.setTab('discover')" id="mobile-nav-discover" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-      <i class="fa-solid fa-fire text-lg"></i>
-      <span class="text-[10px] font-semibold">Esplora</span>
+      <i class="fa-solid fa-fire text-lg"></i> <span class="text-[10px] font-semibold">Esplora</span>
     </button>
   </nav>
 
-  <!-- MODAL: SEARCH -->
-  <div id="search-modal" onclick="if(event.target === this) app.closeSearchModal()" class="fixed inset-0 z-50 bg-black/80 modal-backdrop hidden flex items-start justify-center p-4 sm:pt-16">
-    <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-      <div class="p-4 border-b border-surface-border flex items-center gap-3">
-        <i class="fa-solid fa-magnifying-glass text-brand-400 text-lg"></i>
-        <input type="text" id="search-query-input" placeholder="Cerca es. 12 Angry Men, Inception, The Bear..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
-        <button onclick="app.closeSearchModal()" class="text-slate-400 hover:text-white p-2 rounded-lg cursor-pointer">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <div id="search-results-list" class="overflow-y-auto p-4 space-y-3 flex-1">
-        <div class="text-center py-12 text-slate-500 text-sm">
-          Digita il titolo di un film o di una serie TV per iniziare la ricerca.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: SHOW / MOVIE DETAILS -->
+  <!-- ========================================== -->
+  <!-- ======== MODAL: DETTAGLI TITOLO ========== -->
+  <!-- ========================================== -->
   <div id="show-details-modal" onclick="if(event.target === this) app.closeDetailsModal()" class="fixed inset-0 z-50 bg-black/85 modal-backdrop hidden flex items-center justify-center p-2 sm:p-4">
     <div class="relative bg-surface rounded-3xl border border-surface-border w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
       
-      <!-- Pulsante X di chiusura -->
-      <button onclick="app.closeDetailsModal()" class="absolute top-3.5 right-3.5 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-black text-slate-200 hover:text-white flex items-center justify-center transition shadow-lg cursor-pointer tap-highlight-transparent active:scale-90" aria-label="Chiudi finestra">
+      <button onclick="app.closeDetailsModal()" class="absolute top-3.5 right-3.5 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-black text-slate-200 hover:text-white flex items-center justify-center transition shadow-lg cursor-pointer tap-highlight-transparent active:scale-90" aria-label="Chiudi">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <div id="modal-hero" class="relative min-h-[160px] sm:min-h-[220px] bg-cover bg-center flex items-end p-4 sm:p-6">
         <div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent"></div>
-        
         <div class="relative z-10 flex gap-4 items-end w-full pr-10">
           <img id="modal-poster" src="" alt="Poster" class="w-20 sm:w-28 rounded-xl shadow-lg border-2 border-surface-border object-cover aspect-[2/3] bg-surface-elevated flex-shrink-0">
           <div class="flex-1 min-w-0">
@@ -344,9 +321,7 @@
               <span id="modal-type-pill" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30">Serie</span>
               <span id="modal-status-pill" class="text-[10px] font-bold px-2 py-0.5 rounded bg-surface-elevated text-slate-300 border border-surface-border">In corso</span>
               <span id="modal-year" class="text-xs text-slate-400 font-semibold">2023</span>
-              <span id="modal-rating" class="text-xs text-accent font-bold flex items-center gap-1">
-                <i class="fa-solid fa-star"></i> 8.5
-              </span>
+              <span id="modal-rating" class="text-xs text-accent font-bold flex items-center gap-1"><i class="fa-solid fa-star"></i> 8.5</span>
             </div>
             <h2 id="modal-title" class="text-xl sm:text-2xl font-extrabold text-white leading-tight truncate">Titolo</h2>
             <div id="modal-genres" class="flex flex-wrap gap-1.5 mt-2 text-[11px] text-slate-300"></div>
@@ -358,18 +333,15 @@
         <div class="flex flex-wrap gap-2 items-center justify-between">
           <div class="flex items-center gap-2">
             <button id="modal-btn-track" onclick="app.toggleItemTrackingFromModal()" class="px-4 py-2 rounded-xl text-sm font-bold bg-brand-500 hover:bg-brand-400 text-slate-950 transition flex items-center gap-2 cursor-pointer">
-              <i class="fa-solid fa-bookmark"></i>
-              <span id="modal-track-label">Aggiungi alla lista</span>
+              <i class="fa-solid fa-bookmark"></i> <span id="modal-track-label">Aggiungi alla lista</span>
             </button>
             <button id="modal-btn-mark-all" onclick="app.markAllModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-surface-elevated hover:bg-surface-border text-slate-300 transition cursor-pointer">
               <i class="fa-solid fa-check-double mr-1 text-brand-400"></i> Tutto visto
             </button>
           </div>
-
           <div class="w-full sm:w-48 text-right">
             <div class="flex justify-between text-xs text-slate-400 mb-1 font-medium">
-              <span>Avanzamento</span>
-              <span id="modal-progress-percent">0%</span>
+              <span>Avanzamento</span> <span id="modal-progress-percent">0%</span>
             </div>
             <div class="w-full h-2 bg-surface-elevated rounded-full overflow-hidden">
               <div id="modal-progress-fill" class="h-full bg-brand-400 transition-all duration-300" style="width: 0%"></div>
@@ -377,7 +349,13 @@
           </div>
         </div>
 
-        <p id="modal-summary" class="text-xs sm:text-sm text-slate-400 line-clamp-3 leading-relaxed"></p>
+        <p id="modal-summary" class="text-xs sm:text-sm text-slate-300 line-clamp-3 leading-relaxed border-l-2 border-brand-500 pl-3"></p>
+        
+        <!-- INFO CAST E DURATA -->
+        <div class="bg-surface-elevated/40 p-3 rounded-xl border border-surface-border/50 text-xs text-slate-400 space-y-1">
+          <div><span class="font-bold text-slate-200">Durata:</span> <span id="modal-runtime-text"></span></div>
+          <div><span class="font-bold text-slate-200">Cast principale:</span> <span id="modal-cast-text">Nessun dato disponibile</span></div>
+        </div>
 
         <div class="pt-2 flex items-center gap-2 overflow-x-auto pb-1" id="modal-seasons-tabs"></div>
       </div>
@@ -386,57 +364,40 @@
     </div>
   </div>
 
-  <!-- MODAL: SETTINGS & DATA & TMDB KEY -->
+  <!-- ========================================== -->
+  <!-- ======== MODAL: IMPOSTAZIONI & DATI ====== -->
+  <!-- ========================================== -->
   <div id="data-modal" onclick="if(event.target === this) app.closeDataModal()" class="fixed inset-0 z-50 bg-black/80 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="bg-surface rounded-3xl border border-surface-border w-full max-w-md p-6 space-y-5 shadow-2xl overflow-y-auto max-h-[90vh]">
       <div class="flex items-center justify-between border-b border-surface-border pb-3">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-gear text-brand-400"></i> Impostazioni & Dati
-        </h3>
-        <button onclick="app.closeDataModal()" class="text-slate-400 hover:text-white cursor-pointer">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-gear text-brand-400"></i> Impostazioni</h3>
+        <button onclick="app.closeDataModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <div class="bg-surface-elevated/70 p-4 rounded-2xl border border-surface-border space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-brand-400 flex items-center gap-1.5">
-            <i class="fa-solid fa-key"></i> Chiave TMDb (Gratuita)
-          </span>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-400 flex items-center gap-1.5"><i class="fa-solid fa-key"></i> Chiave TMDb</span>
           <span id="tmdb-badge-modal" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300">Non attiva</span>
         </div>
-
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Incolla la tua <b>Chiave API (v3 auth)</b> per sbloccare tutti i film del mondo e abilitare le raccomandazioni TMDb in tempo reale in base ai tuoi generi preferiti.
-        </p>
-
+        <p class="text-xs text-slate-400 leading-relaxed">Inserisci la tua <b>Chiave API</b> per sbloccare tutti i film del mondo e la ricerca per Attori.</p>
         <div class="flex gap-2">
           <input type="text" id="tmdb-api-key-input" placeholder="Incolla chiave TMDb..." class="flex-1 bg-surface border border-surface-border text-white text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-brand-500 font-mono" autocomplete="off">
-          <button onclick="app.saveTmdbKey()" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs transition cursor-pointer">
-            Salva
-          </button>
+          <button onclick="app.saveTmdbKey()" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs transition cursor-pointer">Salva</button>
         </div>
       </div>
 
       <div class="space-y-2.5">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Manutenzione & Backup</span>
-        
         <button onclick="app.cleanDuplicateTrackedShows(true)" class="w-full py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-brand-500/30 text-brand-400 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
-          <i class="fa-solid fa-broom"></i>
-          Rimuovi titoli doppi dalla lista
+          <i class="fa-solid fa-broom"></i> Rimuovi titoli doppi
         </button>
-
         <button onclick="app.exportDataJSON()" class="w-full py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border text-white text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
-          <i class="fa-solid fa-download text-brand-400"></i>
-          Esporta Backup (JSON)
+          <i class="fa-solid fa-download text-brand-400"></i> Esporta Backup (JSON)
         </button>
-
         <label class="w-full py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface-border border border-surface-border text-white text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
-          <i class="fa-solid fa-upload text-emerald-400"></i>
-          Importa Backup (JSON)
+          <i class="fa-solid fa-upload text-emerald-400"></i> Importa Backup (JSON)
           <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="app.importDataJSON(event)">
         </label>
-
         <button onclick="app.clearAllData()" class="w-full py-2 px-4 rounded-xl text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition cursor-pointer">
           Cancella tutti i dati
         </button>
@@ -449,47 +410,44 @@
     <span id="toast-message" class="text-xs sm:text-sm font-semibold">Notifica</span>
   </div>
 
+  <!-- ========================================== -->
+  <!-- =============== JAVASCRIPT =============== -->
+  <!-- ========================================== -->
   <script>
     const app = {
+      // ==== STATO GLOBALE ====
       trackedShows: {},
       tmdbApiKey: '',
       activeTab: 'watchlist',
-      listFilter: 'all',
-      selectedModalShow: null,
-      selectedModalSeason: 1,
+      
+      // Filtri Watchlist (Doppio stato)
+      filterType: 'all',    // 'all', 'movie', 'series'
+      filterStatus: 'all',  // 'all', 'watching', 'plan', 'finished'
+      
+      // Stato Ricerca
+      searchMode: 'title', // 'title' o 'actor'
       searchDebounceTimer: null,
-
+      
+      // Stato Esplora
+      discoverCategory: 'smart',
       displayedDiscoverShows: [],
       candidateShowPool: [],
       dismissedIds: new Set(),
+      
+      // Stato Modal
+      selectedModalShow: null,
+      selectedModalSeason: 1,
 
-      tmdbGenreIds: {
-        'Action': 28, 'Adventure': 12, 'Animation': 16, 'Comedy': 35, 'Crime': 80,
-        'Documentary': 99, 'Drama': 18, 'Family': 10751, 'Fantasy': 14, 'History': 36,
-        'Horror': 27, 'Music': 10402, 'Mystery': 9648, 'Romance': 10749, 'Sci-Fi': 878,
-        'Thriller': 53, 'War': 10752, 'Western': 37,
-        'Action & Adventure': 10759, 'Sci-Fi & Fantasy': 10765
-      },
-
-      tmdbGenreMap: {
-        28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
-        99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History',
-        27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-Fi',
-        10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western',
-        10759: 'Action & Adventure', 10762: 'Kids', 10763: 'News', 10764: 'Reality',
-        10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics'
-      },
+      GENERIC_GENRES: new Set(['Drama', 'Cinema', 'Series']),
+      tmdbGenreIds: { 'Action': 28, 'Adventure': 12, 'Animation': 16, 'Comedy': 35, 'Crime': 80, 'Drama': 18, 'Family': 10751, 'Fantasy': 14, 'History': 36, 'Horror': 27, 'Mystery': 9648, 'Sci-Fi': 878, 'Thriller': 53 },
+      tmdbGenreMap: { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-Fi', 10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western', 10759: 'Action & Adventure', 10762: 'Kids', 10765: 'Sci-Fi & Fantasy' },
 
       curatedMovies: [
-        { id: 'm_12angrymen', type: 'movie', name: '12 Angry Men', image: 'https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg', rating: 9.0, runtime: 96, premiered: '1957', genres: ['Drama', 'Crime'], summary: 'Dodici giurati sono chiamati a decidere sulla sorte di un diciottenne accusato di parricidio in un drammatico confronto a porte chiuse.' },
-        { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Drama', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.' },
-        { id: 'm_inception', type: 'movie', name: 'Inception', image: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', rating: 8.8, runtime: 148, premiered: '2010', genres: ['Sci-Fi', 'Action', 'Thriller'], summary: 'Un abile ladro di segreti nel subconscio deve affrontare una pericolosa missione di innesto di una nuova idea.' },
-        { id: 'm_darkknight', type: 'movie', name: 'The Dark Knight', image: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', rating: 9.0, runtime: 152, premiered: '2008', genres: ['Action', 'Crime', 'Drama'], summary: 'Batman affronta la prova psicologica e fisica più letale contro la follia anarchica del Joker.' },
-        { id: 'm_pulpfiction', type: 'movie', name: 'Pulp Fiction', image: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', rating: 8.9, runtime: 154, premiered: '1994', genres: ['Crime', 'Thriller', 'Drama'], summary: 'Quattro storie di crimine e violenza a Los Angeles intrecciate con dialoghi leggendari.' },
-        { id: 'm_dune2', type: 'movie', name: 'Dune: Part Two', image: 'https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGhkAi0ym92H.jpg', rating: 8.6, runtime: 166, premiered: '2024', genres: ['Sci-Fi', 'Adventure'], summary: 'Paul Atreides stringe alleanza con i Fremen per vendicare la caduta della Casa Atreides su Arrakis.' },
-        { id: 'm_fightclub', type: 'movie', name: 'Fight Club', image: 'https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg', rating: 8.8, runtime: 139, premiered: '1999', genres: ['Drama', 'Thriller'], summary: 'Un impiegato insonne e un misterioso produttore di sapone creano un circolo sovversivo di lotta.' },
-        { id: 'm_parasite', type: 'movie', name: 'Parasite', image: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', rating: 8.5, runtime: 132, premiered: '2019', genres: ['Thriller', 'Comedy', 'Drama'], summary: 'Una famiglia in difficoltà economiche si insinua con l\'inganno nella vita di una ricca famiglia di Seoul.' }
+        { id: 'm_12angrymen', type: 'movie', name: '12 Angry Men', image: 'https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg', rating: 9.0, runtime: 96, premiered: '1957', genres: ['Drama', 'Crime'], summary: 'Dodici giurati sono chiamati a decidere sulla sorte di un diciottenne accusato di parricidio in un drammatico confronto a porte chiuse.', cast: ['Henry Fonda', 'Lee J. Cobb', 'Martin Balsam'] },
+        { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Drama', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.', cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain'] },
+        { id: 'm_inception', type: 'movie', name: 'Inception', image: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', rating: 8.8, runtime: 148, premiered: '2010', genres: ['Sci-Fi', 'Action', 'Thriller'], summary: 'Un abile ladro di segreti nel subconscio deve affrontare una pericolosa missione di innesto di una nuova idea.', cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'] },
       ],
+      curatedShowIds: [169, 82, 431, 305, 1780, 216, 2993, 31086],
 
       normalizeTitle(title) {
         if (!title) return '';
@@ -508,115 +466,35 @@
       loadFromStorage() {
         try {
           const stored = localStorage.getItem('trackmovie_data_v1') || localStorage.getItem('bingetrack_data_v1');
-          if (stored) {
-            this.trackedShows = JSON.parse(stored);
-          }
+          if (stored) this.trackedShows = JSON.parse(stored);
           this.tmdbApiKey = localStorage.getItem('trackmovie_tmdb_key') || '';
-        } catch (e) {
-          console.error("Storage load error:", e);
-          this.trackedShows = {};
-        }
+        } catch (e) { this.trackedShows = {}; }
       },
 
       saveToStorage() {
-        try {
-          localStorage.setItem('trackmovie_data_v1', JSON.stringify(this.trackedShows));
-          this.updateStats();
-          this.updateWatchlistCounts();
-        } catch (e) {
-          console.error("Storage save error:", e);
-        }
-      },
-
-      cleanDuplicateTrackedShows(notify = false) {
-        const seenNames = new Map();
-        let removedCount = 0;
-
-        for (const [id, item] of Object.entries(this.trackedShows)) {
-          const norm = this.normalizeTitle(item.name);
-          if (seenNames.has(norm)) {
-            const existingId = seenNames.get(norm);
-            const existingItem = this.trackedShows[existingId];
-            
-            const existingProgress = (existingItem.watched ? 1 : 0) + Object.keys(existingItem.watchedEpisodes || {}).length;
-            const currentProgress = (item.watched ? 1 : 0) + Object.keys(item.watchedEpisodes || {}).length;
-
-            if (currentProgress > existingProgress) {
-              delete this.trackedShows[existingId];
-              seenNames.set(norm, id);
-            } else {
-              delete this.trackedShows[id];
-            }
-            removedCount++;
-          } else {
-            seenNames.set(norm, id);
-          }
-        }
-
-        if (removedCount > 0) {
-          this.saveToStorage();
-          this.renderWatchlist();
-          if (notify) this.showToast(`Rimossi ${removedCount} titoli duplicati!`, 'fa-broom');
-        } else if (notify) {
-          this.showToast("Nessun titolo duplicato trovato.", "fa-check");
-        }
-      },
-
-      saveTmdbKey() {
-        const input = document.getElementById('tmdb-api-key-input');
-        const key = input.value.trim();
-        this.tmdbApiKey = key;
-        localStorage.setItem('trackmovie_tmdb_key', key);
-        this.updateTmdbIndicator();
-        this.showToast(key ? "Chiave TMDb salvata e attivata!" : "Chiave TMDb rimossa", "fa-key");
-        this.refreshDiscoverFeed(true);
-      },
-
-      updateTmdbIndicator() {
-        const input = document.getElementById('tmdb-api-key-input');
-        if (input) input.value = this.tmdbApiKey;
-
-        const dot = document.getElementById('tmdb-indicator-dot');
-        const text = document.getElementById('tmdb-indicator-text');
-        const modalBadge = document.getElementById('tmdb-badge-modal');
-
-        if (this.tmdbApiKey) {
-          if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse";
-          if (text) text.textContent = "TMDb Attivo";
-          if (modalBadge) {
-            modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-            modalBadge.textContent = "Attiva";
-          }
-        } else {
-          if (dot) dot.className = "inline-block w-2 h-2 rounded-full bg-amber-400 mr-2";
-          if (text) text.textContent = "TMDb Non configurato";
-          if (modalBadge) {
-            modalBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
-            modalBadge.textContent = "Non attiva";
-          }
-        }
+        localStorage.setItem('trackmovie_data_v1', JSON.stringify(this.trackedShows));
+        this.updateStats();
+        this.updateWatchlistCounts();
       },
 
       showToast(msg, icon = 'fa-circle-check') {
         const toast = document.getElementById('toast');
-        const iconEl = document.getElementById('toast-icon');
-        const msgEl = document.getElementById('toast-message');
-        
-        iconEl.className = `fa-solid ${icon} text-brand-400`;
-        msgEl.textContent = msg;
-        
+        document.getElementById('toast-icon').className = `fa-solid ${icon} text-brand-400`;
+        document.getElementById('toast-message').textContent = msg;
         toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
         toast.classList.add('opacity-100', 'translate-y-0');
-
         setTimeout(() => {
           toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
           toast.classList.remove('opacity-100', 'translate-y-0');
         }, 2200);
       },
 
+      // ==========================================
+      // ========== NAVIGAZIONE TAB ===============
+      // ==========================================
       setTab(tabId) {
         this.activeTab = tabId;
-        const tabs = ['watchlist', 'calendar', 'stats', 'discover'];
+        const tabs = ['watchlist', 'search', 'calendar', 'stats', 'discover'];
         
         tabs.forEach(t => {
           const view = document.getElementById(`view-${t}`);
@@ -624,41 +502,96 @@
           const mobBtn = document.getElementById(`mobile-nav-${t}`);
 
           if (t === tabId) {
-            view.classList.remove('hidden');
-            if (navBtn) navBtn.classList.add('bg-surface-elevated', 'text-brand-400', 'shadow-sm');
-            if (navBtn) navBtn.classList.remove('text-slate-400');
-            if (mobBtn) mobBtn.classList.add('text-brand-400');
-            if (mobBtn) mobBtn.classList.remove('text-slate-400');
+            if(view) view.classList.remove('hidden');
+            if (navBtn) navBtn.className = "nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 bg-surface-elevated text-brand-400 shadow-sm";
+            if (mobBtn && t !== 'search') mobBtn.className = "flex flex-col items-center gap-1 text-brand-400";
           } else {
-            view.classList.add('hidden');
-            if (navBtn) navBtn.classList.remove('bg-surface-elevated', 'text-brand-400', 'shadow-sm');
-            if (navBtn) navBtn.classList.add('text-slate-400');
-            if (mobBtn) mobBtn.classList.remove('text-brand-400');
-            if (mobBtn) mobBtn.classList.add('text-slate-400');
+            if(view) view.classList.add('hidden');
+            if (navBtn) navBtn.className = "nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200";
+            if (mobBtn && t !== 'search') mobBtn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200";
           }
         });
 
         if (tabId === 'stats') this.renderStats();
         if (tabId === 'calendar') this.renderCalendar();
         if (tabId === 'watchlist') this.renderWatchlist();
+        if (tabId === 'search') document.getElementById('main-search-input').focus();
       },
 
-      setListFilter(filter) {
-        this.listFilter = filter;
-        document.querySelectorAll('.list-filter').forEach(btn => {
-          btn.classList.remove('bg-brand-500/20', 'text-brand-400', 'border', 'border-brand-500/30');
-          btn.classList.add('text-slate-400');
+      // ==========================================
+      // ======= FILTRI WATCHLIST COMBINATI =======
+      // ==========================================
+      setFilterType(type) {
+        this.filterType = type;
+        document.querySelectorAll('.filter-type').forEach(btn => {
+          btn.classList.remove('bg-brand-500/20', 'text-brand-400', 'border-brand-500/30');
+          btn.classList.add('text-slate-400', 'border-transparent');
         });
-        const activeBtn = document.getElementById(`filter-${filter}`);
+        const activeBtn = document.getElementById(`filter-type-${type}`);
         if (activeBtn) {
-          activeBtn.classList.add('bg-brand-500/20', 'text-brand-400', 'border', 'border-brand-500/30');
-          activeBtn.classList.remove('text-slate-400');
+          activeBtn.classList.add('bg-brand-500/20', 'text-brand-400', 'border-brand-500/30');
+          activeBtn.classList.remove('text-slate-400', 'border-transparent');
         }
         this.renderWatchlist();
       },
 
+      setFilterStatus(status) {
+        this.filterStatus = status;
+        document.querySelectorAll('.filter-status').forEach(btn => {
+          btn.classList.remove('bg-brand-500/20', 'text-brand-400', 'border-brand-500/30');
+          btn.classList.add('text-slate-400', 'border-transparent');
+        });
+        const activeBtn = document.getElementById(`filter-status-${status}`);
+        if (activeBtn) {
+          activeBtn.classList.add('bg-brand-500/20', 'text-brand-400', 'border-brand-500/30');
+          activeBtn.classList.remove('text-slate-400', 'border-transparent');
+        }
+        this.renderWatchlist();
+      },
+
+      // ==========================================
+      // ======= SEZIONE: GESTIONE RICERCA ========
+      // ==========================================
+      setSearchMode(mode) {
+        this.searchMode = mode;
+        const btnTitle = document.getElementById('search-mode-title');
+        const btnActor = document.getElementById('search-mode-actor');
+        const input = document.getElementById('main-search-input');
+
+        if (mode === 'title') {
+          btnTitle.className = "search-mode-btn px-4 py-2 rounded-xl text-sm font-bold transition bg-brand-500 text-slate-950 shadow-sm";
+          btnActor.className = "search-mode-btn px-4 py-2 rounded-xl text-sm font-bold transition bg-surface-elevated text-slate-400 hover:text-white border border-surface-border";
+          input.placeholder = "Cerca titoli es. Inception, Breaking Bad...";
+        } else {
+          btnActor.className = "search-mode-btn px-4 py-2 rounded-xl text-sm font-bold transition bg-brand-500 text-slate-950 shadow-sm";
+          btnTitle.className = "search-mode-btn px-4 py-2 rounded-xl text-sm font-bold transition bg-surface-elevated text-slate-400 hover:text-white border border-surface-border";
+          input.placeholder = "Cerca attore es. Leonardo DiCaprio...";
+        }
+        this.triggerSearch();
+      },
+
+      triggerSearch() {
+        const query = document.getElementById('main-search-input').value;
+        if (!query.trim()) {
+          document.getElementById('main-search-results').innerHTML = `<div class="md:col-span-2 text-center py-16 text-slate-500 text-sm"><i class="fa-solid fa-keyboard text-4xl mb-3 text-surface-border"></i><br>Digita qualcosa per iniziare la ricerca.</div>`;
+          return;
+        }
+
+        document.getElementById('main-search-results').innerHTML = `<div class="md:col-span-2 text-center py-12 text-brand-400 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Ricerca in corso...</div>`;
+
+        clearTimeout(this.searchDebounceTimer);
+        this.searchDebounceTimer = setTimeout(async () => {
+          let results = [];
+          if (this.searchMode === 'title') {
+            results = await this.searchAll(query);
+          } else {
+            results = await this.searchByActor(query);
+          }
+          this.renderSearchResults(results);
+        }, 400);
+      },
+
       async searchAll(query) {
-        if (!query.trim()) return [];
         const qTrim = query.trim();
         let rawResults = [];
 
@@ -672,8 +605,7 @@
                 .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
                 .map(item => {
                   const isMovie = item.media_type === 'movie';
-                  const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean);
-
+                  const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean).filter(g => g !== 'Drama');
                   return {
                     id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
                     tmdbId: item.id,
@@ -683,55 +615,172 @@
                     rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
                     runtime: isMovie ? 120 : 45,
                     premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
-                    genres: genres.length > 0 ? genres : [],
+                    genres: genres.length > 0 ? genres : [isMovie ? 'Cinema' : 'Serie'],
                     summary: item.overview || 'Nessuna trama disponibile.'
                   };
                 });
             }
-          } catch (e) {
-            console.error("TMDb API search error:", e);
-          }
+          } catch (e) {}
         }
 
         const qLower = qTrim.toLowerCase();
-        const movieResults = this.curatedMovies.filter(m => 
-          m.name.toLowerCase().includes(qLower) || 
-          m.genres.some(g => g.toLowerCase().includes(qLower))
-        );
+        const movieResults = this.curatedMovies.filter(m => m.name.toLowerCase().includes(qLower));
 
         let seriesResults = [];
         try {
           const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(qTrim)}`);
           const list = await res.json();
-          seriesResults = list.map(item => {
-            const s = item.show;
-            s.type = 'series';
-            return s;
-          });
+          seriesResults = list.map(item => { const s = item.show; s.type = 'series'; return s; });
         } catch (err) {}
 
         const combined = [...rawResults, ...movieResults, ...seriesResults];
-
         const unique = [];
         const seen = new Set();
         for (const item of combined) {
           const normKey = `${this.normalizeTitle(item.name)}_${item.type}`;
-          if (!seen.has(normKey)) {
-            seen.add(normKey);
-            unique.push(item);
-          }
+          if (!seen.has(normKey)) { seen.add(normKey); unique.push(item); }
         }
-
         return unique;
       },
 
+      async searchByActor(query) {
+        if (!this.tmdbApiKey) {
+          this.showToast("Ricerca attore disponibile solo con chiave TMDb attiva.", "fa-triangle-exclamation");
+          return [];
+        }
+        try {
+          // 1. Cerca la persona
+          const personRes = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${this.tmdbApiKey}&language=it-IT&query=${encodeURIComponent(query)}`);
+          const personData = await personRes.json();
+          if (!personData.results || personData.results.length === 0) return [];
+          
+          const personId = personData.results[0].id; // Prende il primo risultato più rilevante
+          
+          // 2. Cerca i crediti della persona
+          const credRes = await fetch(`https://api.themoviedb.org/3/person/${personId}/combined_credits?api_key=${this.tmdbApiKey}&language=it-IT`);
+          const credData = await credRes.json();
+          
+          const rawResults = (credData.cast || [])
+            .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
+            .sort((a, b) => b.popularity - a.popularity) // Ordina per popolarità
+            .map(item => {
+              const isMovie = item.media_type === 'movie';
+              const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean).filter(g => g !== 'Drama');
+              return {
+                id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
+                tmdbId: item.id,
+                type: isMovie ? 'movie' : 'series',
+                name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
+                image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
+                runtime: isMovie ? 120 : 45,
+                premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
+                genres: genres.length > 0 ? genres : [isMovie ? 'Cinema' : 'Serie'],
+                summary: item.overview || 'Nessuna trama disponibile.',
+                character: item.character || ''
+              };
+            });
+            
+          return rawResults;
+        } catch (e) {
+          console.error(e);
+          return [];
+        }
+      },
+
+      renderSearchResults(items) {
+        const container = document.getElementById('main-search-results');
+        if (items.length === 0) {
+          container.innerHTML = `<div class="md:col-span-2 text-center py-12 text-slate-400 text-sm">Nessun risultato trovato. Verifica lo spelling.</div>`;
+          return;
+        }
+
+        container.innerHTML = items.map(item => {
+          const isTracked = !!this.trackedShows[String(item.id)];
+          const isMovie = item.type === 'movie';
+          const imgUrl = item.image ? (item.image.medium || item.image) : 'https://placehold.co/100x150/1f2737/ffffff?text=' + encodeURIComponent(item.name);
+          const year = item.premiered ? item.premiered.slice(0, 4) : 'N/A';
+          const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
+          const genreDisplay = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
+
+          // Se è una ricerca attore, mostra il ruolo
+          const roleHtml = item.character ? `<div class="text-[10px] text-brand-400 font-medium truncate mt-1"><i class="fa-solid fa-mask mr-1"></i>Ruolo: ${item.character}</div>` : '';
+
+          return `
+            <div class="bg-surface-elevated/70 p-3 rounded-2xl border border-surface-border flex items-center justify-between gap-3 hover:border-brand-500/40 transition">
+              <div class="flex items-center gap-3 cursor-pointer overflow-hidden flex-1" onclick="app.inspectItemFromSearch('${item.id}', ${isMovie})">
+                <img src="${imgUrl}" class="w-12 h-16 rounded-xl object-cover border border-surface-border flex-shrink-0">
+                <div class="truncate">
+                  <div class="flex items-center gap-2">
+                    <h4 class="font-bold text-slate-100 text-sm truncate">${item.name}</h4>
+                    <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded border ${isMovie ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}">${isMovie ? 'Film' : 'Serie'}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                    <span>${year}</span> <span>•</span>
+                    <span class="text-accent font-semibold"><i class="fa-solid fa-star text-[10px]"></i> ${rating}</span> <span>•</span>
+                    <span class="truncate">${genreDisplay}</span>
+                  </div>
+                  ${roleHtml}
+                </div>
+              </div>
+
+              <button onclick="app.quickAddOrOpen('${item.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
+                <i class="fa-solid ${isTracked ? 'fa-eye' : 'fa-plus'}"></i>
+                <span class="hidden sm:inline">${isTracked ? 'Dettagli' : 'Aggiungi'}</span>
+              </button>
+            </div>
+          `;
+        }).join('');
+      },
+
+      async inspectItemFromSearch(itemId, isMovieType) {
+        const idStr = String(itemId);
+        if (this.trackedShows[idStr]) {
+          this.openItemModalById(idStr);
+        } else {
+          // Preleva item fittizio per fetchDetails
+          const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
+          const full = await this.fetchItemDetails(dummyItem);
+          if (full) this.openItemModalExternal(full);
+        }
+      },
+
+      async quickAddOrOpen(itemId) {
+        const idStr = String(itemId);
+        if (this.trackedShows[idStr]) {
+          this.openItemModalById(idStr);
+        } else {
+          const isMovieType = idStr.includes('_m_');
+          const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
+          await this.trackItem(dummyItem);
+        }
+      },
+
+      bindEvents() {
+        const searchInput = document.getElementById('main-search-input');
+        if(searchInput) {
+          searchInput.addEventListener('input', () => this.triggerSearch());
+        }
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            this.closeDetailsModal();
+            this.closeDataModal();
+          }
+        });
+      },
+
+      // ==========================================
+      // ====== RECUPERO DATI E FETCH (API) =======
+      // ==========================================
       async fetchItemDetails(item) {
         const idStr = String(item.id);
 
         if (idStr.startsWith('tmdb_s_') && this.tmdbApiKey) {
           const rawId = item.tmdbId || idStr.replace('tmdb_s_', '');
           try {
-            const res = await fetch(`https://api.themoviedb.org/3/tv/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT`);
+            // Aggiunto append_to_response=credits per ottenere il CAST
+            const res = await fetch(`https://api.themoviedb.org/3/tv/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT&append_to_response=credits`);
             const tv = await res.json();
             
             const seasons = {};
@@ -741,34 +790,29 @@
               const epCount = s.episode_count || 10;
               for (let i = 1; i <= epCount; i++) {
                 eps.push({
-                  id: `${rawId}_s${s.season_number}_e${i}`,
-                  name: `Episodio ${i}`,
-                  season: s.season_number,
-                  number: i,
-                  runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
-                  airdate: s.air_date || '',
-                  summary: ''
+                  id: `${rawId}_s${s.season_number}_e${i}`, name: `Episodio ${i}`, season: s.season_number, number: i,
+                  runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45, airdate: s.air_date || '', summary: ''
                 });
               }
               seasons[s.season_number] = eps;
             }
 
-            const cleanGenres = (tv.genres || []).map(g => g.name);
+            const cleanGenres = (tv.genres || []).map(g => g.name).filter(g => g !== 'Drama');
+            // Estrai top 5 attori
+            const castList = (tv.credits && tv.credits.cast) ? tv.credits.cast.slice(0, 5).map(c => c.name) : [];
 
             return {
-              id: idStr,
-              type: 'series',
+              id: idStr, type: 'series',
               name: tv.name || item.name,
               image: tv.poster_path ? `https://image.tmdb.org/t/p/w500${tv.poster_path}` : item.image,
               rating: tv.vote_average ? tv.vote_average.toFixed(1) : item.rating,
               runtime: (tv.episode_run_time && tv.episode_run_time[0]) || 45,
               premiered: tv.first_air_date ? tv.first_air_date.slice(0, 4) : 'N/A',
               status: tv.status || 'In corso',
-              genres: cleanGenres.length > 0 ? cleanGenres : [],
+              genres: cleanGenres.length > 0 ? cleanGenres : ['Serie'],
               summary: tv.overview || item.summary || 'Nessuna trama.',
-              seasons: seasons,
-              watchedEpisodes: {},
-              addedAt: Date.now()
+              cast: castList,
+              seasons: seasons, watchedEpisodes: {}, addedAt: Date.now()
             };
           } catch (e) {}
         }
@@ -776,74 +820,66 @@
         if (idStr.startsWith('tmdb_m_') && this.tmdbApiKey) {
           const rawId = item.tmdbId || idStr.replace('tmdb_m_', '');
           try {
-            const res = await fetch(`https://api.themoviedb.org/3/movie/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT`);
+            // Aggiunto append_to_response=credits
+            const res = await fetch(`https://api.themoviedb.org/3/movie/${rawId}?api_key=${this.tmdbApiKey}&language=it-IT&append_to_response=credits`);
             const mov = await res.json();
-            const cleanGenres = (mov.genres || []).map(g => g.name);
+            const cleanGenres = (mov.genres || []).map(g => g.name).filter(g => !this.GENERIC_GENRES.has(g));
+            const castList = (mov.credits && mov.credits.cast) ? mov.credits.cast.slice(0, 5).map(c => c.name) : [];
+
             return {
-              id: idStr,
-              type: 'movie',
+              id: idStr, type: 'movie',
               name: mov.title || item.name,
               image: mov.poster_path ? `https://image.tmdb.org/t/p/w500${mov.poster_path}` : item.image,
               rating: mov.vote_average ? mov.vote_average.toFixed(1) : item.rating,
               runtime: mov.runtime || 120,
               premiered: mov.release_date ? mov.release_date.slice(0, 4) : 'N/A',
-              genres: cleanGenres.length > 0 ? cleanGenres : [],
+              genres: cleanGenres.length > 0 ? cleanGenres : ['Cinema'],
               summary: mov.overview || item.summary || 'Nessuna trama disponibile.',
-              watched: false,
-              addedAt: Date.now()
+              cast: castList,
+              watched: false, addedAt: Date.now()
             };
           } catch (e) {}
         }
 
+        // TVMaze Fallback
         if (item.type === 'series') {
           try {
-            const res = await fetch(`https://api.tvmaze.com/shows/${item.id}?embed[]=episodes`);
+            const res = await fetch(`https://api.tvmaze.com/shows/${item.id}?embed[]=episodes&embed[]=cast`);
             const fullData = await res.json();
             const seasons = {};
             const episodesList = (fullData._embedded && fullData._embedded.episodes) ? fullData._embedded.episodes : [];
             episodesList.forEach(ep => {
               const sNum = ep.season || 1;
               if (!seasons[sNum]) seasons[sNum] = [];
-              seasons[sNum].push({
-                id: ep.id,
-                name: ep.name,
-                season: ep.season,
-                number: ep.number,
-                runtime: ep.runtime || fullData.runtime || 45,
-                airdate: ep.airdate,
-                summary: ep.summary || ''
-              });
+              seasons[sNum].push({ id: ep.id, name: ep.name, season: ep.season, number: ep.number, runtime: ep.runtime || fullData.runtime || 45, airdate: ep.airdate, summary: ep.summary || '' });
             });
 
+            let cleanGenres = (fullData.genres || []).filter(g => g !== 'Drama');
+            if (cleanGenres.length === 0) cleanGenres = fullData.genres || ['Serie'];
+            
+            const castList = (fullData._embedded && fullData._embedded.cast) ? fullData._embedded.cast.slice(0, 5).map(c => c.person.name) : [];
+
             return {
-              id: String(fullData.id),
-              type: 'series',
-              name: fullData.name,
+              id: String(fullData.id), type: 'series', name: fullData.name,
               image: fullData.image ? (fullData.image.original || fullData.image.medium) : item.image,
               rating: fullData.rating && fullData.rating.average ? fullData.rating.average : 7.8,
               runtime: fullData.runtime || 45,
               premiered: fullData.premiered ? fullData.premiered.slice(0, 4) : 'N/A',
               status: fullData.status || 'Ended',
-              genres: fullData.genres || [],
-              summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
-              seasons: seasons,
-              watchedEpisodes: {},
-              addedAt: Date.now()
+              genres: cleanGenres, summary: fullData.summary ? fullData.summary.replace(/<[^>]*>?/gm, '') : 'Nessuna descrizione.',
+              cast: castList,
+              seasons: seasons, watchedEpisodes: {}, addedAt: Date.now()
             };
           } catch (e) {}
         }
 
-        return item;
+        return item; // Fallback per i curated
       },
 
       async trackItem(itemData) {
         const normNew = this.normalizeTitle(itemData.name);
         const alreadyExists = Object.values(this.trackedShows).some(s => this.normalizeTitle(s.name) === normNew);
-        
-        if (alreadyExists) {
-          this.showToast("Questo titolo è già nella tua lista!", "fa-info");
-          return;
-        }
+        if (alreadyExists) { this.showToast("Questo titolo è già nella tua lista!", "fa-info"); return; }
 
         const fullItem = await this.fetchItemDetails(itemData);
         if (!fullItem) return;
@@ -854,713 +890,11 @@
         this.showToast(`Aggiunto: ${fullItem.name}`, 'fa-plus');
       },
 
-      untrackItem(itemId) {
-        const idStr = String(itemId);
-        if (this.trackedShows[idStr]) {
-          const name = this.trackedShows[idStr].name;
-          delete this.trackedShows[idStr];
-          this.saveToStorage();
-          this.renderAll();
-          this.showToast(`Rimosso: ${name}`, 'fa-trash');
-        }
-      },
-
-      toggleMovieWatched(movieId) {
-        const idStr = String(movieId);
-        const movie = this.trackedShows[idStr];
-        if (!movie || movie.type !== 'movie') return;
-        movie.watched = !movie.watched;
-        this.saveToStorage();
-        this.renderWatchlist();
-        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
-          this.refreshModalView();
-        }
-        this.showToast(movie.watched ? `Segnato come visto: ${movie.name}` : `Rimosso dai visti`);
-      },
-
-      toggleEpisode(showId, epId) {
-        const idStr = String(showId);
-        const show = this.trackedShows[idStr];
-        if (!show || show.type === 'movie') return;
-
-        if (!show.watchedEpisodes) show.watchedEpisodes = {};
-
-        if (show.watchedEpisodes[epId]) {
-          delete show.watchedEpisodes[epId];
-        } else {
-          show.watchedEpisodes[epId] = true;
-        }
-
-        this.saveToStorage();
-        this.renderWatchlist();
-        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
-          this.refreshModalView();
-        }
-      },
-
-      markSeasonWatched(showId, seasonNum, markAsWatched = true) {
-        const idStr = String(showId);
-        const show = this.trackedShows[idStr];
-        if (!show || !show.seasons || !show.seasons[seasonNum]) return;
-
-        if (!show.watchedEpisodes) show.watchedEpisodes = {};
-
-        show.seasons[seasonNum].forEach(ep => {
-          if (markAsWatched) {
-            show.watchedEpisodes[ep.id] = true;
-          } else {
-            delete show.watchedEpisodes[ep.id];
-          }
-        });
-
-        this.saveToStorage();
-        this.renderWatchlist();
-        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
-          this.refreshModalView();
-        }
-        this.showToast(markAsWatched ? `Stagione ${seasonNum} completata!` : `Stagione ${seasonNum} azzerata`);
-      },
-
-      markAll(itemId) {
-        const idStr = String(itemId);
-        const item = this.trackedShows[idStr];
-        if (!item) return;
-
-        if (item.type === 'movie') {
-          item.watched = true;
-        } else {
-          let total = 0;
-          if (!item.watchedEpisodes) item.watchedEpisodes = {};
-          Object.values(item.seasons || {}).forEach(eps => {
-            eps.forEach(ep => {
-              item.watchedEpisodes[ep.id] = true;
-              total++;
-            });
-          });
-        }
-
-        this.saveToStorage();
-        this.renderWatchlist();
-        if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
-          this.refreshModalView();
-        }
-        this.showToast(`Segnato tutto come visto!`);
-      },
-
-      getItemProgress(item) {
-        if (item.type === 'movie') {
-          return {
-            watched: item.watched ? 1 : 0,
-            total: 1,
-            percent: item.watched ? 100 : 0,
-            status: item.watched ? 'finished' : 'plan'
-          };
-        }
-
-        let total = 0;
-        Object.values(item.seasons || {}).forEach(eps => total += eps.length);
-        const watched = Object.keys(item.watchedEpisodes || {}).length;
-        const percent = total > 0 ? Math.round((watched / total) * 100) : 0;
-        
-        let status = 'watching';
-        if (watched === 0) status = 'plan';
-        else if (watched === total && total > 0) status = 'finished';
-
-        return { watched, total, percent, status };
-      },
-
-      getNextEpisodeToWatch(show) {
-        if (show.type === 'movie' || !show.seasons) return null;
-        const sortedSeasons = Object.keys(show.seasons).map(Number).sort((a, b) => a - b);
-        for (const s of sortedSeasons) {
-          const eps = show.seasons[s];
-          for (const ep of eps) {
-            if (!show.watchedEpisodes || !show.watchedEpisodes[ep.id]) {
-              return ep;
-            }
-          }
-        }
-        return null;
-      },
-
-      renderWatchlist() {
-        const grid = document.getElementById('tracked-shows-grid');
-        const empty = document.getElementById('watchlist-empty-state');
-        const nextUpContainer = document.getElementById('next-up-container');
-        
-        const itemIds = Object.keys(this.trackedShows);
-        if (itemIds.length === 0) {
-          grid.innerHTML = '';
-          nextUpContainer.innerHTML = '';
-          empty.classList.remove('hidden');
-          return;
-        }
-
-        empty.classList.add('hidden');
-
-        const filtered = itemIds.map(id => this.trackedShows[id]).filter(item => {
-          const { status } = this.getItemProgress(item);
-          if (this.listFilter === 'all') return true;
-          if (this.listFilter === 'movie') return item.type === 'movie';
-          if (this.listFilter === 'series') return item.type !== 'movie';
-          return status === this.listFilter;
-        });
-
-        const watchingSeries = itemIds.map(id => this.trackedShows[id]).filter(s => {
-          if (s.type === 'movie') return false;
-          const p = this.getItemProgress(s);
-          return p.status === 'watching' || p.status === 'plan';
-        });
-
-        let nextUpHTML = '';
-        if (watchingSeries.length > 0) {
-          const current = watchingSeries[0];
-          const nextEp = this.getNextEpisodeToWatch(current);
-
-          if (nextEp) {
-            nextUpHTML = `
-              <div class="bg-gradient-to-r from-surface-elevated to-surface p-4 sm:p-5 rounded-2xl border border-brand-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
-                <div class="flex items-center gap-4">
-                  <div class="relative w-12 h-16 sm:w-14 sm:h-20 rounded-xl overflow-hidden flex-shrink-0 border border-surface-border">
-                    <img src="${current.image}" class="w-full h-full object-cover">
-                  </div>
-                  <div>
-                    <span class="text-[10px] uppercase font-bold tracking-widest text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">Prossimo da vedere</span>
-                    <h3 class="text-base sm:text-lg font-extrabold text-white mt-0.5">${current.name}</h3>
-                    <p class="text-xs text-slate-300">S${String(nextEp.season).padStart(2, '0')}E${String(nextEp.number).padStart(2, '0')} — <span class="text-slate-400">${nextEp.name}</span></p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 self-end sm:self-center">
-                  <button onclick="app.toggleEpisode('${current.id}', '${nextEp.id}')" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md cursor-pointer">
-                    <i class="fa-solid fa-check"></i> Segna come visto
-                  </button>
-                  <button onclick="app.openItemModalById('${current.id}')" class="p-2.5 rounded-xl bg-surface-border hover:bg-slate-700 text-slate-300 text-xs transition cursor-pointer">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                  </button>
-                </div>
-              </div>
-            `;
-          }
-        }
-        nextUpContainer.innerHTML = nextUpHTML;
-
-        grid.innerHTML = filtered.map(item => {
-          const { watched, total, percent, status } = this.getItemProgress(item);
-          const isMovie = item.type === 'movie';
-          const nextEp = !isMovie ? this.getNextEpisodeToWatch(item) : null;
-
-          let badgeColor = 'bg-brand-500/20 text-brand-400 border-brand-500/30';
-          let statusText = isMovie ? (watched ? 'Visto' : 'Da vedere') : `${watched}/${total} ep`;
-          
-          if (status === 'finished') {
-            badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-            statusText = isMovie ? 'Visto' : 'Completata';
-          } else if (status === 'plan') {
-            badgeColor = 'bg-slate-700 text-slate-300 border-slate-600';
-            statusText = 'Da iniziare';
-          }
-
-          return `
-            <div onclick="app.openItemModalById('${item.id}')" class="group relative bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col cursor-pointer shadow-md hover:-translate-y-1">
-              <div class="relative aspect-[2/3] w-full overflow-hidden bg-surface-elevated">
-                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
-                
-                <div class="absolute top-2 left-2">
-                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}">
-                    ${isMovie ? 'Film' : 'Serie'}
-                  </span>
-                </div>
-
-                <div class="absolute top-2 right-2">
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${badgeColor} backdrop-blur-md">
-                    ${percent}%
-                  </span>
-                </div>
-
-                ${nextEp ? `
-                  <div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate">
-                    <span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>: ${nextEp.name}
-                  </div>
-                ` : ''}
-              </div>
-
-              <div class="p-3 flex-1 flex flex-col justify-between">
-                <div>
-                  <h4 class="font-bold text-sm text-slate-100 group-hover:text-brand-400 transition-colors line-clamp-1">${item.name}</h4>
-                  <div class="flex items-center justify-between text-[11px] text-slate-400 mt-1">
-                    <span>${item.premiered}</span>
-                    <span class="font-semibold text-slate-300">${statusText}</span>
-                  </div>
-                </div>
-
-                <div class="w-full h-1.5 bg-surface-elevated rounded-full overflow-hidden mt-3">
-                  <div class="h-full ${isMovie ? 'bg-amber-400' : 'bg-brand-400'} rounded-full transition-all" style="width: ${percent}%"></div>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      },
-
-      renderStats() {
-        let totalMinutes = 0;
-        let totalEpisodes = 0;
-        let moviesWatched = 0;
-        let finishedSeries = 0;
-        const genreCounts = {};
-
-        const items = Object.values(this.trackedShows);
-
-        items.forEach(item => {
-          const { status } = this.getItemProgress(item);
-
-          if (item.type === 'movie') {
-            if (item.watched) {
-              moviesWatched++;
-              totalMinutes += (item.runtime || 120);
-            }
-          } else {
-            if (status === 'finished') finishedSeries++;
-            const watchedEpIds = Object.keys(item.watchedEpisodes || {});
-            totalEpisodes += watchedEpIds.length;
-
-            Object.values(item.seasons || {}).forEach(eps => {
-              eps.forEach(ep => {
-                if (item.watchedEpisodes && item.watchedEpisodes[ep.id]) {
-                  totalMinutes += (ep.runtime || item.runtime || 45);
-                }
-              });
-            });
-          }
-
-          if (item.genres && Array.isArray(item.genres)) {
-            item.genres.forEach(g => {
-              genreCounts[g] = (genreCounts[g] || 0) + 1;
-            });
-          }
-        });
-
-        const minutesInHour = 60;
-        const minutesInDay = 60 * 24;
-        const minutesInMonth = 60 * 24 * 30.5;
-
-        const months = Math.floor(totalMinutes / minutesInMonth);
-        let rem = totalMinutes % minutesInMonth;
-
-        const days = Math.floor(rem / minutesInDay);
-        rem = rem % minutesInDay;
-
-        const hours = Math.floor(rem / minutesInHour);
-        const mins = rem % minutesInHour;
-
-        document.getElementById('stat-months').textContent = months;
-        document.getElementById('stat-days').textContent = days;
-        document.getElementById('stat-hours').textContent = hours;
-        document.getElementById('stat-minutes').textContent = mins;
-
-        document.getElementById('stat-movies-count').textContent = moviesWatched;
-        document.getElementById('stat-episodes-count').textContent = totalEpisodes;
-        document.getElementById('stat-finished-count').textContent = finishedSeries;
-        document.getElementById('stat-total-shows').textContent = items.length;
-
-        const genresContainer = document.getElementById('genres-bars-container');
-        const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-
-        if (sortedGenres.length === 0) {
-          genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei tuoi generi preferiti.</p>`;
-          return;
-        }
-
-        const maxCount = sortedGenres[0][1] || 1;
-        genresContainer.innerHTML = sortedGenres.map(([genre, count]) => {
-          const pct = Math.round((count / maxCount) * 100);
-          return `
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-slate-200">${genre}</span>
-                <span class="text-brand-400 font-bold">${count} titoli</span>
-              </div>
-              <div class="w-full h-2 bg-surface-elevated rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-brand-600 to-brand-400 rounded-full" style="width: ${pct}%"></div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      },
-
-      updateStats() {
-        if (this.activeTab === 'stats') this.renderStats();
-      },
-
-      updateWatchlistCounts() {
-        const countEl = document.getElementById('badge-watching-count');
-        if (countEl) {
-          countEl.textContent = Object.keys(this.trackedShows).length;
-        }
-      },
-
-      renderCalendar() {
-        const container = document.getElementById('calendar-schedule-container');
-        const upcomingList = [];
-
-        const todayStr = new Date().toISOString().split('T')[0];
-
-        Object.values(this.trackedShows).forEach(show => {
-          if (show.type === 'movie' || !show.seasons) return;
-          Object.values(show.seasons).forEach(eps => {
-            eps.forEach(ep => {
-              if (ep.airdate && ep.airdate >= todayStr) {
-                upcomingList.push({
-                  showName: show.name,
-                  showImage: show.image,
-                  showId: show.id,
-                  epTitle: ep.name,
-                  season: ep.season,
-                  number: ep.number,
-                  airdate: ep.airdate
-                });
-              }
-            });
-          });
-        });
-
-        upcomingList.sort((a, b) => a.airdate.localeCompare(b.airdate));
-
-        if (upcomingList.length === 0) {
-          container.innerHTML = `
-            <div class="text-center py-16 bg-surface rounded-2xl border border-surface-border text-slate-400">
-              <i class="fa-regular fa-calendar-xmark text-3xl mb-3 text-slate-500"></i>
-              <p class="text-sm font-semibold">Nessuna nuova uscita a breve</p>
-              <p class="text-xs text-slate-500 mt-1">Le serie che stai seguendo sono concluse o in pausa stagionale.</p>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = upcomingList.slice(0, 15).map(item => {
-          const dateObj = new Date(item.airdate);
-          const dateFormatted = dateObj.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
-
-          return `
-            <div onclick="app.openItemModalById('${item.showId}')" class="bg-surface p-4 rounded-2xl border border-surface-border hover:border-brand-500/40 flex items-center justify-between gap-4 transition cursor-pointer">
-              <div class="flex items-center gap-3.5">
-                <img src="${item.showImage}" class="w-12 h-16 rounded-xl object-cover border border-surface-border">
-                <div>
-                  <span class="text-xs font-bold text-brand-400 flex items-center gap-1.5">
-                    <i class="fa-regular fa-clock"></i> ${dateFormatted}
-                  </span>
-                  <h4 class="font-bold text-white text-sm sm:text-base">${item.showName}</h4>
-                  <p class="text-xs text-slate-400">Stagione ${item.season}, Episodio ${item.number} • ${item.epTitle}</p>
-                </div>
-              </div>
-              <span class="text-xs bg-surface-elevated px-3 py-1.5 rounded-xl text-slate-300 font-semibold border border-surface-border">In arrivo</span>
-            </div>
-          `;
-        }).join('');
-      },
-
-      /**
-       * RECUPERA I GENERI ESATTAMENTE COME SONO SALVATI DALL'UTENTE
-       */
-      getUserTopGenres() {
-        const counts = {};
-        Object.values(this.trackedShows).forEach(s => {
-          if (s.genres && Array.isArray(s.genres)) {
-            s.genres.forEach(g => {
-              counts[g] = (counts[g] || 0) + 1;
-            });
-          }
-        });
-        return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
-      },
-
-      async buildSmartCandidatePool(forceFullNew = false) {
-        let pool = [];
-        const trackedTitles = new Set(Object.values(this.trackedShows).map(s => this.normalizeTitle(s.name)));
-        const trackedKeys = new Set(Object.keys(this.trackedShows));
-
-        if (this.tmdbApiKey) {
-          try {
-            const randomPage = forceFullNew ? Math.floor(Math.random() * 5) + 1 : 1;
-            let endpoints = [];
-
-            const userTopGenres = this.getUserTopGenres();
-
-            if (userTopGenres.length > 0) {
-              // Estrapola fino a 2 generi preferiti dall'utente e trova il loro ID TMDb
-              const topG = userTopGenres.slice(0, 2);
-              const genreIdsToFetch = topG.map(g => this.tmdbGenreIds[g] || Object.keys(this.tmdbGenreMap).find(key => this.tmdbGenreMap[key] === g)).filter(Boolean);
-              
-              if (genreIdsToFetch.length > 0) {
-                const genreQuery = genreIdsToFetch.join('|'); // Uso di pipe (|) per condizione OR su TMDb
-                endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreQuery}&sort_by=popularity.desc&page=${randomPage}`);
-                endpoints.push(`https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreQuery}&sort_by=popularity.desc&page=${randomPage}`);
-              } else {
-                 endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-              }
-            } else {
-               endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
-            }
-
-            const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
-            responses.forEach(data => {
-              if (data && data.results) {
-                const mapped = data.results
-                  .filter(i => i && i.poster_path)
-                  .map(item => {
-                    const isMovie = item.title !== undefined;
-                    const genres = (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean);
-
-                    return {
-                      id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`,
-                      tmdbId: item.id,
-                      type: isMovie ? 'movie' : 'series',
-                      name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name),
-                      image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                      rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0',
-                      runtime: isMovie ? 120 : 45,
-                      premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'),
-                      genres: genres.length > 0 ? genres : [],
-                      summary: item.overview || 'Nessuna trama.'
-                    };
-                  });
-                pool = pool.concat(mapped);
-              }
-            });
-          } catch (e) {
-            console.error("TMDb feed error:", e);
-          }
-        }
-
-        const shuffledCurated = [...this.curatedMovies].sort(() => 0.5 - Math.random());
-        pool = pool.concat(shuffledCurated);
-
-        const uniqueList = [];
-        const seenKeys = new Set();
-        const seenNormTitles = new Set();
-
-        pool.forEach(item => {
-          if (item && item.id && item.name && item.image) {
-            const idStr = String(item.id);
-            const norm = this.normalizeTitle(item.name);
-
-            if (!trackedKeys.has(idStr) && 
-                !trackedTitles.has(norm) && 
-                !this.dismissedIds.has(idStr) && 
-                !seenKeys.has(idStr) && 
-                !seenNormTitles.has(norm)) {
-              
-              seenKeys.add(idStr);
-              seenNormTitles.add(norm);
-              uniqueList.push(item);
-            }
-          }
-        });
-
-        this.candidateShowPool = uniqueList.sort(() => 0.5 - Math.random());
-      },
-
-      async getNextReplacementShow(excludeIds = []) {
-        const excludeSet = new Set([...excludeIds.map(String), ...Object.keys(this.trackedShows), ...Array.from(this.dismissedIds)]);
-        const onScreenTitles = new Set(this.displayedDiscoverShows.map(s => this.normalizeTitle(s.name)));
-        
-        for (let i = 0; i < this.candidateShowPool.length; i++) {
-          const candidate = this.candidateShowPool[i];
-          const norm = this.normalizeTitle(candidate.name);
-          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(norm)) {
-            this.candidateShowPool.splice(i, 1);
-            return candidate;
-          }
-        }
-
-        await this.buildSmartCandidatePool(true);
-        for (let i = 0; i < this.candidateShowPool.length; i++) {
-          const candidate = this.candidateShowPool[i];
-          const norm = this.normalizeTitle(candidate.name);
-          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(norm)) {
-            this.candidateShowPool.splice(i, 1);
-            return candidate;
-          }
-        }
-        return null;
-      },
-
-      async refreshDiscoverFeed(forceReload = false) {
-        const discoverGrid = document.getElementById('discover-cards-grid');
-        const hintEl = document.getElementById('discover-flavor-hint');
-        const refreshIcon = document.getElementById('icon-refresh-discover');
-
-        if (refreshIcon) refreshIcon.classList.add('fa-spin');
-        
-        discoverGrid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-400 text-sm">
-            <i class="fa-solid fa-spinner fa-spin text-brand-400 mr-2 text-base"></i>
-            Generazione di nuove proposte in corso...
-          </div>
-        `;
-
-        if (forceReload) {
-          this.candidateShowPool = [];
-          this.displayedDiscoverShows = [];
-        }
-
-        await this.buildSmartCandidatePool(forceReload);
-
-        const userTopGenres = this.getUserTopGenres();
-        if (hintEl) {
-          if (userTopGenres.length > 0) {
-            hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Basato sui tuoi gusti: <b class="text-slate-200">${userTopGenres.slice(0, 2).join(', ')}</b>`;
-          } else {
-            hintEl.textContent = 'I titoli del momento (aggiungi film e serie per suggerimenti su misura)';
-          }
-        }
-
-        const initialTargetCount = 10;
-        this.displayedDiscoverShows = [];
-        const seenNormTitles = new Set();
-
-        while (this.displayedDiscoverShows.length < initialTargetCount && this.candidateShowPool.length > 0) {
-          const item = this.candidateShowPool.shift();
-          const idStr = String(item.id);
-          const norm = this.normalizeTitle(item.name);
-
-          if (!this.trackedShows[idStr] && !this.dismissedIds.has(idStr) && !seenNormTitles.has(norm)) {
-            seenNormTitles.add(norm);
-            this.displayedDiscoverShows.push(item);
-          }
-        }
-
-        if (refreshIcon) {
-          setTimeout(() => refreshIcon.classList.remove('fa-spin'), 350);
-        }
-
-        this.renderDiscoverGrid();
-      },
-
-      renderDiscoverGrid() {
-        const discoverGrid = document.getElementById('discover-cards-grid');
-        
-        if (this.displayedDiscoverShows.length === 0) {
-          discoverGrid.innerHTML = `
-            <div class="col-span-full py-12 text-center text-slate-500 text-sm">
-              Nessun altro titolo disponibile in questa categoria. Prova a premere nuovamente "Aggiorna tutti".
-            </div>
-          `;
-          return;
-        }
-
-        discoverGrid.innerHTML = this.displayedDiscoverShows.map((item) => this.generateDiscoverCardHTML(item)).join('');
-      },
-
-      generateDiscoverCardHTML(item) {
-        const isTracked = !!this.trackedShows[String(item.id)];
-        const isMovie = item.type === 'movie' || String(item.id).startsWith('m_') || String(item.id).startsWith('tmdb_m_');
-        const img = item.image ? (item.image.medium || item.image.original || item.image) : '';
-        const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '8.2');
-        const year = item.premiered ? item.premiered.slice(0, 4) : '';
-        
-        const genre = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
-
-        return `
-          <div id="discover-card-${item.id}" class="group bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col shadow-sm relative">
-            <div class="relative aspect-[2/3] w-full overflow-hidden bg-surface-elevated cursor-pointer" onclick="app.inspectItemFromDiscover('${item.id}')">
-              <img src="${img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-              
-              <div class="absolute top-2 left-2 flex gap-1">
-                <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/30 text-amber-300 border-amber-500/40' : 'bg-cyan-500/30 text-cyan-300 border-cyan-500/40'}">
-                  ${isMovie ? 'Film' : 'Serie'}
-                </span>
-              </div>
-
-              <button onclick="event.stopPropagation(); app.dismissAndReplaceItem('${item.id}')" title="Non mi interessa" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-rose-500/80 text-slate-300 hover:text-white flex items-center justify-center text-xs transition backdrop-blur-md cursor-pointer z-10">
-                <i class="fa-solid fa-eye-slash"></i>
-              </button>
-
-              <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-accent text-xs font-bold flex items-center gap-1">
-                <i class="fa-solid fa-star text-[10px]"></i> ${rating}
-              </div>
-            </div>
-            <div class="p-3 flex-1 flex flex-col justify-between gap-2">
-              <div>
-                <h4 class="font-bold text-sm text-slate-200 line-clamp-1 cursor-pointer group-hover:text-brand-400 transition-colors" onclick="app.inspectItemFromDiscover('${item.id}')">${item.name}</h4>
-                <span class="text-[11px] text-slate-400">${year ? year + ' • ' : ''}${genre}</span>
-              </div>
-              <button onclick="app.quickAddAndReplaceItem('${item.id}')" class="w-full py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${isTracked ? 'bg-surface-elevated text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
-                <i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i>
-                <span>${isTracked ? 'In Lista' : 'Aggiungi'}</span>
-              </button>
-            </div>
-          </div>
-        `;
-      },
-
-      async dismissAndReplaceItem(itemId) {
-        this.dismissedIds.add(String(itemId));
-        this.showToast("Titolo nascosto", "fa-eye-slash");
-        await this.replaceCardOnScreen(itemId);
-      },
-
-      async quickAddAndReplaceItem(itemId) {
-        const targetItem = this.displayedDiscoverShows.find(s => String(s.id) === String(itemId));
-        if (targetItem) {
-          await this.trackItem(targetItem);
-        }
-        await this.replaceCardOnScreen(itemId);
-      },
-
-      async replaceCardOnScreen(itemId) {
-        const cardElement = document.getElementById(`discover-card-${itemId}`);
-        if (!cardElement) return;
-
-        cardElement.classList.add('scale-95', 'opacity-30', 'transition-all', 'duration-200');
-
-        const currentOnScreenIds = this.displayedDiscoverShows.map(s => s.id);
-        const replacement = await this.getNextReplacementShow(currentOnScreenIds);
-
-        const showIndex = this.displayedDiscoverShows.findIndex(s => String(s.id) === String(itemId));
-        if (showIndex !== -1) {
-          if (replacement) {
-            this.displayedDiscoverShows[showIndex] = replacement;
-          } else {
-            this.displayedDiscoverShows.splice(showIndex, 1);
-          }
-        }
-
-        setTimeout(() => {
-          if (replacement) {
-            const tempContainer = document.createElement('div');
-            tempContainer.innerHTML = this.generateDiscoverCardHTML(replacement);
-            const newCardNode = tempContainer.firstElementChild;
-            newCardNode.classList.add('opacity-0', 'scale-90', 'transition-all', 'duration-300');
-            cardElement.replaceWith(newCardNode);
-
-            requestAnimationFrame(() => {
-              newCardNode.classList.remove('opacity-0', 'scale-90');
-            });
-          } else {
-            cardElement.remove();
-          }
-        }, 200);
-      },
-
-      async inspectItemFromDiscover(itemId) {
-        const idStr = String(itemId);
-        if (this.trackedShows[idStr]) {
-          this.openItemModalById(idStr);
-        } else {
-          const item = this.displayedDiscoverShows.find(s => String(s.id) === idStr) || this.candidateShowPool.find(s => String(s.id) === idStr);
-          if (item) {
-            const full = await this.fetchItemDetails(item);
-            this.openItemModalExternal(full);
-          }
-        }
-      },
-
+      // ==========================================
+      // ======== GESTIONE POP-UP (MODAL) =========
+      // ==========================================
       openItemModalById(itemId) {
-        const idStr = String(itemId);
-        const item = this.trackedShows[idStr];
+        const item = this.trackedShows[String(itemId)];
         if (!item) return;
         this.selectedModalShow = item;
         this.selectedModalSeason = 1;
@@ -1598,25 +932,29 @@
         typePill.textContent = isMovie ? 'Film' : 'Serie TV';
         typePill.className = `text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${isMovie ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'}`;
 
-        document.getElementById('modal-status-pill').textContent = isMovie ? `${currentData.runtime || 120} min` : (currentData.status || 'In corso');
+        document.getElementById('modal-status-pill').textContent = isMovie ? `Film` : (currentData.status || 'In corso');
         document.getElementById('modal-summary').textContent = currentData.summary;
 
-        document.getElementById('modal-genres').innerHTML = (currentData.genres || []).map(g => `
-          <span class="bg-surface-elevated px-2 py-0.5 rounded border border-surface-border">${g}</span>
-        `).join('');
+        // INSERIMENTO DETTAGLI EXTRA: MINUTAGGIO E CAST
+        const runtimeText = currentData.runtime ? `${currentData.runtime} min ${isMovie ? '' : '(media ad episodio)'}` : 'Sconosciuta';
+        document.getElementById('modal-runtime-text').textContent = runtimeText;
+        
+        const castStr = (currentData.cast && currentData.cast.length > 0) ? currentData.cast.join(', ') : 'Nessun dato disponibile';
+        document.getElementById('modal-cast-text').textContent = castStr;
+
+        document.getElementById('modal-genres').innerHTML = (currentData.genres || []).map(g => `<span class="bg-surface-elevated px-2 py-0.5 rounded border border-surface-border">${g}</span>`).join('');
 
         const { watched, total, percent } = this.getItemProgress(currentData);
         document.getElementById('modal-progress-percent').textContent = isMovie ? (watched ? '100% (Visto)' : '0% (Non visto)') : `${percent}% (${watched}/${total})`;
         document.getElementById('modal-progress-fill').style.width = `${percent}%`;
 
         const trackBtn = document.getElementById('modal-btn-track');
-        const trackLabel = document.getElementById('modal-track-label');
         if (isTracked) {
           trackBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition flex items-center gap-2 cursor-pointer";
-          trackLabel.textContent = "Rimuovi dalla lista";
+          document.getElementById('modal-track-label').textContent = "Rimuovi dalla lista";
         } else {
           trackBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-brand-500 hover:bg-brand-400 text-slate-950 transition flex items-center gap-2 cursor-pointer";
-          trackLabel.textContent = "Aggiungi alla lista";
+          document.getElementById('modal-track-label').textContent = "Aggiungi alla lista";
         }
 
         const markAllBtn = document.getElementById('modal-btn-mark-all');
@@ -1626,319 +964,457 @@
         if (isMovie) {
           seasonsTabsContainer.innerHTML = '';
           markAllBtn.classList.add('hidden');
-          
           epContainer.innerHTML = `
             <div class="py-8 px-4 text-center bg-surface/50 rounded-2xl border border-surface-border flex flex-col items-center justify-center gap-4">
               <i class="fa-solid fa-film text-4xl text-amber-400"></i>
-              <div>
-                <h4 class="text-base font-bold text-white">${currentData.name}</h4>
-                <p class="text-xs text-slate-400 mt-1">Durata: ${currentData.runtime || 120} minuti</p>
-              </div>
+              <div><h4 class="text-base font-bold text-white">${currentData.name}</h4></div>
               ${isTracked ? `
                 <button onclick="app.toggleMovieWatched('${currentData.id}')" class="px-6 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 cursor-pointer ${currentData.watched ? 'bg-emerald-500 text-slate-950' : 'bg-surface-elevated border border-surface-border text-slate-200 hover:text-white'}">
-                  <i class="fa-solid ${currentData.watched ? 'fa-check' : 'fa-play'}"></i>
-                  <span>${currentData.watched ? 'Film già visto' : 'Segna film come visto'}</span>
+                  <i class="fa-solid ${currentData.watched ? 'fa-check' : 'fa-play'}"></i> <span>${currentData.watched ? 'Film già visto' : 'Segna film come visto'}</span>
                 </button>
-              ` : `
-                <p class="text-xs text-slate-500">Aggiungi il film alla lista per segnarlo come visto.</p>
-              `}
+              ` : `<p class="text-xs text-slate-500">Aggiungi il film alla lista per segnarlo come visto.</p>`}
             </div>
           `;
           return;
         }
 
         markAllBtn.classList.remove('hidden');
-
         const seasonNums = Object.keys(currentData.seasons || {}).map(Number).sort((a, b) => a - b);
-        if (!seasonNums.includes(this.selectedModalSeason) && seasonNums.length > 0) {
-          this.selectedModalSeason = seasonNums[0];
-        }
+        if (!seasonNums.includes(this.selectedModalSeason) && seasonNums.length > 0) this.selectedModalSeason = seasonNums[0];
 
         seasonsTabsContainer.innerHTML = seasonNums.map(sNum => {
           const isActive = sNum === this.selectedModalSeason;
-          return `
-            <button onclick="app.selectSeasonTab(${sNum})" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${isActive ? 'bg-brand-500 text-slate-950 shadow' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
-              Stagione ${sNum}
-            </button>
-          `;
+          return `<button onclick="app.selectSeasonTab(${sNum})" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${isActive ? 'bg-brand-500 text-slate-950 shadow' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">Stagione ${sNum}</button>`;
         }).join('');
 
         const activeEps = (currentData.seasons && currentData.seasons[this.selectedModalSeason]) || [];
-
         if (activeEps.length === 0) {
-          epContainer.innerHTML = `<p class="text-xs text-slate-500 py-6 text-center">Nessun episodio registrato per questa stagione.</p>`;
+          epContainer.innerHTML = `<p class="text-xs text-slate-500 py-6 text-center">Nessun episodio registrato.</p>`;
           return;
         }
 
         const allSeasonWatched = activeEps.every(ep => currentData.watchedEpisodes && currentData.watchedEpisodes[ep.id]);
-
-        let epHTML = `
-          <div class="flex items-center justify-between pb-3 mb-2 border-b border-surface-border/60">
-            <span class="text-xs font-bold text-slate-300">Episodi Stagione ${this.selectedModalSeason} (${activeEps.length})</span>
-            ${isTracked ? `
-              <button onclick="app.markSeasonWatched('${currentData.id}', ${this.selectedModalSeason},${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline cursor-pointer">
-                <i class="fa-solid fa-check mr-1"></i> ${allSeasonWatched ? 'Deseleziona tutta la stagione' : 'Segna stagione come vista'}
-              </button>
-            ` : ''}
-          </div>
-        `;
+        let epHTML = `<div class="flex items-center justify-between pb-3 mb-2 border-b border-surface-border/60"><span class="text-xs font-bold text-slate-300">Episodi Stagione ${this.selectedModalSeason} (${activeEps.length})</span>${isTracked ? `<button onclick="app.markSeasonWatched('${currentData.id}', ${this.selectedModalSeason},${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline cursor-pointer"><i class="fa-solid fa-check mr-1"></i> ${allSeasonWatched ? 'Deseleziona stagione' : 'Segna stagione vista'}</button>` : ''}</div>`;
 
         epHTML += activeEps.map(ep => {
           const isWatched = !!(currentData.watchedEpisodes && currentData.watchedEpisodes[ep.id]);
           return `
             <div class="flex items-center justify-between gap-3 p-3 rounded-xl border transition ${isWatched ? 'bg-surface/50 border-surface-border opacity-70' : 'bg-surface border-surface-border/80 hover:border-brand-500/40'}">
               <div class="flex items-center gap-3">
-                <span class="text-xs font-bold ${isWatched ? 'text-brand-400' : 'text-slate-500'} w-7 text-center">
-                  E${ep.number}
-                </span>
+                <span class="text-xs font-bold ${isWatched ? 'text-brand-400' : 'text-slate-500'} w-7 text-center">E${ep.number}</span>
                 <div>
                   <h5 class="text-sm font-bold ${isWatched ? 'line-through text-slate-400' : 'text-slate-100'}">${ep.name}</h5>
                   <span class="text-[11px] text-slate-500">${ep.runtime || 45} min ${ep.airdate ? '• ' + ep.airdate : ''}</span>
                 </div>
               </div>
-
-              ${isTracked ? `
-                <button onclick="app.toggleEpisode('${currentData.id}', '${ep.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}">
-                  <i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i>
-                </button>
-              ` : `
-                <button onclick="app.quickAddAndReplaceItem('${currentData.id}')" class="text-xs text-brand-400 font-semibold hover:underline cursor-pointer">Aggiungi</button>
-              `}
+              ${isTracked ? `<button onclick="app.toggleEpisode('${currentData.id}', '${ep.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition cursor-pointer ${isWatched ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-surface-elevated text-slate-400 hover:text-white border border-surface-border'}"><i class="fa-solid ${isWatched ? 'fa-check' : 'fa-plus'}"></i></button>` : `<button onclick="app.quickAddOrOpen('${currentData.id}')" class="text-xs text-brand-400 font-semibold hover:underline cursor-pointer">Aggiungi</button>`}
             </div>
           `;
         }).join('');
-
         epContainer.innerHTML = epHTML;
       },
 
-      selectSeasonTab(seasonNum) {
-        this.selectedModalSeason = seasonNum;
-        this.refreshModalView();
-      },
+      selectSeasonTab(seasonNum) { this.selectedModalSeason = seasonNum; this.refreshModalView(); },
 
       async toggleItemTrackingFromModal() {
         if (!this.selectedModalShow) return;
         const idStr = String(this.selectedModalShow.id);
-
-        if (this.trackedShows[idStr]) {
-          this.untrackItem(idStr);
-          this.closeDetailsModal();
-        } else {
-          await this.trackItem(this.selectedModalShow);
-          this.refreshModalView();
-        }
+        if (this.trackedShows[idStr]) { this.untrackItem(idStr); this.closeDetailsModal(); }
+        else { await this.trackItem(this.selectedModalShow); this.refreshModalView(); }
       },
 
       markAllModal() {
         if (!this.selectedModalShow) return;
         const idStr = String(this.selectedModalShow.id);
-        if (!this.trackedShows[idStr]) {
-          this.showToast("Aggiungi prima il titolo alla lista", "fa-info");
-          return;
-        }
+        if (!this.trackedShows[idStr]) { this.showToast("Aggiungi prima alla lista", "fa-info"); return; }
         this.markAll(idStr);
       },
 
-      openSearchModal() {
-        const modal = document.getElementById('search-modal');
-        const input = document.getElementById('search-query-input');
-        modal.classList.remove('hidden');
-        input.value = '';
-        input.focus();
+      // ==========================================
+      // ====== RENDERING LISTA E STATISTICHE ======
+      // ==========================================
+      getItemProgress(item) {
+        if (item.type === 'movie') return { watched: item.watched ? 1 : 0, total: 1, percent: item.watched ? 100 : 0, status: item.watched ? 'finished' : 'plan' };
+        let total = 0; Object.values(item.seasons || {}).forEach(eps => total += eps.length);
+        const watched = Object.keys(item.watchedEpisodes || {}).length;
+        const percent = total > 0 ? Math.round((watched / total) * 100) : 0;
+        let status = 'watching'; if (watched === 0) status = 'plan'; else if (watched === total && total > 0) status = 'finished';
+        return { watched, total, percent, status };
       },
 
-      closeSearchModal() {
-        document.getElementById('search-modal').classList.add('hidden');
+      getNextEpisodeToWatch(show) {
+        if (show.type === 'movie' || !show.seasons) return null;
+        const sortedSeasons = Object.keys(show.seasons).map(Number).sort((a, b) => a - b);
+        for (const s of sortedSeasons) {
+          const eps = show.seasons[s];
+          for (const ep of eps) { if (!show.watchedEpisodes || !show.watchedEpisodes[ep.id]) return ep; }
+        }
+        return null;
       },
 
-      bindEvents() {
-        const searchInput = document.getElementById('search-query-input');
-        searchInput.addEventListener('input', (e) => {
-          clearTimeout(this.searchDebounceTimer);
-          const query = e.target.value;
-          if (!query.trim()) {
-            document.getElementById('search-results-list').innerHTML = `
-              <div class="text-center py-12 text-slate-500 text-sm">
-                Digita il titolo di un film o di una serie TV per iniziare la ricerca.
+      renderWatchlist() {
+        const grid = document.getElementById('tracked-shows-grid');
+        const empty = document.getElementById('watchlist-empty-state');
+        const nextUpContainer = document.getElementById('next-up-container');
+        
+        const itemIds = Object.keys(this.trackedShows);
+        if (itemIds.length === 0) { grid.innerHTML = ''; nextUpContainer.innerHTML = ''; empty.classList.remove('hidden'); return; }
+
+        empty.classList.add('hidden');
+
+        // LOGICA FILTRI COMBINATI
+        const filtered = itemIds.map(id => this.trackedShows[id]).filter(item => {
+          const { status } = this.getItemProgress(item);
+          // Filtro Tipo
+          let matchType = true;
+          if (this.filterType === 'movie') matchType = item.type === 'movie';
+          if (this.filterType === 'series') matchType = item.type !== 'movie';
+          
+          // Filtro Stato
+          let matchStatus = true;
+          if (this.filterStatus !== 'all') matchStatus = status === this.filterStatus;
+
+          return matchType && matchStatus;
+        });
+
+        // Mostra "Prossimo episodio" solo se non c'è filtro esclusivo sui film
+        const watchingSeries = itemIds.map(id => this.trackedShows[id]).filter(s => {
+          if (s.type === 'movie' || this.filterType === 'movie') return false;
+          const p = this.getItemProgress(s);
+          return p.status === 'watching' || p.status === 'plan';
+        });
+
+        let nextUpHTML = '';
+        if (watchingSeries.length > 0) {
+          const current = watchingSeries[0];
+          const nextEp = this.getNextEpisodeToWatch(current);
+          if (nextEp) {
+            nextUpHTML = `
+              <div class="bg-gradient-to-r from-surface-elevated to-surface p-4 sm:p-5 rounded-2xl border border-brand-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
+                <div class="flex items-center gap-4">
+                  <div class="relative w-12 h-16 sm:w-14 sm:h-20 rounded-xl overflow-hidden flex-shrink-0 border border-surface-border">
+                    <img src="${current.image}" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase font-bold tracking-widest text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">Prossimo da vedere</span>
+                    <h3 class="text-base sm:text-lg font-extrabold text-white mt-0.5">${current.name}</h3>
+                    <p class="text-xs text-slate-300">S${String(nextEp.season).padStart(2, '0')}E${String(nextEp.number).padStart(2, '0')} — <span class="text-slate-400">${nextEp.name}</span></p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 self-end sm:self-center">
+                  <button onclick="app.toggleEpisode('${current.id}', '${nextEp.id}')" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition shadow-md cursor-pointer"><i class="fa-solid fa-check"></i> Segna visto</button>
+                  <button onclick="app.openItemModalById('${current.id}')" class="p-2.5 rounded-xl bg-surface-border hover:bg-slate-700 text-slate-300 text-xs transition cursor-pointer"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
               </div>
             `;
-            return;
           }
+        }
+        nextUpContainer.innerHTML = nextUpHTML;
 
-          document.getElementById('search-results-list').innerHTML = `
-            <div class="text-center py-12 text-brand-400 text-sm">
-              <i class="fa-solid fa-spinner fa-spin mr-2"></i> Ricerca Film e Serie in corso...
-            </div>
-          `;
-
-          this.searchDebounceTimer = setTimeout(async () => {
-            const results = await this.searchAll(query);
-            this.renderSearchResults(results);
-          }, 300);
-        });
-
-        window.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-            this.closeSearchModal();
-            this.closeDetailsModal();
-            this.closeDataModal();
-          }
-        });
-      },
-
-      renderSearchResults(items) {
-        const container = document.getElementById('search-results-list');
-        if (items.length === 0) {
-          container.innerHTML = `
-            <div class="text-center py-12 text-slate-400 text-sm">
-              Nessun film o serie trovata. Prova un altro titolo o verifica lo spelling.
-            </div>
-          `;
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">Nessun titolo corrisponde ai filtri selezionati.</div>`;
           return;
         }
 
-        container.innerHTML = items.map(item => {
-          const isTracked = !!this.trackedShows[String(item.id)];
-          const isMovie = item.type === 'movie' || String(item.id).startsWith('m_') || String(item.id).startsWith('tmdb_m_');
-          const imgUrl = item.image ? (item.image.medium || item.image) : 'https://placehold.co/100x150/1f2737/ffffff?text=' + encodeURIComponent(item.name);
-          const year = item.premiered ? item.premiered.slice(0, 4) : 'N/A';
-          const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
-
-          const genreDisplay = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
+        grid.innerHTML = filtered.map(item => {
+          const { watched, total, percent, status } = this.getItemProgress(item);
+          const isMovie = item.type === 'movie';
+          const nextEp = !isMovie ? this.getNextEpisodeToWatch(item) : null;
+          let badgeColor = 'bg-brand-500/20 text-brand-400 border-brand-500/30';
+          let statusText = isMovie ? (watched ? 'Visto' : 'Da vedere') : `${watched}/${total} ep`;
+          if (status === 'finished') { badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'; statusText = isMovie ? 'Visto' : 'Completata'; } 
+          else if (status === 'plan') { badgeColor = 'bg-slate-700 text-slate-300 border-slate-600'; statusText = 'Da iniziare'; }
 
           return `
-            <div class="bg-surface-elevated/70 p-3 rounded-2xl border border-surface-border flex items-center justify-between gap-3 hover:border-brand-500/40 transition">
-              <div class="flex items-center gap-3 cursor-pointer overflow-hidden flex-1" onclick="app.inspectItemFromSearch('${item.id}')">
-                <img src="${imgUrl}" class="w-12 h-16 rounded-xl object-cover border border-surface-border flex-shrink-0">
-                <div class="truncate">
-                  <div class="flex items-center gap-2">
-                    <h4 class="font-bold text-slate-100 text-sm truncate">${item.name}</h4>
-                    <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded border ${isMovie ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}">
-                      ${isMovie ? 'Film' : 'Serie'}
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-                    <span>${year}</span>
-                    <span>•</span>
-                    <span class="text-accent font-semibold"><i class="fa-solid fa-star text-[10px]"></i> ${rating}</span>
-                    <span>•</span>
-                    <span class="truncate">${genreDisplay}</span>
-                  </div>
-                </div>
+            <div onclick="app.openItemModalById('${item.id}')" class="group relative bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col cursor-pointer shadow-md hover:-translate-y-1">
+              <div class="relative aspect-[2/3] w-full overflow-hidden bg-surface-elevated">
+                <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
+                <div class="absolute top-2 left-2"><span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}">${isMovie ? 'Film' : 'Serie'}</span></div>
+                <div class="absolute top-2 right-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${badgeColor} backdrop-blur-md">${percent}%</span></div>
+                ${nextEp ? `<div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate"><span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>:${nextEp.name}</div>` : ''}
               </div>
-
-              <button onclick="app.quickAddOrOpen('${item.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
-                <i class="fa-solid ${isTracked ? 'fa-eye' : 'fa-plus'}"></i>
-                <span>${isTracked ? 'Dettagli' : 'Aggiungi'}</span>
-              </button>
+              <div class="p-3 flex-1 flex flex-col justify-between">
+                <div>
+                  <h4 class="font-bold text-sm text-slate-100 group-hover:text-brand-400 transition-colors line-clamp-1">${item.name}</h4>
+                  <div class="flex items-center justify-between text-[11px] text-slate-400 mt-1"><span>${item.premiered}</span><span class="font-semibold text-slate-300">${statusText}</span></div>
+                </div>
+                <div class="w-full h-1.5 bg-surface-elevated rounded-full overflow-hidden mt-3"><div class="h-full ${isMovie ? 'bg-amber-400' : 'bg-brand-400'} rounded-full transition-all" style="width: ${percent}%"></div></div>
+              </div>
             </div>
           `;
         }).join('');
       },
 
-      async inspectItemFromSearch(itemId) {
-        this.closeSearchModal();
-        const idStr = String(itemId);
-        if (this.trackedShows[idStr]) {
-          this.openItemModalById(idStr);
-        } else {
-          const item = await this.searchAll(idStr);
-          if (item && item.length > 0) {
-            const full = await this.fetchItemDetails(item[0]);
-            this.openItemModalExternal(full);
-          }
-        }
-      },
+      renderStats() {
+        let totalMinutes = 0, totalEpisodes = 0, moviesWatched = 0, finishedSeries = 0;
+        const genreCounts = {};
+        const items = Object.values(this.trackedShows);
 
-      async quickAddOrOpen(itemId) {
-        const idStr = String(itemId);
-        if (this.trackedShows[idStr]) {
-          this.closeSearchModal();
-          this.openItemModalById(idStr);
-        } else {
-          this.closeSearchModal();
-          const target = this.displayedDiscoverShows.find(s => String(s.id) === idStr) || 
-                         this.curatedMovies.find(m => String(m.id) === idStr);
-          if (target) {
-            await this.trackItem(target);
+        items.forEach(item => {
+          const { status } = this.getItemProgress(item);
+          if (item.type === 'movie') {
+            if (item.watched) { moviesWatched++; totalMinutes += (item.runtime || 120); }
           } else {
-            await this.trackItem({ id: idStr, type: idStr.includes('_m_') ? 'movie' : 'series' });
+            if (status === 'finished') finishedSeries++;
+            const watchedEpIds = Object.keys(item.watchedEpisodes || {});
+            totalEpisodes += watchedEpIds.length;
+            Object.values(item.seasons || {}).forEach(eps => { eps.forEach(ep => { if (item.watchedEpisodes && item.watchedEpisodes[ep.id]) totalMinutes += (ep.runtime || item.runtime || 45); }); });
           }
+          if (item.genres && Array.isArray(item.genres)) {
+            item.genres.forEach(g => { if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') genreCounts[g] = (genreCounts[g] || 0) + 1; });
+          }
+        });
+
+        const mInH = 60, mInD = 60 * 24, mInM = 60 * 24 * 30.5;
+        const months = Math.floor(totalMinutes / mInM); let rem = totalMinutes % mInM;
+        const days = Math.floor(rem / mInD); rem = rem % mInD;
+        const hours = Math.floor(rem / mInH); const mins = rem % mInH;
+
+        document.getElementById('stat-months').textContent = months; document.getElementById('stat-days').textContent = days;
+        document.getElementById('stat-hours').textContent = hours; document.getElementById('stat-minutes').textContent = mins;
+        document.getElementById('stat-movies-count').textContent = moviesWatched; document.getElementById('stat-episodes-count').textContent = totalEpisodes;
+        document.getElementById('stat-finished-count').textContent = finishedSeries; document.getElementById('stat-total-shows').textContent = items.length;
+
+        const genresContainer = document.getElementById('genres-bars-container');
+        const sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        if (sortedGenres.length === 0) { genresContainer.innerHTML = `<p class="text-xs text-slate-500 py-4">Aggiungi titoli per visualizzare la ripartizione dei tuoi generi preferiti.</p>`; return; }
+        const maxCount = sortedGenres[0][1] || 1;
+        genresContainer.innerHTML = sortedGenres.map(([genre, count]) => {
+          const pct = Math.round((count / maxCount) * 100);
+          return `<div><div class="flex justify-between text-xs font-semibold mb-1"><span class="text-slate-200">${genre}</span><span class="text-brand-400 font-bold">${count} titoli</span></div><div class="w-full h-2 bg-surface-elevated rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-brand-600 to-brand-400 rounded-full" style="width: ${pct}%"></div></div></div>`;
+        }).join('');
+      },
+
+      updateStats() { if (this.activeTab === 'stats') this.renderStats(); },
+      updateWatchlistCounts() { const countEl = document.getElementById('badge-watching-count'); if (countEl) countEl.textContent = Object.keys(this.trackedShows).length; },
+
+      renderCalendar() {
+        const container = document.getElementById('calendar-schedule-container');
+        const upcomingList = [];
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        Object.values(this.trackedShows).forEach(show => {
+          if (show.type === 'movie' || !show.seasons) return;
+          Object.values(show.seasons).forEach(eps => {
+            eps.forEach(ep => { if (ep.airdate && ep.airdate >= todayStr) upcomingList.push({ showName: show.name, showImage: show.image, showId: show.id, epTitle: ep.name, season: ep.season, number: ep.number, airdate: ep.airdate }); });
+          });
+        });
+        upcomingList.sort((a, b) => a.airdate.localeCompare(b.airdate));
+
+        if (upcomingList.length === 0) { container.innerHTML = `<div class="text-center py-16 bg-surface rounded-2xl border border-surface-border text-slate-400"><i class="fa-regular fa-calendar-xmark text-3xl mb-3 text-slate-500"></i><p class="text-sm font-semibold">Nessuna nuova uscita a breve</p></div>`; return; }
+        container.innerHTML = upcomingList.slice(0, 15).map(item => {
+          const dateFormatted = new Date(item.airdate).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+          return `<div onclick="app.openItemModalById('${item.showId}')" class="bg-surface p-4 rounded-2xl border border-surface-border hover:border-brand-500/40 flex items-center justify-between gap-4 transition cursor-pointer"><div class="flex items-center gap-3.5"><img src="${item.showImage}" class="w-12 h-16 rounded-xl object-cover border border-surface-border"><div><span class="text-xs font-bold text-brand-400 flex items-center gap-1.5"><i class="fa-regular fa-clock"></i> ${dateFormatted}</span><h4 class="font-bold text-white text-sm sm:text-base">${item.showName}</h4><p class="text-xs text-slate-400">S${item.season}, E${item.number} • ${item.epTitle}</p></div></div><span class="text-xs bg-surface-elevated px-3 py-1.5 rounded-xl text-slate-300 font-semibold border border-surface-border">In arrivo</span></div>`;
+        }).join('');
+      },
+
+      // ==========================================
+      // ====== SEZIONE: DISCOVER & ESPLORA =======
+      // ==========================================
+      getUserTopSpecificGenres() {
+        const counts = {};
+        Object.values(this.trackedShows).forEach(s => { if (s.genres && Array.isArray(s.genres)) { s.genres.forEach(g => { if (!this.GENERIC_GENRES.has(g) && g !== 'Drama') counts[g] = (counts[g] || 0) + 1; }); } });
+        return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
+      },
+
+      async buildSmartCandidatePool(forceFullNew = false) {
+        let pool = [];
+        const trackedTitles = new Set(Object.values(this.trackedShows).map(s => this.normalizeTitle(s.name)));
+        const trackedKeys = new Set(Object.keys(this.trackedShows));
+        const cat = this.discoverCategory;
+
+        if (this.tmdbApiKey) {
+          try {
+            const randomPage = forceFullNew ? Math.floor(Math.random() * 5) + 1 : 1;
+            let endpoints = [];
+            if (cat === 'top') {
+              endpoints.push(`https://api.themoviedb.org/3/movie/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
+              endpoints.push(`https://api.themoviedb.org/3/tv/top_rated?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
+            } else if (cat !== 'smart') {
+              const genreId = this.tmdbGenreIds[cat] || 28;
+              endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
+              endpoints.push(`https://api.themoviedb.org/3/discover/tv?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
+            } else {
+              const specificGenres = this.getUserTopSpecificGenres();
+              if (specificGenres.length > 0) {
+                const targetGenre = specificGenres[Math.floor(Math.random() * specificGenres.length)];
+                const genreId = this.tmdbGenreIds[targetGenre];
+                if (genreId) endpoints.push(`https://api.themoviedb.org/3/discover/movie?api_key=${this.tmdbApiKey}&language=it-IT&with_genres=${genreId}&sort_by=popularity.desc&page=${randomPage}`);
+              }
+              endpoints.push(`https://api.themoviedb.org/3/trending/all/week?api_key=${this.tmdbApiKey}&language=it-IT&page=${randomPage}`);
+            }
+
+            const responses = await Promise.all(endpoints.map(u => fetch(u).then(r => r.json()).catch(() => null)));
+            responses.forEach(data => {
+              if (data && data.results) {
+                const mapped = data.results.filter(i => i && i.poster_path).map(item => {
+                  const isMovie = item.title !== undefined;
+                  return { id: isMovie ? `tmdb_m_${item.id}` : `tmdb_s_${item.id}`, tmdbId: item.id, type: isMovie ? 'movie' : 'series', name: isMovie ? (item.title || item.original_title) : (item.name || item.original_name), image: `https://image.tmdb.org/t/p/w500${item.poster_path}`, rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0', runtime: isMovie ? 120 : 45, premiered: isMovie ? (item.release_date ? item.release_date.slice(0, 4) : 'N/A') : (item.first_air_date ? item.first_air_date.slice(0, 4) : 'N/A'), genres: (item.genre_ids || []).map(id => this.tmdbGenreMap[id]).filter(Boolean).filter(g => g !== 'Drama'), summary: item.overview || 'Nessuna trama.' };
+                });
+                pool = pool.concat(mapped);
+              }
+            });
+          } catch (e) {}
+        }
+        pool = pool.concat([...this.curatedMovies].sort(() => 0.5 - Math.random()));
+        const uniqueList = []; const seenKeys = new Set(); const seenNormTitles = new Set();
+        pool.forEach(item => {
+          if (item && item.id && item.name && item.image) {
+            const idStr = String(item.id); const norm = this.normalizeTitle(item.name);
+            if (!trackedKeys.has(idStr) && !trackedTitles.has(norm) && !this.dismissedIds.has(idStr) && !seenKeys.has(idStr) && !seenNormTitles.has(norm)) {
+              seenKeys.add(idStr); seenNormTitles.add(norm); uniqueList.push(item);
+            }
+          }
+        });
+        this.candidateShowPool = uniqueList.sort(() => 0.5 - Math.random());
+      },
+
+      async getNextReplacementShow(excludeIds = []) {
+        const excludeSet = new Set([...excludeIds.map(String), ...Object.keys(this.trackedShows), ...Array.from(this.dismissedIds)]);
+        const onScreenTitles = new Set(this.displayedDiscoverShows.map(s => this.normalizeTitle(s.name)));
+        for (let i = 0; i < this.candidateShowPool.length; i++) {
+          const candidate = this.candidateShowPool[i];
+          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(this.normalizeTitle(candidate.name))) {
+            this.candidateShowPool.splice(i, 1); return candidate;
+          }
+        }
+        await this.buildSmartCandidatePool(true);
+        for (let i = 0; i < this.candidateShowPool.length; i++) {
+          const candidate = this.candidateShowPool[i];
+          if (!excludeSet.has(String(candidate.id)) && !onScreenTitles.has(this.normalizeTitle(candidate.name))) {
+            this.candidateShowPool.splice(i, 1); return candidate;
+          }
+        }
+        return null;
+      },
+
+      async refreshDiscoverFeed(forceReload = false) {
+        const discoverGrid = document.getElementById('discover-cards-grid');
+        const hintEl = document.getElementById('discover-flavor-hint');
+        const refreshIcon = document.getElementById('icon-refresh-discover');
+
+        if (refreshIcon) refreshIcon.classList.add('fa-spin');
+        discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin text-brand-400 mr-2 text-base"></i> Generazione proposte in corso...</div>`;
+        if (forceReload) { this.candidateShowPool = []; this.displayedDiscoverShows = []; }
+        await this.buildSmartCandidatePool(forceReload);
+
+        const specificGenres = this.getUserTopSpecificGenres();
+        if (hintEl) {
+          if (this.discoverCategory === 'smart') {
+            hintEl.innerHTML = specificGenres.length > 0 ? `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato a: <b class="text-slate-200">${specificGenres.slice(0, 2).join(', ')}</b>` : 'Proposte popolari e cult';
+          } else { hintEl.textContent = `Categoria: ${this.discoverCategory}`; }
+        }
+
+        this.displayedDiscoverShows = [];
+        const seenNormTitles = new Set();
+        while (this.displayedDiscoverShows.length < 10 && this.candidateShowPool.length > 0) {
+          const item = this.candidateShowPool.shift();
+          const idStr = String(item.id); const norm = this.normalizeTitle(item.name);
+          if (!this.trackedShows[idStr] && !this.dismissedIds.has(idStr) && !seenNormTitles.has(norm)) {
+            seenNormTitles.add(norm); this.displayedDiscoverShows.push(item);
+          }
+        }
+        if (refreshIcon) setTimeout(() => refreshIcon.classList.remove('fa-spin'), 350);
+        this.renderDiscoverGrid();
+      },
+
+      renderDiscoverGrid() {
+        const discoverGrid = document.getElementById('discover-cards-grid');
+        if (this.displayedDiscoverShows.length === 0) { discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 text-sm">Nessun altro titolo disponibile in questa categoria.</div>`; return; }
+        discoverGrid.innerHTML = this.displayedDiscoverShows.map((item) => this.generateDiscoverCardHTML(item)).join('');
+      },
+
+      generateDiscoverCardHTML(item) {
+        const isTracked = !!this.trackedShows[String(item.id)];
+        const isMovie = item.type === 'movie' || String(item.id).startsWith('m_') || String(item.id).startsWith('tmdb_m_');
+        const img = item.image ? (item.image.medium || item.image.original || item.image) : '';
+        const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '8.2');
+        const genre = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
+
+        return `
+          <div id="discover-card-${item.id}" class="group bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col shadow-sm relative">
+            <div class="relative aspect-[2/3] w-full overflow-hidden bg-surface-elevated cursor-pointer" onclick="app.inspectItemFromDiscover('${item.id}')">
+              <img src="${img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute top-2 left-2 flex gap-1"><span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/30 text-amber-300 border-amber-500/40' : 'bg-cyan-500/30 text-cyan-300 border-cyan-500/40'}">${isMovie ? 'Film' : 'Serie'}</span></div>
+              <button onclick="event.stopPropagation(); app.dismissAndReplaceItem('${item.id}')" title="Non mi interessa" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-rose-500/80 text-slate-300 hover:text-white flex items-center justify-center text-xs transition backdrop-blur-md cursor-pointer z-10"><i class="fa-solid fa-eye-slash"></i></button>
+              <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-accent text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-star text-[10px]"></i> ${rating}</div>
+            </div>
+            <div class="p-3 flex-1 flex flex-col justify-between gap-2">
+              <div><h4 class="font-bold text-sm text-slate-200 line-clamp-1 cursor-pointer group-hover:text-brand-400 transition-colors" onclick="app.inspectItemFromDiscover('${item.id}')">${item.name}</h4><span class="text-[11px] text-slate-400">${item.premiered ? item.premiered.slice(0,4) + ' • ' : ''}${genre}</span></div>
+              <button onclick="app.quickAddAndReplaceItem('${item.id}')" class="w-full py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${isTracked ? 'bg-surface-elevated text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}"><i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i><span>${isTracked ? 'In Lista' : 'Aggiungi'}</span></button>
+            </div>
+          </div>
+        `;
+      },
+
+      async dismissAndReplaceItem(itemId) { this.dismissedIds.add(String(itemId)); this.showToast("Titolo nascosto", "fa-eye-slash"); await this.replaceCardOnScreen(itemId); },
+      async quickAddAndReplaceItem(itemId) {
+        const targetItem = this.displayedDiscoverShows.find(s => String(s.id) === String(itemId));
+        if (targetItem) await this.trackItem(targetItem);
+        await this.replaceCardOnScreen(itemId);
+      },
+
+      async replaceCardOnScreen(itemId) {
+        const cardElement = document.getElementById(`discover-card-${itemId}`);
+        if (!cardElement) return;
+        cardElement.classList.add('scale-95', 'opacity-30', 'transition-all', 'duration-200');
+        const currentOnScreenIds = this.displayedDiscoverShows.map(s => s.id);
+        const replacement = await this.getNextReplacementShow(currentOnScreenIds);
+        const showIndex = this.displayedDiscoverShows.findIndex(s => String(s.id) === String(itemId));
+        if (showIndex !== -1) { if (replacement) this.displayedDiscoverShows[showIndex] = replacement; else this.displayedDiscoverShows.splice(showIndex, 1); }
+        setTimeout(() => {
+          if (replacement) {
+            const tempContainer = document.createElement('div'); tempContainer.innerHTML = this.generateDiscoverCardHTML(replacement);
+            const newCardNode = tempContainer.firstElementChild; newCardNode.classList.add('opacity-0', 'scale-90', 'transition-all', 'duration-300');
+            cardElement.replaceWith(newCardNode); requestAnimationFrame(() => newCardNode.classList.remove('opacity-0', 'scale-90'));
+          } else { cardElement.remove(); }
+        }, 200);
+      },
+
+      async inspectItemFromDiscover(itemId) {
+        const idStr = String(itemId);
+        if (this.trackedShows[idStr]) { this.openItemModalById(idStr); } 
+        else {
+          const item = this.displayedDiscoverShows.find(s => String(s.id) === idStr) || this.candidateShowPool.find(s => String(s.id) === idStr);
+          if (item) { const full = await this.fetchItemDetails(item); this.openItemModalExternal(full); }
         }
       },
 
-      openDataModal() {
-        this.updateTmdbIndicator();
-        document.getElementById('data-modal').classList.remove('hidden');
-      },
-
-      closeDataModal() {
-        document.getElementById('data-modal').classList.add('hidden');
-      },
+      openDataModal() { this.updateTmdbIndicator(); document.getElementById('data-modal').classList.remove('hidden'); },
+      closeDataModal() { document.getElementById('data-modal').classList.add('hidden'); },
 
       exportDataJSON() {
-        const dataStr = JSON.stringify(this.trackedShows, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `TrackMovie_Backup_${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        this.showToast("Backup scaricato con successo!", "fa-circle-down");
+        const dataStr = JSON.stringify(this.trackedShows, null, 2); const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url;
+        link.download = `TrackMovie_Backup_${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+        this.showToast("Backup scaricato!", "fa-circle-down");
       },
 
       importDataJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
+        const file = event.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
             const parsed = JSON.parse(e.target.result);
             if (typeof parsed === 'object' && parsed !== null) {
-              this.trackedShows = parsed;
-              this.cleanDuplicateTrackedShows(false);
-              this.saveToStorage();
-              this.renderAll();
-              this.refreshDiscoverFeed(true);
-              this.closeDataModal();
-              this.showToast("Dati importati con successo!");
-            } else {
-              throw new Error("Formato non valido");
-            }
-          } catch (err) {
-            console.error(err);
-            this.showToast("File JSON non valido o corrotto", "fa-triangle-exclamation");
-          }
+              this.trackedShows = parsed; this.cleanDuplicateTrackedShows(false); this.saveToStorage(); this.renderAll(); this.refreshDiscoverFeed(true); this.closeDataModal(); this.showToast("Dati importati!");
+            } else throw new Error("Formato non valido");
+          } catch (err) { this.showToast("File JSON non valido", "fa-triangle-exclamation"); }
         };
         reader.readAsText(file);
       },
 
       clearAllData() {
-        const proceed = window.confirm("Sei sicuro di voler cancellare tutti i film, le serie e i progressi salvati?");
-        if (proceed) {
-          this.trackedShows = {};
-          this.saveToStorage();
-          this.renderAll();
-          this.refreshDiscoverFeed(true);
-          this.closeDataModal();
-          this.showToast("Dati azzerati con successo", "fa-trash");
+        if (window.confirm("Sei sicuro di voler cancellare tutto?")) {
+          this.trackedShows = {}; this.saveToStorage(); this.renderAll(); this.refreshDiscoverFeed(true); this.closeDataModal(); this.showToast("Dati azzerati", "fa-trash");
         }
       },
 
-      renderAll() {
-        this.renderWatchlist();
-        this.updateStats();
-        this.updateWatchlistCounts();
-      }
+      renderAll() { this.renderWatchlist(); this.updateStats(); this.updateWatchlistCounts(); }
     };
 
-    window.addEventListener('DOMContentLoaded', () => {
-      app.init();
-    });
+    window.addEventListener('DOMContentLoaded', () => { app.init(); });
   </script>
 </body>
 </html>
