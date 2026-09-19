@@ -81,7 +81,8 @@
 
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-12">
     
-   <div class="hidden md:flex items-center justify-between border-b border-surface-border pb-4 mb-6">
+    <!-- Barra Desktop (nascosta su cellulare) -->
+    <div class="hidden md:flex items-center justify-between border-b border-surface-border pb-4 mb-6">
       <nav class="flex space-x-1 sm:space-x-2 bg-surface p-1 rounded-2xl border border-surface-border text-sm overflow-x-auto">
         <button onclick="app.setTab('watchlist')" id="tab-btn-watchlist" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-brand-400 bg-surface-elevated shadow-sm">
           <i class="fa-solid fa-layer-group"></i> <span>La mia Lista</span>
@@ -118,11 +119,12 @@
           <button onclick="app.setFilterType('movie')" id="filter-type-movie" class="filter-type px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Film</button>
           <button onclick="app.setFilterType('series')" id="filter-type-series" class="filter-type px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Serie TV</button>
         </div>
-        <!-- RIGA 2: FILTRO STATO -->
+        <!-- RIGA 2: FILTRO STATO (CON "IN PAUSA") -->
         <div class="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto pt-2 border-t border-surface-border/50">
           <span class="text-slate-500 font-bold uppercase tracking-wider mr-2 text-[10px]">Stato:</span>
           <button onclick="app.setFilterStatus('all')" id="filter-status-all" class="filter-status px-3 py-1.5 rounded-lg font-medium bg-brand-500/20 text-brand-400 border border-brand-500/30">Tutti</button>
           <button onclick="app.setFilterStatus('watching')" id="filter-status-watching" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">In corso</button>
+          <button onclick="app.setFilterStatus('paused')" id="filter-status-paused" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">In pausa</button>
           <button onclick="app.setFilterStatus('plan')" id="filter-status-plan" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Da vedere</button>
           <button onclick="app.setFilterStatus('finished')" id="filter-status-finished" class="filter-status px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Visti</button>
         </div>
@@ -136,7 +138,7 @@
           <i class="fa-solid fa-film"></i>
         </div>
         <h3 class="text-lg font-bold text-slate-200">Nessun titolo corrisponde ai filtri</h3>
-        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Modifica i filtri qui sopra o vai nella scheda Ricerca per aggiungere nuovi titoli.</p>
+        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Modifica i filtri qui sopra o cerca nuovi titoli da aggiungere.</p>
         <button onclick="app.setTab('search')" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-500 hover:bg-brand-400 text-slate-950 transition cursor-pointer">
           <i class="fa-solid fa-magnifying-glass mr-2"></i>Vai alla Ricerca
         </button>
@@ -148,7 +150,6 @@
     <!-- ========================================== -->
     <section id="view-search" class="hidden space-y-6">
       <div class="bg-surface rounded-3xl border border-surface-border p-4 sm:p-6 shadow-xl flex flex-col gap-4">
-        
         <div class="flex items-center gap-3 bg-surface-elevated p-3 rounded-2xl border border-surface-border focus-within:border-brand-500 transition-colors">
           <i class="fa-solid fa-magnifying-glass text-brand-400 text-lg ml-2"></i>
           <input type="text" id="main-search-input" oninput="app.triggerSearch()" placeholder="Cerca titoli es. Inception, Breaking Bad..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-slate-500" autocomplete="off">
@@ -330,12 +331,16 @@
 
       <div class="p-4 sm:p-6 border-b border-surface-border space-y-4 overflow-y-auto">
         <div class="flex flex-wrap gap-2 items-center justify-between">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <button id="modal-btn-track" onclick="app.toggleItemTrackingFromModal()" class="px-4 py-2 rounded-xl text-sm font-bold bg-brand-500 hover:bg-brand-400 text-slate-950 transition flex items-center gap-2 cursor-pointer">
               <i class="fa-solid fa-bookmark"></i> <span id="modal-track-label">Aggiungi alla lista</span>
             </button>
             <button id="modal-btn-mark-all" onclick="app.markAllModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-surface-elevated hover:bg-surface-border text-slate-300 transition cursor-pointer">
               <i class="fa-solid fa-check-double mr-1 text-brand-400"></i> Tutto visto
+            </button>
+            <!-- TASTO IN PAUSA -->
+            <button id="modal-btn-pause" onclick="app.togglePauseModal()" class="hidden px-3 py-2 rounded-xl text-xs font-semibold bg-surface-elevated hover:bg-surface-border text-amber-400 transition cursor-pointer border border-surface-border">
+              <i class="fa-solid fa-pause mr-1"></i> <span id="modal-pause-label">Metti in pausa</span>
             </button>
           </div>
           <div class="w-full sm:w-48 text-right">
@@ -350,7 +355,6 @@
 
         <p id="modal-summary" class="text-xs sm:text-sm text-slate-300 line-clamp-3 leading-relaxed border-l-2 border-brand-500 pl-3"></p>
         
-        <!-- INFO CAST E DURATA -->
         <div class="bg-surface-elevated/40 p-3 rounded-xl border border-surface-border/50 text-xs text-slate-400 space-y-1">
           <div><span class="font-bold text-slate-200">Durata:</span> <span id="modal-runtime-text"></span></div>
           <div><span class="font-bold text-slate-200">Cast principale:</span> <span id="modal-cast-text">Nessun dato disponibile</span></div>
@@ -414,26 +418,21 @@
   <!-- ========================================== -->
   <script>
     const app = {
-      // ==== STATO GLOBALE ====
       trackedShows: {},
       tmdbApiKey: '',
       activeTab: 'watchlist',
       
-      // Filtri Watchlist (Doppio stato)
       filterType: 'all',    // 'all', 'movie', 'series'
-      filterStatus: 'all',  // 'all', 'watching', 'plan', 'finished'
+      filterStatus: 'all',  // 'all', 'watching', 'paused', 'plan', 'finished'
       
-      // Stato Ricerca
-      searchMode: 'title', // 'title' o 'actor'
+      searchMode: 'title',
       searchDebounceTimer: null,
       
-      // Stato Esplora
       discoverCategory: 'smart',
       displayedDiscoverShows: [],
       candidateShowPool: [],
       dismissedIds: new Set(),
       
-      // Stato Modal
       selectedModalShow: null,
       selectedModalSeason: 1,
 
@@ -446,7 +445,6 @@
         { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Drama', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.', cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain'] },
         { id: 'm_inception', type: 'movie', name: 'Inception', image: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', rating: 8.8, runtime: 148, premiered: '2010', genres: ['Sci-Fi', 'Action', 'Thriller'], summary: 'Un abile ladro di segreti nel subconscio deve affrontare una pericolosa missione di innesto di una nuova idea.', cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'] },
       ],
-      curatedShowIds: [169, 82, 431, 305, 1780, 216, 2993, 31086],
 
       normalizeTitle(title) {
         if (!title) return '';
@@ -549,6 +547,20 @@
           activeBtn.classList.remove('text-slate-400', 'border-transparent');
         }
         this.renderWatchlist();
+      },
+
+      // GESTIONE PAUSA
+      togglePauseModal() {
+        if (!this.selectedModalShow) return;
+        const idStr = String(this.selectedModalShow.id);
+        const item = this.trackedShows[idStr];
+        if (!item || item.type === 'movie') return;
+
+        item.paused = !item.paused;
+        this.saveToStorage();
+        this.renderWatchlist();
+        this.refreshModalView();
+        this.showToast(item.paused ? `Serie messa in pausa: ${item.name}` : `Serie ripresa: ${item.name}`, item.paused ? 'fa-pause' : 'fa-play');
       },
 
       // ==========================================
@@ -749,15 +761,6 @@
         }
       },
 
-      bindEvents() {
-        window.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-            this.closeDetailsModal();
-            this.closeDataModal();
-          }
-        });
-      },
-
       // ==========================================
       // ====== RECUPERO DATI E FETCH (API) =======
       // ==========================================
@@ -806,6 +809,8 @@
               cast: castList,
               seasons: seasons,
               watchedEpisodes: {},
+              paused: false,
+              lastActivity: Date.now(),
               addedAt: Date.now()
             };
           } catch (e) {}
@@ -831,6 +836,7 @@
               summary: mov.overview || item.summary || 'Nessuna trama disponibile.',
               cast: castList,
               watched: false,
+              lastActivity: Date.now(),
               addedAt: Date.now()
             };
           } catch (e) {}
@@ -874,6 +880,8 @@
               cast: castList,
               seasons: seasons,
               watchedEpisodes: {},
+              paused: false,
+              lastActivity: Date.now(),
               addedAt: Date.now()
             };
           } catch (e) {}
@@ -905,6 +913,8 @@
       openItemModalById(itemId) {
         const item = this.trackedShows[String(itemId)];
         if (!item) return;
+        item.lastActivity = Date.now();
+        this.saveToStorage();
         this.selectedModalShow = item;
         this.selectedModalSeason = 1;
         this.refreshModalView();
@@ -941,7 +951,18 @@
         typePill.textContent = isMovie ? 'Film' : 'Serie TV';
         typePill.className = `text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${isMovie ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'}`;
 
-        document.getElementById('modal-status-pill').textContent = isMovie ? `Film` : (currentData.status || 'In corso');
+        const statusPill = document.getElementById('modal-status-pill');
+        if (isMovie) {
+          statusPill.textContent = 'Film';
+          statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-surface-elevated text-slate-300 border border-surface-border';
+        } else if (currentData.paused) {
+          statusPill.textContent = 'In pausa';
+          statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        } else {
+          statusPill.textContent = currentData.status || 'In corso';
+          statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-surface-elevated text-slate-300 border border-surface-border';
+        }
+
         document.getElementById('modal-summary').textContent = currentData.summary;
 
         const runtimeText = currentData.runtime ? `${currentData.runtime} min ${isMovie ? '' : '(media episodio)'}` : 'Sconosciuta';
@@ -966,12 +987,15 @@
         }
 
         const markAllBtn = document.getElementById('modal-btn-mark-all');
+        const pauseBtn = document.getElementById('modal-btn-pause');
+        const pauseLabel = document.getElementById('modal-pause-label');
         const seasonsTabsContainer = document.getElementById('modal-seasons-tabs');
         const epContainer = document.getElementById('modal-episodes-container');
 
         if (isMovie) {
           seasonsTabsContainer.innerHTML = '';
           markAllBtn.classList.add('hidden');
+          pauseBtn.classList.add('hidden');
           epContainer.innerHTML = `
             <div class="py-8 px-4 text-center bg-surface/50 rounded-2xl border border-surface-border flex flex-col items-center justify-center gap-4">
               <i class="fa-solid fa-film text-4xl text-amber-400"></i>
@@ -987,6 +1011,16 @@
         }
 
         markAllBtn.classList.remove('hidden');
+
+        // Mostra tasto pausa se serie tracciata
+        if (isTracked) {
+          pauseBtn.classList.remove('hidden');
+          pauseLabel.textContent = currentData.paused ? 'Riprendi serie' : 'Metti in pausa';
+          pauseBtn.className = `px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${currentData.paused ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold' : 'bg-surface-elevated hover:bg-surface-border text-amber-400 border-surface-border'}`;
+        } else {
+          pauseBtn.classList.add('hidden');
+        }
+
         const seasonNums = Object.keys(currentData.seasons || {}).map(Number).sort((a, b) => a - b);
         if (!seasonNums.includes(this.selectedModalSeason) && seasonNums.length > 0) this.selectedModalSeason = seasonNums[0];
 
@@ -1005,7 +1039,8 @@
         let epHTML = `<div class="flex items-center justify-between pb-3 mb-2 border-b border-surface-border/60"><span class="text-xs font-bold text-slate-300">Episodi Stagione ${this.selectedModalSeason} (${activeEps.length})</span>${isTracked ? `<button onclick="app.markSeasonWatched('${currentData.id}', ${this.selectedModalSeason}, ${!allSeasonWatched})" class="text-xs font-semibold text-brand-400 hover:underline cursor-pointer"><i class="fa-solid fa-check mr-1"></i> ${allSeasonWatched ? 'Deseleziona stagione' : 'Segna stagione vista'}</button>` : ''}</div>`;
 
         epHTML += activeEps.map(ep => {
-          const isWatched = !!(currentData.watchedEpisodes && currentData.watchedEpisodes[String(ep.id)]);
+          const epKey = String(ep.id);
+          const isWatched = !!(currentData.watchedEpisodes && currentData.watchedEpisodes[epKey]);
           return `
             <div class="flex items-center justify-between gap-3 p-3 rounded-xl border transition ${isWatched ? 'bg-surface/50 border-surface-border opacity-70' : 'bg-surface border-surface-border/80 hover:border-brand-500/40'}">
               <div class="flex items-center gap-3">
@@ -1027,28 +1062,6 @@
         this.refreshModalView();
       },
 
-      async toggleItemTrackingFromModal() {
-        if (!this.selectedModalShow) return;
-        const idStr = String(this.selectedModalShow.id);
-        if (this.trackedShows[idStr]) {
-          this.untrackItem(idStr);
-          this.closeDetailsModal();
-        } else {
-          await this.trackItem(this.selectedModalShow);
-          this.refreshModalView();
-        }
-      },
-
-      markAllModal() {
-        if (!this.selectedModalShow) return;
-        const idStr = String(this.selectedModalShow.id);
-        if (!this.trackedShows[idStr]) {
-          this.showToast("Aggiungi prima alla lista", "fa-info");
-          return;
-        }
-        this.markAll(idStr);
-      },
-
       // ==========================================
       // ====== RENDERING LISTA E STATISTICHE ======
       // ==========================================
@@ -1060,9 +1073,12 @@
         Object.values(item.seasons || {}).forEach(eps => total += eps.length);
         const watched = Object.keys(item.watchedEpisodes || {}).length;
         const percent = total > 0 ? Math.round((watched / total) * 100) : 0;
+        
         let status = 'watching';
         if (watched === 0) status = 'plan';
         else if (watched === total && total > 0) status = 'finished';
+        else if (item.paused) status = 'paused';
+
         return { watched, total, percent, status };
       },
 
@@ -1072,7 +1088,8 @@
         for (const s of sortedSeasons) {
           const eps = show.seasons[s];
           for (const ep of eps) {
-            if (!show.watchedEpisodes || !show.watchedEpisodes[String(ep.id)]) return ep;
+            const epKey = String(ep.id);
+            if (!show.watchedEpisodes || !show.watchedEpisodes[epKey]) return ep;
           }
         }
         return null;
@@ -1105,14 +1122,18 @@
           return matchType && matchStatus;
         });
 
-        const watchingSeries = itemIds.map(id => this.trackedShows[id]).filter(s => {
-          if (s.type === 'movie' || this.filterType === 'movie') return false;
-          const p = this.getItemProgress(s);
-          return p.status === 'watching' || p.status === 'plan';
-        });
+        // "PROSSIMO DA VEDERE": SELEZIONA SPECIFICATAMENTE LA SERIE IN CORSO PIÙ RECENTE (NON IN PAUSA)
+        const watchingSeries = itemIds
+          .map(id => this.trackedShows[id])
+          .filter(s => {
+            if (s.type === 'movie' || s.paused) return false;
+            const p = this.getItemProgress(s);
+            return p.status === 'watching';
+          })
+          .sort((a, b) => (b.lastActivity || b.addedAt || 0) - (a.lastActivity || a.addedAt || 0));
 
         let nextUpHTML = '';
-        if (watchingSeries.length > 0) {
+        if (watchingSeries.length > 0 && this.filterType !== 'movie') {
           const current = watchingSeries[0];
           const nextEp = this.getNextEpisodeToWatch(current);
           if (nextEp) {
@@ -1123,7 +1144,7 @@
                     <img src="${current.image}" class="w-full h-full object-cover">
                   </div>
                   <div>
-                    <span class="text-[10px] uppercase font-bold tracking-widest text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">Prossimo da vedere</span>
+                    <span class="text-[10px] uppercase font-bold tracking-widest text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">La tua serie in corso</span>
                     <h3 class="text-base sm:text-lg font-extrabold text-white mt-0.5">${current.name}</h3>
                     <p class="text-xs text-slate-300">S${String(nextEp.season).padStart(2, '0')}E${String(nextEp.number).padStart(2, '0')} — <span class="text-slate-400">${nextEp.name}</span></p>
                   </div>
@@ -1147,11 +1168,16 @@
           const { watched, total, percent, status } = this.getItemProgress(item);
           const isMovie = item.type === 'movie';
           const nextEp = !isMovie ? this.getNextEpisodeToWatch(item) : null;
+          
           let badgeColor = 'bg-brand-500/20 text-brand-400 border-brand-500/30';
           let statusText = isMovie ? (watched ? 'Visto' : 'Da vedere') : `${watched}/${total} ep`;
+          
           if (status === 'finished') {
             badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
             statusText = isMovie ? 'Visto' : 'Completata';
+          } else if (status === 'paused') {
+            badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+            statusText = 'In pausa';
           } else if (status === 'plan') {
             badgeColor = 'bg-slate-700 text-slate-300 border-slate-600';
             statusText = 'Da iniziare';
@@ -1164,7 +1190,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
                 <div class="absolute top-2 left-2"><span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}">${isMovie ? 'Film' : 'Serie'}</span></div>
                 <div class="absolute top-2 right-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${badgeColor} backdrop-blur-md">${percent}%</span></div>
-                ${nextEp ? `<div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate"><span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>: ${nextEp.name}</div>` : ''}
+                ${nextEp && !item.paused ? `<div class="absolute bottom-2 left-2 right-2 text-[11px] font-medium text-slate-200 truncate"><span class="text-brand-400 font-bold">S${nextEp.season}E${nextEp.number}</span>: ${nextEp.name}</div>` : ''}
               </div>
               <div class="p-3 flex-1 flex flex-col justify-between">
                 <div>
@@ -1285,6 +1311,7 @@
         }).join('');
       },
 
+      // GESTIONE EPISODI E VISIONI
       toggleEpisode(showId, epId) {
         const idStr = String(showId);
         const epKey = String(epId);
@@ -1297,6 +1324,8 @@
           delete show.watchedEpisodes[epKey];
         } else {
           show.watchedEpisodes[epKey] = true;
+          show.lastActivity = Date.now(); // Aggiorna attività per "prossimo da vedere"
+          show.paused = false; // Se guardi un episodio, togli la pausa automaticamente
         }
 
         this.saveToStorage();
@@ -1311,6 +1340,7 @@
         const movie = this.trackedShows[idStr];
         if (!movie || movie.type !== 'movie') return;
         movie.watched = !movie.watched;
+        movie.lastActivity = Date.now();
         this.saveToStorage();
         this.renderWatchlist();
         if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
@@ -1335,6 +1365,8 @@
           }
         });
 
+        show.lastActivity = Date.now();
+        if (markAsWatched) show.paused = false;
         this.saveToStorage();
         this.renderWatchlist();
         if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
@@ -1357,8 +1389,10 @@
               item.watchedEpisodes[String(ep.id)] = true;
             });
           });
+          item.paused = false;
         }
 
+        item.lastActivity = Date.now();
         this.saveToStorage();
         this.renderWatchlist();
         if (this.selectedModalShow && String(this.selectedModalShow.id) === idStr) {
@@ -1642,13 +1676,30 @@
           <div id="discover-card-${item.id}" class="group bg-surface-card rounded-2xl overflow-hidden border border-surface-border hover:border-brand-500/50 transition-all duration-300 flex flex-col shadow-sm relative">
             <div class="relative aspect-[2/3] w-full overflow-hidden bg-surface-elevated cursor-pointer" onclick="app.inspectItemFromDiscover('${item.id}')">
               <img src="${img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-              <div class="absolute top-2 left-2 flex gap-1"><span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/30 text-amber-300 border-amber-500/40' : 'bg-cyan-500/30 text-cyan-300 border-cyan-500/40'}">${isMovie ? 'Film' : 'Serie'}</span></div>
-              <button onclick="event.stopPropagation(); app.dismissAndReplaceItem('${item.id}')" title="Non mi interessa" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-rose-500/80 text-slate-300 hover:text-white flex items-center justify-center text-xs transition backdrop-blur-md cursor-pointer z-10"><i class="fa-solid fa-eye-slash"></i></button>
-              <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-accent text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-star text-[10px]"></i> ${rating}</div>
+              
+              <div class="absolute top-2 left-2 flex gap-1">
+                <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded backdrop-blur-md border ${isMovie ? 'bg-amber-500/30 text-amber-300 border-amber-500/40' : 'bg-cyan-500/30 text-cyan-300 border-cyan-500/40'}">
+                  ${isMovie ? 'Film' : 'Serie'}
+                </span>
+              </div>
+
+              <button onclick="event.stopPropagation(); app.dismissAndReplaceItem('${item.id}')" title="Non mi interessa" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-rose-500/80 text-slate-300 hover:text-white flex items-center justify-center text-xs transition backdrop-blur-md cursor-pointer z-10">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
+
+              <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-accent text-xs font-bold flex items-center gap-1">
+                <i class="fa-solid fa-star text-[10px]"></i> ${rating}
+              </div>
             </div>
             <div class="p-3 flex-1 flex flex-col justify-between gap-2">
-              <div><h4 class="font-bold text-sm text-slate-200 line-clamp-1 cursor-pointer group-hover:text-brand-400 transition-colors" onclick="app.inspectItemFromDiscover('${item.id}')">${item.name}</h4><span class="text-[11px] text-slate-400">${year ? year + ' • ' : ''}${genre}</span></div>
-              <button onclick="app.quickAddAndReplaceItem('${item.id}')" class="w-full py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${isTracked ? 'bg-surface-elevated text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}"><i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i><span>${isTracked ? 'In Lista' : 'Aggiungi'}</span></button>
+              <div>
+                <h4 class="font-bold text-sm text-slate-200 line-clamp-1 cursor-pointer group-hover:text-brand-400 transition-colors" onclick="app.inspectItemFromDiscover('${item.id}')">${item.name}</h4>
+                <span class="text-[11px] text-slate-400">${year ? year + ' • ' : ''}${genre}</span>
+              </div>
+              <button onclick="app.quickAddAndReplaceItem('${item.id}')" class="w-full py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${isTracked ? 'bg-surface-elevated text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
+                <i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i>
+                <span>${isTracked ? 'In Lista' : 'Aggiungi'}</span>
+              </button>
             </div>
           </div>
         `;
@@ -1662,21 +1713,30 @@
 
       async quickAddAndReplaceItem(itemId) {
         const targetItem = this.displayedDiscoverShows.find(s => String(s.id) === String(itemId));
-        if (targetItem) await this.trackItem(targetItem);
+        if (targetItem) {
+          await this.trackItem(targetItem);
+        }
         await this.replaceCardOnScreen(itemId);
       },
 
       async replaceCardOnScreen(itemId) {
         const cardElement = document.getElementById(`discover-card-${itemId}`);
         if (!cardElement) return;
+
         cardElement.classList.add('scale-95', 'opacity-30', 'transition-all', 'duration-200');
+
         const currentOnScreenIds = this.displayedDiscoverShows.map(s => s.id);
         const replacement = await this.getNextReplacementShow(currentOnScreenIds);
+
         const showIndex = this.displayedDiscoverShows.findIndex(s => String(s.id) === String(itemId));
         if (showIndex !== -1) {
-          if (replacement) this.displayedDiscoverShows[showIndex] = replacement;
-          else this.displayedDiscoverShows.splice(showIndex, 1);
+          if (replacement) {
+            this.displayedDiscoverShows[showIndex] = replacement;
+          } else {
+            this.displayedDiscoverShows.splice(showIndex, 1);
+          }
         }
+
         setTimeout(() => {
           if (replacement) {
             const tempContainer = document.createElement('div');
@@ -1684,7 +1744,10 @@
             const newCardNode = tempContainer.firstElementChild;
             newCardNode.classList.add('opacity-0', 'scale-90', 'transition-all', 'duration-300');
             cardElement.replaceWith(newCardNode);
-            requestAnimationFrame(() => newCardNode.classList.remove('opacity-0', 'scale-90'));
+
+            requestAnimationFrame(() => {
+              newCardNode.classList.remove('opacity-0', 'scale-90');
+            });
           } else {
             cardElement.remove();
           }
