@@ -731,9 +731,9 @@
                 </div>
               </div>
 
-              <button onclick="app.quickAddOrOpen('${item.id}', ${isMovie})" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
-                <i class="fa-solid ${isTracked ? 'fa-eye' : 'fa-plus'}"></i>
-                <span class="hidden sm:inline">${isTracked ? 'Dettagli' : 'Aggiungi'}</span>
+               <button onclick="app.quickAddOrOpen('${item.id}', ${isMovie}, event)" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isTracked ? 'bg-surface text-brand-400 border border-brand-500/30' : 'bg-brand-500 hover:bg-brand-400 text-slate-950'}">
+                <i class="fa-solid ${isTracked ? 'fa-check' : 'fa-plus'}"></i>
+                <span class="hidden sm:inline">${isTracked ? 'In Lista' : 'Aggiungi'}</span>
               </button>
             </div>
           `;
@@ -751,13 +751,30 @@
         }
       },
 
-      async quickAddOrOpen(itemId, isMovieType) {
+      async quickAddOrOpen(itemId, isMovieType, event) {
         const idStr = String(itemId);
+        
+        // Se è già presente, apre direttamente i dettagli
         if (this.trackedShows[idStr]) {
           this.openItemModalById(idStr);
-        } else {
-          const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
-          await this.trackItem(dummyItem);
+          return;
+        }
+
+        // Recupera il bottone cliccato per aggiornarne subito l'icona
+        const btn = event ? event.currentTarget : null;
+        if (btn) {
+          btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span class="hidden sm:inline">Aggiunta...</span>`;
+          btn.disabled = true;
+        }
+
+        const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
+        await this.trackItem(dummyItem);
+
+        // Trasforma il pulsante con la spunta e lo stile "In Lista"
+        if (btn) {
+          btn.disabled = false;
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer bg-surface text-brand-400 border border-brand-500/30";
+          btn.innerHTML = `<i class="fa-solid fa-check"></i><span class="hidden sm:inline">In Lista</span>`;
         }
       },
 
