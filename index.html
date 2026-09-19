@@ -81,7 +81,7 @@
 
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-12">
     
-    <!-- Barra Desktop (nascosta su cellulare) -->
+    <!-- Barra Desktop (nascosta su cellulare tramite hidden md:flex) -->
     <div class="hidden md:flex items-center justify-between border-b border-surface-border pb-4 mb-6">
       <nav class="flex space-x-1 sm:space-x-2 bg-surface p-1 rounded-2xl border border-surface-border text-sm overflow-x-auto">
         <button onclick="app.setTab('watchlist')" id="tab-btn-watchlist" class="nav-tab px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 text-brand-400 bg-surface-elevated shadow-sm">
@@ -119,7 +119,7 @@
           <button onclick="app.setFilterType('movie')" id="filter-type-movie" class="filter-type px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Film</button>
           <button onclick="app.setFilterType('series')" id="filter-type-series" class="filter-type px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Serie TV</button>
         </div>
-        <!-- RIGA 2: FILTRO STATO (CON "IN PAUSA") -->
+        <!-- RIGA 2: FILTRO STATO -->
         <div class="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto pt-2 border-t border-surface-border/50">
           <span class="text-slate-500 font-bold uppercase tracking-wider mr-2 text-[10px]">Stato:</span>
           <button onclick="app.setFilterStatus('all')" id="filter-status-all" class="filter-status px-3 py-1.5 rounded-lg font-medium bg-brand-500/20 text-brand-400 border border-brand-500/30">Tutti</button>
@@ -138,7 +138,7 @@
           <i class="fa-solid fa-film"></i>
         </div>
         <h3 class="text-lg font-bold text-slate-200">Nessun titolo corrisponde ai filtri</h3>
-        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Modifica i filtri qui sopra o cerca nuovi titoli da aggiungere.</p>
+        <p class="text-slate-400 text-sm max-w-sm mx-auto mt-1 mb-6">Modifica i filtri sopra o usa la ricerca per aggiungere nuovi film e serie.</p>
         <button onclick="app.setTab('search')" class="px-5 py-2.5 rounded-xl font-semibold bg-brand-500 hover:bg-brand-400 text-slate-950 transition cursor-pointer">
           <i class="fa-solid fa-magnifying-glass mr-2"></i>Vai alla Ricerca
         </button>
@@ -259,6 +259,7 @@
         </div>
       </div>
 
+      <!-- Pillole Categorie Esplora -->
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
         <button onclick="app.setDiscoverCategory('smart')" id="disc-cat-smart" class="disc-pill px-3.5 py-1.5 rounded-xl font-bold transition whitespace-nowrap bg-brand-500 text-slate-950">
           <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> I tuoi gusti
@@ -338,7 +339,6 @@
             <button id="modal-btn-mark-all" onclick="app.markAllModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-surface-elevated hover:bg-surface-border text-slate-300 transition cursor-pointer">
               <i class="fa-solid fa-check-double mr-1 text-brand-400"></i> Tutto visto
             </button>
-            <!-- TASTO IN PAUSA -->
             <button id="modal-btn-pause" onclick="app.togglePauseModal()" class="hidden px-3 py-2 rounded-xl text-xs font-semibold bg-surface-elevated hover:bg-surface-border text-amber-400 transition cursor-pointer border border-surface-border">
               <i class="fa-solid fa-pause mr-1"></i> <span id="modal-pause-label">Metti in pausa</span>
             </button>
@@ -382,7 +382,7 @@
           <span class="text-xs font-bold uppercase tracking-wider text-brand-400 flex items-center gap-1.5"><i class="fa-solid fa-key"></i> Chiave TMDb</span>
           <span id="tmdb-badge-modal" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300">Non attiva</span>
         </div>
-        <p class="text-xs text-slate-400 leading-relaxed">Inserisci la tua <b>Chiave API</b> per sbloccare tutti i film del mondo e la ricerca per Attori.</p>
+        <p class="text-xs text-slate-400 leading-relaxed">Inserisci la tua <b>Chiave API</b> per cercare qualsiasi film al mondo e abilitare la ricerca per Attori.</p>
         <div class="flex gap-2">
           <input type="text" id="tmdb-api-key-input" placeholder="Incolla chiave TMDb..." class="flex-1 bg-surface border border-surface-border text-white text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-brand-500 font-mono" autocomplete="off">
           <button onclick="app.saveTmdbKey()" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs transition cursor-pointer">Salva</button>
@@ -422,8 +422,8 @@
       tmdbApiKey: '',
       activeTab: 'watchlist',
       
-      filterType: 'all',    // 'all', 'movie', 'series'
-      filterStatus: 'all',  // 'all', 'watching', 'paused', 'plan', 'finished'
+      filterType: 'all',
+      filterStatus: 'all',
       
       searchMode: 'title',
       searchDebounceTimer: null,
@@ -445,6 +445,7 @@
         { id: 'm_interstellar', type: 'movie', name: 'Interstellar', image: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', rating: 8.7, runtime: 169, premiered: '2014', genres: ['Sci-Fi', 'Drama', 'Adventure'], summary: 'Un gruppo di esploratori compie il viaggio più rischioso della storia umana attraverso un wormhole nello spazio profondo.', cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain'] },
         { id: 'm_inception', type: 'movie', name: 'Inception', image: 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', rating: 8.8, runtime: 148, premiered: '2010', genres: ['Sci-Fi', 'Action', 'Thriller'], summary: 'Un abile ladro di segreti nel subconscio deve affrontare una pericolosa missione di innesto di una nuova idea.', cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'] },
       ],
+      curatedShowIds: [169, 82, 431, 305, 1780, 216, 2993, 31086],
 
       normalizeTitle(title) {
         if (!title) return '';
@@ -710,7 +711,6 @@
           const year = item.premiered ? item.premiered.slice(0, 4) : 'N/A';
           const rating = (item.rating && item.rating.average) ? item.rating.average : (item.rating || '7.5');
           const genreDisplay = (item.genres && item.genres.length > 0) ? item.genres[0] : (isMovie ? 'Cinema' : 'Serie');
-
           const roleHtml = item.character ? `<div class="text-[10px] text-brand-400 font-medium truncate mt-1"><i class="fa-solid fa-mask mr-1"></i>Ruolo: ${item.character}</div>` : '';
 
           return `
@@ -759,6 +759,15 @@
           const dummyItem = { id: idStr, type: isMovieType ? 'movie' : 'series' };
           await this.trackItem(dummyItem);
         }
+      },
+
+      bindEvents() {
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            this.closeDetailsModal();
+            this.closeDataModal();
+          }
+        });
       },
 
       // ==========================================
@@ -1012,7 +1021,6 @@
 
         markAllBtn.classList.remove('hidden');
 
-        // Mostra tasto pausa se serie tracciata
         if (isTracked) {
           pauseBtn.classList.remove('hidden');
           pauseLabel.textContent = currentData.paused ? 'Riprendi serie' : 'Metti in pausa';
@@ -1324,8 +1332,8 @@
           delete show.watchedEpisodes[epKey];
         } else {
           show.watchedEpisodes[epKey] = true;
-          show.lastActivity = Date.now(); // Aggiorna attività per "prossimo da vedere"
-          show.paused = false; // Se guardi un episodio, togli la pausa automaticamente
+          show.lastActivity = Date.now();
+          show.paused = false;
         }
 
         this.saveToStorage();
@@ -1415,6 +1423,20 @@
       // ==========================================
       // ====== SEZIONE: DISCOVER & ESPLORA =======
       // ==========================================
+      setDiscoverCategory(cat) {
+        this.discoverCategory = cat;
+        document.querySelectorAll('.disc-pill').forEach(btn => {
+          btn.classList.remove('bg-brand-500', 'text-slate-950');
+          btn.classList.add('bg-surface-elevated', 'text-slate-400', 'border', 'border-surface-border');
+        });
+        const activeBtn = document.getElementById(`disc-cat-${cat}`);
+        if (activeBtn) {
+          activeBtn.classList.add('bg-brand-500', 'text-slate-950');
+          activeBtn.classList.remove('bg-surface-elevated', 'text-slate-400', 'border', 'border-surface-border');
+        }
+        this.refreshDiscoverFeed(true);
+      },
+
       getUserTopGenres() {
         const counts = {};
         Object.values(this.trackedShows).forEach(s => {
@@ -1607,23 +1629,27 @@
 
         if (refreshIcon) refreshIcon.classList.add('fa-spin');
         
-        discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin text-brand-400 mr-2 text-base"></i> Caricamento proposte per te...</div>`;
+        if (discoverGrid) {
+          discoverGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin text-brand-400 mr-2 text-base"></i> Caricamento proposte per te...</div>`;
+        }
 
         if (forceReload) {
           this.candidateShowPool = [];
           this.displayedDiscoverShows = [];
         }
 
-        await this.buildSmartCandidatePool(forceReload);
+        try {
+          await this.buildSmartCandidatePool(forceReload);
+        } catch (e) {
+          console.error("Errore candidate pool:", e);
+        }
 
         const userTopGenres = this.getUserTopGenres();
         if (hintEl) {
           if (this.discoverCategory === 'smart') {
-            if (userTopGenres.length > 0) {
-              hintEl.innerHTML = `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato ai tuoi titoli: <b class="text-slate-200">${userTopGenres.slice(0, 2).join(', ')}</b>`;
-            } else {
-              hintEl.textContent = 'Proposte basate sulle serie e i film che aggiungi';
-            }
+            hintEl.innerHTML = userTopGenres.length > 0 
+              ? `<i class="fa-solid fa-sparkles text-amber-400 mr-1"></i> Ispirato ai tuoi titoli: <b class="text-slate-200">${userTopGenres.slice(0, 2).join(', ')}</b>` 
+              : 'Proposte basate sulle serie e i film che aggiungi';
           } else if (this.discoverCategory === 'top') {
             hintEl.innerHTML = `<i class="fa-solid fa-crown text-amber-400 mr-1"></i> Pietre miliari e film più premiati della storia`;
           } else {
@@ -1631,11 +1657,10 @@
           }
         }
 
-        const initialTargetCount = 10;
         this.displayedDiscoverShows = [];
         const seenNormTitles = new Set();
 
-        while (this.displayedDiscoverShows.length < initialTargetCount && this.candidateShowPool.length > 0) {
+        while (this.displayedDiscoverShows.length < 10 && this.candidateShowPool.length > 0) {
           const item = this.candidateShowPool.shift();
           const idStr = String(item.id);
           const norm = this.normalizeTitle(item.name);
@@ -1713,9 +1738,7 @@
 
       async quickAddAndReplaceItem(itemId) {
         const targetItem = this.displayedDiscoverShows.find(s => String(s.id) === String(itemId));
-        if (targetItem) {
-          await this.trackItem(targetItem);
-        }
+        if (targetItem) await this.trackItem(targetItem);
         await this.replaceCardOnScreen(itemId);
       },
 
